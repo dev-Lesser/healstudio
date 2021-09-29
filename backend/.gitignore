@@ -1,0 +1,5 @@
+config/
+images/
+*.ipynb
+.ipynb_checkpoints
+secret.json
