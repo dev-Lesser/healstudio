@@ -6,6 +6,12 @@ import urllib.request
 import os, json, sys
 
 
+DB_HOST= 'mongodb://localhost:27017'
+DB_USER= ''
+DB_PASSWORD= ''
+DB_NAME= 'healstudio'
+COLLECTION_NAME= 'space'
+
 def createGglquery(query, display=50, start=1):
     query = [{
         'operationName': "getPlacesList",
@@ -63,11 +69,13 @@ def parseGymDetail(data):
         return pd.Series([desc, keywords, urlList, imageIDs, checkParse])
     except exceptions.RetryError as e:
         return pd.Series([desc, keywords, urlList, imageIDs, checkParse])
-    desc = res_detail['description']
-    keywords = res_detail['keywords']
-    urlList = res_detail['urlList']
-    imgList = [i['url'] for i in res_detail['images']]
+    desc = res_detail.get('description')
+    keywords = res_detail.get('keywords')
+    urlList = res_detail.get('urlList')
     print(keywords)
+    if res_detail.get('images') != None:
+        imgList = [i['url'] for i in res_detail.get('images')]
+    
     if keywords == 0:
         keywords = None
     
@@ -78,7 +86,8 @@ def parseGymDetail(data):
         except FileExistsError:
             # directory already exists
             pass
-        for idx, image_url in enumerate([i['url'] for i in res_detail['images']][:5]):
+        
+        for idx, image_url in enumerate([i['url'] for i in res_detail.get('images')][:5]):
             try:
                 imageIDs.append(gymID +'_{}'.format(idx))
                 urllib.request.urlretrieve(image_url, 'images/' + gymID + '/' +gymID +'_{}'.format(idx) +'.jpg') # code 이름으로 파일 저장
@@ -97,7 +106,7 @@ def main():
     regions = list(region.find({'depth1': sys.argv[1]}))
     spaces = db[COLLECTION_NAME]
     url = 'https://pcmap-api.place.naver.com/place/graphql'
-
+    # print(regions)
     for ires in list(regions):
         print(ires)
         page = 1
@@ -124,7 +133,9 @@ def main():
 
             df = pd.DataFrame(res[0]['data']['businesses']['items'])
             df = df[df['name']!='전단지배포대행홍보전문업체학원헬스장배포']
-
+            
+            if len(df) == 0:
+                break
             
             df = df.astype({'x':float, 'y': float})
             df['region'] = ires['region']
