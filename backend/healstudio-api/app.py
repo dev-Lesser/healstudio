@@ -1,0 +1,105 @@
+from chalice import Chalice
+from chalice import BadRequestError
+# from chalicelib import users
+import json, os
+
+import pymongo
+
+DB_HOST = os.environ['DB_HOST']
+DB_USER = os.environ['DB_USER']
+DB_PASSWORD = os.environ.get("DB_PASSWARD")
+DB_NAME = os.environ.get("DB_NAME")
+COLLECTION_NAME = os.environ.get("COLLECTION_NAME")
+
+client = pymongo.MongoClient('mongodb://{host}'.format(
+    user=DB_USER, password=DB_PASSWORD, host=DB_HOST
+))
+db = client[DB_NAME]
+collection = db[COLLECTION_NAME]
+
+app = Chalice(app_name='healstudio-api')
+
+@app.route('/', methods=['GET'], cors=True)
+def index():
+    return {'hello': 'world'}
+
+# region
+@app.route('/regions', methods=['GET'], cors=True)
+def searchRegions():
+    collection = db['region']
+    regions = collection.distinct('region')
+ 
+    return regions
+
+@app.route('/region', methods=['GET'], cors=True)
+def searchRegionDetail():
+    collection = db['region']
+    e = app.current_request.to_dict()
+    params = e.get('query_params')
+    sido = params.get('sido')
+    sigungu = params.get('sigungu')
+    print(sido, sigungu)
+    if sigungu != None:
+        regions = list(collection.find({
+            'region': sido, 
+            'depth1': sigungu
+            },{'_id':0}))
+   
+        return regions
+    regions = list(collection.find({'region': sido},{'_id':0}))
+   
+    return regions
+# user
+@app.route('/user/{userId}', methods=['GET'], cors=True)
+def searchUser(userId):
+    collection = db['users']
+    user = collection.find_one({'user':userId},{'_id':0, 'ip':0, 'password':0})
+ 
+    return user
+
+@app.route('/gym/{gymId}', methods=['GET'], cors=True)
+def searchByGymId(gymId):
+    
+    res = collection.find_one({"id": gymId},{"_id":0, "checkParse":0})
+
+    return res
+
+@app.route('/gym', methods=['POST'], content_types=['application/json'], cors=True)
+def createGym():
+    data = app.current_request.raw_body.decode()
+    data['checkParse'] = False
+    if collection.find_one({"id": data['id']}):
+   
+        raise BadRequestError('id %s exists' % data['id'])
+    
+    
+    response = {
+            "data" : data
+    }
+    return response
+
+@app.route('/gyms-lists', cors=True)
+def search():
+    e = app.current_request.to_dict()
+    params = e.get('query_params')
+    skip = int(params.get('skip'))
+    limit = int(params.get('limit'))
+    print(skip, limit)
+    if limit >= 100:
+        raise BadRequestError('error')
+
+    res = list(collection.find({},{"_id":0, "checkParse":0}).skip(skip).limit(limit))
+
+    return res
+
+# @app.route('/gyms/{gymId}', methods=['GET'])
+# def searchByGymId(gymId):
+    
+#     res = collection.find_one({"id": gymId},{"_id":0, "checkParse":0})
+#     # response = {
+        
+#     # }
+#     return res
+
+
+#

@@ -1,0 +1,22 @@
+class GymModel:
+    id=str
+    name=str
+    category=str
+    roadAddress=str
+    fullAddress=str
+    bookingUrl=str
+    phone=str
+    virtualPhone=str
+    businessHours=str
+    daysOff=bool
+    imageUrl=str
+    x=float 
+    y=float
+    region=str
+    region_detail=str
+    region_detail_spec=str or bool
+    desc=str
+    keywords=list
+    urlList=list
+    imgList=list
+    checkParse=bool

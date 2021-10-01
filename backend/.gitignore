@@ -3,3 +3,8 @@ images/
 *.ipynb
 .ipynb_checkpoints
 secret.json
+node_modules
+__pycache__
+.serverless
+.requirements.zip
+.chalice
