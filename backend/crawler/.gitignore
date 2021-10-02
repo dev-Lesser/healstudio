@@ -1,0 +1,4 @@
+.env
+*.exe
+.DS_Store
+images
