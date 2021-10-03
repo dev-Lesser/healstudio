@@ -46,9 +46,11 @@
                 <div class="trainer-rating">
                 <v-rating
                     v-model="trainer.point"
-                    background-color="white"
+                    background-color="grey"
                     color="yellow accent-4"
                     dense
+                    hover
+                    length="5"
                     half-increments
                     size="18"
                     readonly

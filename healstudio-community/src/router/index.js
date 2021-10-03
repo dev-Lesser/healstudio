@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "@/views/Home";
 import Login from "@/views/Login";
+import SignUp from "@/views/SignUp"
 import Review from "@/views/Review"
 import Trainer from "@/views/Trainer"
 Vue.use(VueRouter);
@@ -11,6 +12,12 @@ const routes = [
     path: "/login",
     name: "Login",
     component: Login,
+    meta: { transition: 'zoom' },
+  },
+  {
+    path: "/signup",
+    name: "SignUp",
+    component: SignUp,
     meta: { transition: 'zoom' },
   },
   {

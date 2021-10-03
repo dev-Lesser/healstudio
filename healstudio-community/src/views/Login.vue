@@ -9,9 +9,14 @@
             </div>
             <v-form class="login-form">
                 <v-text-field v-model="id" color="#52abc4" dense outlined label="아이디" @keyup.enter="doLogin" />
-                <v-text-field v-model="pw" color="#52abc4" dense outlined label="비밀번호" type="password" @keyup.enter="doLogin" />
+                <v-text-field style="font-family:'Noto Sans', sans-serif;" v-model="pw" color="#52abc4" dense outlined label="비밀번호" type="password" @keyup.enter="doLogin" />
                 <v-btn class="login-btn-submit" color="#52abc4" dark @click="doLogin">
                     로그인
+                </v-btn>
+                <v-divider class="mb-3"/>
+                아직 회원이 아니세요?
+                <v-btn class="signup-btn-submit" color="#20738A" dark @click="gotoSignUp">
+                    회원가입
                 </v-btn>
             </v-form>
         </div>
@@ -38,6 +43,9 @@
                 this.$router.push("/");
                 
             },
+            async gotoSignUp(){
+                this.$router.push("/signup");
+            }
         },
     };
 </script>
@@ -67,13 +75,18 @@
         font-weight: bold;
     }
     .login-form {
-        font-family:'Noto Sans KR', sans-serif;
+        font-family:'Jeju Gothic', sans-serif;
         width: 320px;
         margin-top: 30px;
         color: black,
     }
     .login-btn-submit {
         margin-top: 100px;
+        margin-bottom: 10px;
+        width: 320px;
+    }
+    .signup-btn-submit {
+        margin-top: 10px;
         width: 320px;
     }
 </style>

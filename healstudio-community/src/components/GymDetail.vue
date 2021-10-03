@@ -136,17 +136,16 @@
             </v-expansion-panels>
         </perfect-scrollbar>
         <v-divider />
-        <v-card-actions class="container-reviews-trainers">
-            <v-btn color="grey lighten-2" @click="clickToReview" v-if="$route.name == 'Home' | $route.name != 'Review'">
+        <div class="container-reviews-trainers">
+            <v-btn block color="primary" class="mt-2" @click="clickToReview" v-if="$route.name == 'Home' | $route.name != 'Review'">
                 <v-icon small class="mr-3">mdi-pencil</v-icon>
-                리뷰 작성
+                리뷰 확인
             </v-btn>
-            <v-spacer />
-            <v-btn @click="clickToTrainer" v-if="$route.name == 'Home' | $route.name != 'Trainer'">
+            <v-btn block @click="clickToTrainer" dark class="mt-2" v-if="$route.name == 'Home' | $route.name != 'Trainer'">
                 <v-icon small class="mr-3">mdi-account</v-icon>
                 트레이너 확인
             </v-btn>
-        </v-card-actions>
+        </div>
     </div>
 </template>
 <script>
@@ -292,7 +291,6 @@ import ShowDesc from '@/components/ShowDesc'
 }
 .container-reviews-trainers,
 .box-description{
-    display: flex;
     justify-content: center;
     font-size: 13px;
     font-family:'Jeju Gothic', sans-serif;

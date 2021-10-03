@@ -11,7 +11,7 @@
             two-line
             class="review_list"
             v-if="data.length>0"
-            height="450"
+            height="410"
         >
             <div class="review-header">
                 <v-list-item>
@@ -25,11 +25,9 @@
                         내용
                     </div>
                     <div class="review-created">
-                        작성일
+                        작성일/수정일
                     </div>
-                    <div class="review-action">
-                        수정/삭제
-                    </div>
+        
                     
                 </v-list-item>
                 <v-divider />
@@ -62,10 +60,6 @@
                     </div>
                     <div class="review-content">
                     {{review.contents}}
-                    </div>
-                    <div class="review-created">
-                    {{review.created_at >= review.updated_at ? review.created_at.split(" ")[0] : review.updated_at.split(" ")[0]}}
-                    </div>
                     <div v-if="user_id==review.user">
                         <v-icon 
                             small
@@ -81,6 +75,12 @@
                             @click="openDeleteReview(review)"
                         >mdi-delete</v-icon>
                     </div>
+                    </div>
+                    
+                    <div class="review-created">
+                    {{review.created_at >= review.updated_at ? review.created_at.split(" ")[0] : review.updated_at.split(" ")[0]}}
+                    </div>
+                    
                 </v-list-item>
                 <v-divider />
             </div>
@@ -344,18 +344,17 @@ export default {
     width: 10%;
 }
 .review-rating {
-    width: 130px;
+    width: 160px;
     text-align: center;
 }
 .review-content {
-    width: 45%;
+    width: 75%;
+    display:grid;
 }
 .review-created{
     width: 15%;
 }
-.review-updated{
-    width: 15%;
-}
+
 .pagination-bar {
         display: inline-block;
         padding-left: 0;

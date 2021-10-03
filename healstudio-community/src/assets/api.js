@@ -7,7 +7,7 @@ export const login = async (user_id, password) => {
     var data = JSON.stringify(body);
     const result = await axios({
         method: 'post',
-        url: BASE_URL+'/login',
+        url: BASE_URL+'/auth/login',
         headers: {
             'Content-Type': 'application/json'
         },

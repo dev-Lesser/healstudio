@@ -3,6 +3,8 @@ from chalice import BadRequestError
 # from chalicelib import users
 import json, os
 from dotenv import load_dotenv
+
+import requests
 import pymongo
 import datetime
 load_dotenv(verbose=True)
@@ -25,7 +27,7 @@ def index():
     return {'hello': 'world'}
 
 # login
-@app.route('/login', methods=['POST'], cors=True)
+@app.route('/auth/login', methods=['POST'], cors=True)
 def login():
     data = json.loads(app.current_request.raw_body.decode())
     user_id = data.get('user_id')
@@ -42,6 +44,40 @@ def login():
     return Response(body='error',
                     headers={'Content-Type': 'application/json'},
                     status_code=400)
+
+
+@app.route('/auth/signup', methods=['POST'], cors=True)
+def signup():
+    data = json.loads(app.current_request.raw_body.decode())
+    user_id = data.get('user_id')
+    password = data.get('password')
+    collection = db['users']
+    data = collection.find_one({'user': user_id}) # id 체크
+    if data:
+        return Response(body='error',
+                    headers={'Content-Type': 'application/json'},
+                    status_code=400)
+    ip = requests.get("https://api.ipify.org").text
+    admin = False
+    results = {
+        'user': user_id,
+        'password': password,
+        'ip': ip,
+        'admin': admin,
+        'favList': [],
+        'reviews':[],
+        "created_at": datetime.datetime.now(),
+        "last_login": datetime.datetime.now()
+    }
+    collection.insert_one(results)
+    return Response(body={
+        'token':'token',
+        'user_id': user_id,
+        },
+        headers={'Content-Type': 'application/json'},
+        status_code=200)
+        
+    
     
 @app.route('/search', methods=['GET'], cors=True)
 def searchByQuery():
