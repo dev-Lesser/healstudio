@@ -61,9 +61,7 @@ export default {
     },
     async mounted(){
         
-        for(var i in this.$store.state.locations){
-            console.log(this.$store.state.locations[i])
-        }
+
     },
     async beforeUpdate(){
        

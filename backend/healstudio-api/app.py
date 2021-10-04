@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 import requests
 import pymongo
 import datetime
+import uuid
+from authorize import auth
 load_dotenv(verbose=True)
 DB_HOST = os.getenv('DB_HOST')
 DB_USER = os.getenv('DB_USER')
@@ -33,10 +35,12 @@ def login():
     user_id = data.get('user_id')
     password = data.get('password')
     collection = db['users']
-    if collection.find_one({'user': user_id, 'password':password}):
+    data = collection.find_one({'user': user_id, 'password':password})
+    if data:
+        print(data)
         return Response(body={
-            'token':'token',
-            'user_id': user_id,
+            'token': data.get('uuid'),
+            'user_id': data.get('user'),
             },
                     headers={'Content-Type': 'application/json'},
                     status_code=200)
@@ -51,6 +55,10 @@ def signup():
     data = json.loads(app.current_request.raw_body.decode())
     user_id = data.get('user_id')
     password = data.get('password')
+    if not auth.auth_check(user_id, password):
+        return Response(body='error',
+                    headers={'Content-Type': 'application/json'},
+                    status_code=400)
     collection = db['users']
     data = collection.find_one({'user': user_id}) # id 체크
     if data:
@@ -58,9 +66,11 @@ def signup():
                     headers={'Content-Type': 'application/json'},
                     status_code=400)
     ip = requests.get("https://api.ipify.org").text
+    uid = auth.create_uuid(user_id)
     admin = False
     results = {
         'user': user_id,
+        'uuid': uid,
         'password': password,
         'ip': ip,
         'admin': admin,

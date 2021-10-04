@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import Home from "@/views/Home";
 import Login from "@/views/Login";
 import SignUp from "@/views/SignUp"
+import UserPage from "@/views/UserPage"
 import Review from "@/views/Review"
 import Trainer from "@/views/Trainer"
 Vue.use(VueRouter);
@@ -36,6 +37,12 @@ const routes = [
     path: "/trainer/:id",
     name: "Trainer",
     component: Trainer,
+  },
+  {
+    path: "/user/:id",
+    name: "UserPage",
+    component: UserPage,
+
   },
 
 ]

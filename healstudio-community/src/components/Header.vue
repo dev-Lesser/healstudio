@@ -15,7 +15,7 @@
     
     <v-btn outlined class="ml-5" v-if="user_id=='null'" @click="$router.push('/login')">로그인</v-btn>
     <v-btn outlined class="ml-5" v-else @click="logout">로그아웃</v-btn>
-    <v-btn>My Page</v-btn>
+    <v-btn  @click="gotoUserPage" light>My Page</v-btn>
     
     
   </v-app-bar>
@@ -34,7 +34,6 @@ export default {
     
   },
   async updated(){
-    console.log(window.localStorage.getItem(`user_id`))
     await this.isLogin();
   },
   computed:{
@@ -54,15 +53,18 @@ export default {
     async isLogin(){
       this.user_id = window.localStorage.getItem("user_id")
       if (this.user_id!='null'){
-        console.log('로그인됨')
         this.helloText = `반갑습니다 ${this.user_id} 님!`
       }
     },
     async logout(){
-      window.localStorage.setItem("token", null);
-      window.localStorage.setItem("user_id", null);
+      window.localStorage.setItem("token", 'null');
+      window.localStorage.setItem("user_id", 'null');
       this.$router.go()
 
+    },
+    async gotoUserPage(){
+      const uuid = window.localStorage.getItem(`token`)
+      this.$router.push(`/user/${this.user_id}?uid=${uuid}`)
     }
   }
 }
