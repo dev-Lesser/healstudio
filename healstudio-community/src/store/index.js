@@ -42,6 +42,7 @@ export default new Vuex.Store({
         trainers: null,
         locations: null,
         overlay: false,
+        userDetails: null,
 
     },
     getters: {

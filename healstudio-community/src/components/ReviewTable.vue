@@ -341,7 +341,10 @@ export default {
     display: flex;
     justify-content: left;
     align-items: center;
-    width: 10%;
+    width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;  /* 말줄임 적용 */;
 }
 .review-rating {
     width: 160px;

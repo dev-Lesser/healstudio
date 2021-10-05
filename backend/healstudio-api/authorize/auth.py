@@ -12,5 +12,17 @@ def auth_check(user_id, pwd):
 
     return True
     
-def create_uuid(user_id):
-    return str(uuid.uuid5(uuid.NAMESPACE_URL, user_id))
+def create_uuid(user_id, password, ip):
+    import random
+    r = list(user_id+ ip+ password)
+    random.shuffle(r)
+    name = ''.join(r)
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, name))
+
+def hidden_ip(ip):
+    ips = ip.split('.') 
+    ips[1] = '*'*3
+    ips[2] = '*'*3
+    result_ip = '.'.join(ips)
+    return result_ip
+    

@@ -97,14 +97,6 @@ export default {
             // console.log(this.$store.state.gyms)
         },
         locations(){
-            console.log(123)
-            // this.latlon=this.$store.state.locations.map(e => {
-            //     return e
-            // });
-            // this.$store.state.locations = this.latlon;
-            // for(var key in this.latlon){
-            //     console.log(this.latlon[key])
-            // }
             
         }
     }

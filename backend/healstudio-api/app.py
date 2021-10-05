@@ -36,8 +36,10 @@ def login():
     password = data.get('password')
     collection = db['users']
     data = collection.find_one({'user': user_id, 'password':password})
+    collection.update_one({'user': user_id, 'password':password}, {'$set' : {
+                "last_login": datetime.datetime.now()}
+            })
     if data:
-        print(data)
         return Response(body={
             'token': data.get('uuid'),
             'user_id': data.get('user'),
@@ -66,7 +68,7 @@ def signup():
                     headers={'Content-Type': 'application/json'},
                     status_code=400)
     ip = requests.get("https://api.ipify.org").text
-    uid = auth.create_uuid(user_id)
+    uid = auth.create_uuid(user_id, password, ip)
     admin = False
     results = {
         'user': user_id,
@@ -140,12 +142,7 @@ def searchRegionDetail():
     regions = list(collection.find({'region': sido},{'_id':0}))
 
     return regions
-# user
-@app.route('/user/{userId}', methods=['GET'], cors=True)
-def searchUser(userId):
-    collection = db['users']
-    user = collection.find_one({'user':userId},{'_id':0, 'ip':0, 'password':0})
-    return user
+
 
 @app.route('/gym/{gymId}', methods=['GET'], cors=True)
 def searchByGymId(gymId):
@@ -330,6 +327,35 @@ def deleteReview(gymId):
         
     return Response(body={
                     "error": "평점 및 리뷰를 확인해주세요"
+                    },
+            headers={'Content-Type': 'application/json'},
+            status_code=403)
+
+@app.route('/user/{user_id}', methods=['GET'], cors=True)
+def getUserDetails(user_id):
+    collection = db['users']
+    e = app.current_request.to_dict()
+    params = e.get('query_params')
+    print(params, user_id)
+    uid = params.get('uid')
+    if user_id and uid:
+        query = {
+            'user': user_id,
+            'uuid': uid
+        }
+        
+        r = collection.find_one(query,{'_id':0, 'password': 0, 'uuid':0, 'admin':0})
+        
+        r['created_at'] = r['created_at'].strftime('%Y-%m-%d')
+        r['last_login'] = r['last_login'].strftime('%Y-%m-%d')
+        r['ip'] = auth.hidden_ip(r['ip'])
+        
+        return Response(body=r,
+                headers={'Content-Type': 'application/json'},
+                status_code=200)
+        
+    return Response(body={
+                    "error": "error"
                     },
             headers={'Content-Type': 'application/json'},
             status_code=403)

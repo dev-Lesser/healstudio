@@ -14,7 +14,6 @@ export const login = async (user_id, password) => {
         data: data
     })
     if (result.status == 200) {
-        console.log(result.data)
         return [true, result.data]
     }
     return [false, null]
