@@ -182,12 +182,34 @@ def getReviews(gymId):
     collection = db['reviews']
     e = app.current_request.to_dict()
     params = e.get('query_params')
-    skip = int(params.get('skip'))
-    limit = int(params.get('limit'))
+    skip = int(params.get('skip')) if params.get('skip') else 0
+    limit = int(params.get('limit')) if params.get('limit') else 5
+    user = params.get('user')
+    
     sort_by = params.get('sortBy')
     if not sort_by:
         sort_by = 'updated_at'
-    
+    if user: # 유저가 쓴 것만 가져올 수 있음
+        res = list(collection.aggregate([
+            {'$match': {'user': user}},
+            {'$sort': { sort_by: -1 }},  # 디스크 에러 날 경우 어떻게???
+            {'$skip': skip}, {'$limit':limit},
+            {'$lookup': {'from':'space', 'localField':'related_gym_id', 'foreignField':'id', 'as':'gymInfo'}}, # join
+            {'$unwind': '$gymInfo'}, # 반드시 하나
+            {'$project': { '_id':0, 'gymInfo._id':0, 'gymInfo.desc':0, 'gymInfo.checkParse':0, 'gymInfo.urlList':0,
+                        'gymInfo.x':0,'gymInfo.y':0}},
+            
+            
+        ]))
+        results = []
+        for i in res:
+            item = i
+            item['created_at'] = item['created_at'].strftime("%Y-%m-%d %H:%M:%S")
+            item['updated_at'] = item['updated_at'].strftime("%Y-%m-%d %H:%M:%S")
+            results.append(item)
+        return Response(body=results,
+                headers={'Content-Type': 'application/json'},
+                status_code=200)
     res = list(collection.find({"related_gym_id": gymId},{"_id":0}).sort([(sort_by,-1)]).skip(skip).limit(limit))
     results = []
     for i in res:
@@ -336,7 +358,6 @@ def getUserDetails(user_id):
     collection = db['users']
     e = app.current_request.to_dict()
     params = e.get('query_params')
-    print(params, user_id)
     uid = params.get('uid')
     if user_id and uid:
         query = {
