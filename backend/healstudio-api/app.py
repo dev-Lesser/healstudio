@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import requests
 import pymongo
 import datetime
-import uuid
+import bcrypt
 from authorize import auth
 load_dotenv(verbose=True)
 DB_HOST = os.getenv('DB_HOST')
@@ -35,8 +35,15 @@ def login():
     user_id = data.get('user_id')
     password = data.get('password')
     collection = db['users']
-    data = collection.find_one({'user': user_id, 'password':password})
-    collection.update_one({'user': user_id, 'password':password}, {'$set' : {
+    bytes_password = bytes(password, 'utf-8')
+
+    data = collection.find_one({'user': user_id})
+    if not bcrypt.checkpw(bytes_password, data.get('password')):
+        return Response(body='error',
+                    headers={'Content-Type': 'application/json'},
+                    status_code=400)
+
+    collection.update_one({ 'user': user_id }, {'$set' : {
                 "last_login": datetime.datetime.now()}
             })
     if data:
@@ -57,6 +64,9 @@ def signup():
     data = json.loads(app.current_request.raw_body.decode())
     user_id = data.get('user_id')
     password = data.get('password')
+    
+    bytes_password = bytes(password, 'utf-8') #// 비밀번호
+    hashed_password = bcrypt.hashpw(password=bytes_password, salt=bcrypt.gensalt())
     if not auth.auth_check(user_id, password):
         return Response(body='error',
                     headers={'Content-Type': 'application/json'},
@@ -73,7 +83,7 @@ def signup():
     results = {
         'user': user_id,
         'uuid': uid,
-        'password': password,
+        'password': hashed_password,
         'ip': ip,
         'admin': admin,
         'favList': [],
@@ -246,6 +256,7 @@ def getTrainers(gymId):
 @app.route('/review/{gymId}', methods=['POST'], cors=True)
 def createReview(gymId):
     collection = db['reviews']
+    # user_collection = db['users']
     data = json.loads(app.current_request.raw_body.decode())
     contents = data.get('contents')
     if len(contents) > 50:
@@ -273,7 +284,7 @@ def createReview(gymId):
             "updated_at": datetime.datetime.now()
         }
         collection.insert(res)
-    
+
 
         return Response(body=gymId,
                 headers={'Content-Type': 'text/plain'},

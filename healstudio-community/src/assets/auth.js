@@ -12,3 +12,4 @@ export const get_user_details = async (user_id, uuid) => {
     }
     return [false, null]
 }
+
