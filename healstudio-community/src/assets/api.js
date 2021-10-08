@@ -151,3 +151,38 @@ export const delete_review = async (id, gymId, user_id) => {
     }
     return [false, null]
 }
+
+export const handle_favorite = async (user_id, gymId, uid) => {
+    const body = { user_id, uid }
+    var data = JSON.stringify(body);
+    const url = `${BASE_URL}/favorite/${gymId}`
+    const result = await axios({
+        method: 'post',
+        url: url,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    })
+    if (result.status == 200) {
+        // console.log(`deleted ${gymId}, ID: ${id}, USER_ID: ${user_id}, `)
+        return [true, result.data]
+    }
+    return [false, null]
+}
+
+export const check_favorite = async (user_id, gymId, uid) => {
+    const url = `${BASE_URL}/favorite/${gymId}?user_id=${user_id}&uid=${uid}`
+    const result = await axios({
+        method: 'get',
+        url: url,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    if (result.status == 200) {
+        // console.log(`deleted ${gymId}, ID: ${id}, USER_ID: ${user_id}, `)
+        return [true, result.data]
+    }
+    return [false, null]
+}

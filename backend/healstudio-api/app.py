@@ -202,7 +202,7 @@ def getReviews(gymId):
     if user: # 유저가 쓴 것만 가져올 수 있음
         res = list(collection.aggregate([
             {'$match': {'user': user}},
-            {'$sort': { sort_by: -1 }},  # 디스크 에러 날 경우 어떻게???
+            {'$sort': { sort_by: -1 }},  # [TODO] 디스크 에러 날 경우 어떻게???
             {'$skip': skip}, {'$limit':limit},
             {'$lookup': {'from':'space', 'localField':'related_gym_id', 'foreignField':'id', 'as':'gymInfo'}}, # join
             {'$unwind': '$gymInfo'}, # 반드시 하나
@@ -256,7 +256,7 @@ def getTrainers(gymId):
 @app.route('/review/{gymId}', methods=['POST'], cors=True)
 def createReview(gymId):
     collection = db['reviews']
-    # user_collection = db['users']
+    user_collection = db['users']
     data = json.loads(app.current_request.raw_body.decode())
     contents = data.get('contents')
     if len(contents) > 50:
@@ -268,7 +268,8 @@ def createReview(gymId):
         
     user_id = data.get('user_id')
     rate_point = data.get('point')
-    isExist = dict(collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)]))
+    # print(collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)]))
+    isExist = collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)])
     if isExist:
         review_id_max = isExist.get('id') + 1
     else:
@@ -284,7 +285,7 @@ def createReview(gymId):
             "updated_at": datetime.datetime.now()
         }
         collection.insert(res)
-
+        user_collection.update_one({"user": user_id},{'$push': {'reviews': {'review_id':review_id_max, 'gym_id': gymId}}})
 
         return Response(body=gymId,
                 headers={'Content-Type': 'text/plain'},
@@ -340,6 +341,7 @@ def updateReview(gymId):
 @app.route('/review/{gymId}', methods=['DELETE'], cors=True)
 def deleteReview(gymId):
     collection = db['reviews']
+    user_collection = db['users']
     e = app.current_request.to_dict()
     params = e.get('query_params')
     _id = int(params.get('id'))
@@ -352,7 +354,11 @@ def deleteReview(gymId):
         }
         
         collection.delete_one(delete_query)
-    
+        user_collection.update_one(
+            {'user': user_id},
+            {'$pull': {'reviews': {'review_id':_id, 'gym_id': gymId}}}
+        )
+
 
         return Response(body=gymId,
                 headers={'Content-Type': 'text/plain'},
@@ -391,4 +397,50 @@ def getUserDetails(user_id):
                     },
             headers={'Content-Type': 'application/json'},
             status_code=403)
+
+@app.route('/favorite/{gymId}', methods=['GET','POST'], cors=True)
+def handleFavorite(gymId):
+    collection = db['users']
+    # gym_collection = db['space']
+    if app.current_request.method == 'GET':
+        e = app.current_request.to_dict()
+        params = e.get('query_params')
+        user_id = params.get('user_id')
+        uid = params.get('uid')
+        res = collection.find_one(
+            {'user': user_id, 'uuid': uid, 'favList': { '$in': [gymId] }} # 있으면 빼고 없으면 넣어라
+        )
+        if res:
+            return Response(body=True,
+                headers={'Content-Type': 'application/json'},
+                status_code=200)
+        else:
+            return Response(body=False,
+                headers={'Content-Type': 'application/json'},
+                status_code=200)
+    else:
+        data = json.loads(app.current_request.raw_body.decode())
+        user_id = data.get('user_id')
+        uid = data.get('uid')
+        if user_id and uid:
+            query = {
+                'user': user_id,
+                'uuid': uid,
+            }
+            res = collection.find_one(
+                {'user': user_id, 'uuid': uid, 'favList': { '$in': [gymId] }} # 있으면 빼고 없으면 넣어라
+            )
+            if not res:
+                collection.update_one(query, {'$push': {'favList': gymId}})
+            else:
+                collection.update_one(query, {'$pull': {'favList': gymId}})
+            return Response(body=gymId,
+                    headers={'Content-Type': 'application/json'},
+                    status_code=200)
+            
+        return Response(body={
+                        "error": "error"
+                        },
+                headers={'Content-Type': 'application/json'},
+                status_code=403)
 

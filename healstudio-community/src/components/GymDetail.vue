@@ -1,5 +1,6 @@
 <template>
 <div v-if="selected" id="detail-sheet" >
+    
     <perfect-scrollbar v-if="selectedData != null">
         <v-card-actions>
             <v-spacer />
@@ -9,7 +10,10 @@
             <div class="box-title">
                 <div >
                 {{selectedData.name}}
+                
                 <show-desc :desc="desc" />
+                <v-icon class="image-region-tag" small v-if="isFavorite && $route.name !== 'Home'" color="rgb(255, 116, 116)" @click="handleFavorite">mdi-heart</v-icon>
+                <v-icon class="image-region-tag" small v-else-if="!isFavorite && $route.name !== 'Home'" @click="handleFavorite">mdi-heart</v-icon>
                 </div>
                 <v-rating
                 v-model="rating"
@@ -20,6 +24,7 @@
                 size="18"
                 readonly
                 ></v-rating>
+                
                 <div class="box-category">
                     <v-chip small outlined>{{selectedData.category}}</v-chip>
                 </div>
@@ -31,6 +36,7 @@
             <v-carousel
             cycle
             height="200">
+                
                 <v-carousel-item
                 v-for="(image,i) in selectedData.imgList"
                 :key="i"
@@ -150,6 +156,7 @@
 </template>
 <script>
 import ShowDesc from '@/components/ShowDesc'
+import {handle_favorite, check_favorite} from '@/assets/api'
     export default {
         props:{
             data: Object
@@ -163,6 +170,9 @@ import ShowDesc from '@/components/ShowDesc'
                 rating: 5,
                 desc: null,
                 selectedRoadAddress: false,
+                favClicked: false,
+                color: 'red',
+                isFavorite: false,
             }
         },
         computed: {
@@ -173,24 +183,36 @@ import ShowDesc from '@/components/ShowDesc'
                 return this.$store.state.selectedData;
             }
         },
-        mounted(){
+        async mounted(){
             var sheet = document.getElementById("detail-sheet");
             if (this.$route.name != 'Home' & sheet!=null){
                 sheet.style.position = "static"
                 sheet.style.left = '0px'
             }
+            if (this.$route.name != 'Home'){
+                const [user_id, uuid] = [window.localStorage.getItem('user_id'), window.localStorage.getItem("token")]
+                const [_, res] = await check_favorite(user_id, this.$route.params.id , uuid)
+                _;
+                this.isFavorite = res
+                console.log(this.isFavorite)
+            }
         },
-        beforeUpdate(){
+        async beforeUpdate(){
             var sheet = document.getElementById("detail-sheet");
             if (this.$route.name != 'Home' & sheet!=null){
                 sheet.style.position = "static"
                 sheet.style.left = '0px'
             }
+            // if (this.$route.name != 'Home'){
+            //     const [user_id, uuid] = [window.localStorage.getItem('user_id'), window.localStorage.getItem("token")]
+            //     this.isFavorite = await check_favorite(user_id, this.$route.params.id , uuid)
+            //     console.log(this.isFavorite)
+            // }
         },
+        
         methods:{
             clickToReview(){
                 this.$store.state.gymDetailData = this.data
-                console.log(this.data)
                 this.$store.state.gyms = this.selectedData;
                 this.$router.push(`/review/${this.data.id}`);
             },
@@ -198,6 +220,18 @@ import ShowDesc from '@/components/ShowDesc'
                 this.$store.state.gymDetailData = this.data
                 this.$store.state.gyms = this.selectedData;
                 this.$router.push(`/trainer/${this.data.id}`);
+            },
+            async handleFavorite(){
+                const [user_id, uuid] = [window.localStorage.getItem('user_id'), window.localStorage.getItem("token")]
+                if (user_id=='null' || uuid=='null'){
+                    alert('로그인이 필요한 서비스입니다.')
+                    return
+                }
+                const [success, res] = await handle_favorite(user_id, this.$route.params.id , uuid);
+                console.log(success, res)
+                this.favClicked = !this.favClicked
+                this.isFavorite = !this.isFavorite
+                console.log(this.favClicked)
             }
         },
         watch: {
