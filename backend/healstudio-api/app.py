@@ -317,7 +317,6 @@ def updateReview(gymId):
             "related_gym_id": gymId,
             "user": user_id,
         }
-        print(insert_query)
         res = {
             '$set' : {
                 "contents": contents,
@@ -376,19 +375,28 @@ def getUserDetails(user_id):
     e = app.current_request.to_dict()
     params = e.get('query_params')
     uid = params.get('uid')
+    skip = int(params.get('skip')) if params.get('skip') else 0
+    limit = int(params.get('limit')) if params.get('limit') else 10
     if user_id and uid:
-        query = {
-            'user': user_id,
-            'uuid': uid
-        }
+        results = collection.aggregate([
+                {'$match': {'user': user_id, 'uuid': uid}},
+                {'$unwind': '$favList'},
+                {'$skip': skip}, {'$limit':limit},
+                {'$lookup': {'from':'space', 'localField':'favList', 'foreignField':'id', 'as':'gymInfo'}}, # join
+                {'$unwind': '$gymInfo'}, # 반드시 하나
+                {'$project': { '_id':0, 'password':0, 'admin':0,'uuid':0, 
+                            'gymInfo._id':0,
+                            'gymInfo.desc':0, 'gymInfo.urlList':0, 'gymInfo.checkParse':0}},
+            ])
+        results_bucket = list()
+        for i in results:
+            item = i
+            item['created_at'] = i['created_at'].strftime('%Y-%m-%d')
+            item['last_login'] = i['last_login'].strftime('%Y-%m-%d')
+            item['ip'] = auth.hidden_ip(i['ip'])
+            results_bucket.append(item)
         
-        r = collection.find_one(query,{'_id':0, 'password': 0, 'uuid':0, 'admin':0})
-        
-        r['created_at'] = r['created_at'].strftime('%Y-%m-%d')
-        r['last_login'] = r['last_login'].strftime('%Y-%m-%d')
-        r['ip'] = auth.hidden_ip(r['ip'])
-        
-        return Response(body=r,
+        return Response(body=results_bucket,
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
         

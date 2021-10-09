@@ -1,5 +1,9 @@
 <template>
     <v-layout wrap class="user_page_layout">
+        
+        <v-card height="700" width="200">
+            asdfasd
+        </v-card>
         <v-flex xs12 sm8 md8>
             <v-card height=500>
         <v-card-subtitle>
@@ -61,5 +65,6 @@ export default {
 .user_page_layout{
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 </style>
