@@ -71,11 +71,12 @@ export const search_by_query = async (query, skip, limit) => {
     return [false, null]
 }
 
-export const get_reviews = async (gymId, skip, limit) => {
+export const get_reviews = async (gymId, skip, limit, user) => {
     const url = `${BASE_URL}/reviews/${gymId}`
     const result = await axios.get(url, {params: {
         skip: skip,
-        limit: limit
+        limit: limit,
+        user: user,
     }})
     if (result.status == 200) {
         const data = result.data

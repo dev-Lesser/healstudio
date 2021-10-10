@@ -165,7 +165,6 @@ def createGym():
     data = app.current_request.raw_body.decode()
     data['checkParse'] = False
     if collection.find_one({"id": data['id']}):
-   
         raise BadRequestError('id %s exists' % data['id'])
     
     
@@ -199,7 +198,7 @@ def getReviews(gymId):
     sort_by = params.get('sortBy')
     if not sort_by:
         sort_by = 'updated_at'
-    if user: # 유저가 쓴 것만 가져올 수 있음
+    if user and gymId=='all': # 유저가 쓴 것만 가져올 수 있음
         res = list(collection.aggregate([
             {'$match': {'user': user}},
             {'$sort': { sort_by: -1 }},  # [TODO] 디스크 에러 날 경우 어떻게???
@@ -220,16 +219,21 @@ def getReviews(gymId):
         return Response(body=results,
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
-    res = list(collection.find({"related_gym_id": gymId},{"_id":0}).sort([(sort_by,-1)]).skip(skip).limit(limit))
-    results = []
-    for i in res:
-        item = i
-        item['created_at'] = item['created_at'].strftime("%Y-%m-%d %H:%M:%S")
-        item['updated_at'] = item['updated_at'].strftime("%Y-%m-%d %H:%M:%S")
-        results.append(item)
-    return Response(body=results,
-            headers={'Content-Type': 'application/json'},
-            status_code=200)
+    ## user 가 없다면 > 모든 user 가 gym 에대한 리뷰를 updated_at 로 소팅하여 가져옴
+    if gymId.isdigit():
+        res = list(collection.find({"related_gym_id": gymId},{"_id":0}).sort([(sort_by,-1)]).skip(skip).limit(limit))
+        results = []
+        for i in res:
+            item = i
+            item['created_at'] = item['created_at'].strftime("%Y-%m-%d %H:%M:%S")
+            item['updated_at'] = item['updated_at'].strftime("%Y-%m-%d %H:%M:%S")
+            results.append(item)
+        return Response(body=results,
+                headers={'Content-Type': 'application/json'},
+                status_code=200)
+    else: return Response(body='error gymId: \t [%s]' % gymId,
+                headers={'Content-Type': 'text/html'},
+                status_code=200)
 
 @app.route('/trainers/{gymId}', methods=['GET'], cors=True)
 def getTrainers(gymId):
@@ -268,7 +272,6 @@ def createReview(gymId):
         
     user_id = data.get('user_id')
     rate_point = data.get('point')
-    # print(collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)]))
     isExist = collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)])
     if isExist:
         review_id_max = isExist.get('id') + 1
@@ -357,8 +360,6 @@ def deleteReview(gymId):
             {'user': user_id},
             {'$pull': {'reviews': {'review_id':_id, 'gym_id': gymId}}}
         )
-
-
         return Response(body=gymId,
                 headers={'Content-Type': 'text/plain'},
                 status_code=200)
@@ -384,9 +385,10 @@ def getUserDetails(user_id):
                 {'$skip': skip}, {'$limit':limit},
                 {'$lookup': {'from':'space', 'localField':'favList', 'foreignField':'id', 'as':'gymInfo'}}, # join
                 {'$unwind': '$gymInfo'}, # 반드시 하나
-                {'$project': { '_id':0, 'password':0, 'admin':0,'uuid':0, 
-                            'gymInfo._id':0,
-                            'gymInfo.desc':0, 'gymInfo.urlList':0, 'gymInfo.checkParse':0}},
+                {'$project': { '_id':0, 'password':0, 'admin':0,'uuid':0, 'reviews':0,
+                            'gymInfo._id':0,'gymInfo.desc':0, 'gymInfo.urlList':0, 'gymInfo.checkParse':0,
+                            'gymInfo.x':0, 'gymInfo.y':0,'gymInfo.imgList':0,
+                            }},
             ])
         results_bucket = list()
         for i in results:
@@ -409,14 +411,13 @@ def getUserDetails(user_id):
 @app.route('/favorite/{gymId}', methods=['GET','POST'], cors=True)
 def handleFavorite(gymId):
     collection = db['users']
-    # gym_collection = db['space']
     if app.current_request.method == 'GET':
         e = app.current_request.to_dict()
         params = e.get('query_params')
         user_id = params.get('user_id')
         uid = params.get('uid')
         res = collection.find_one(
-            {'user': user_id, 'uuid': uid, 'favList': { '$in': [gymId] }} # 있으면 빼고 없으면 넣어라
+            {'user': user_id, 'uuid': uid, 'favList': { '$in': [gymId] }} # 있으면 찜한 목록이기 때문에 pull 함
         )
         if res:
             return Response(body=True,
@@ -426,7 +427,7 @@ def handleFavorite(gymId):
             return Response(body=False,
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
-    else:
+    elif app.current_request.method == 'POST':
         data = json.loads(app.current_request.raw_body.decode())
         user_id = data.get('user_id')
         uid = data.get('uid')

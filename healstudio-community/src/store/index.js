@@ -43,6 +43,8 @@ export default new Vuex.Store({
         locations: null,
         overlay: false,
         userDetails: null,
+        userMeta: null,
+        userReviews: null,
 
     },
     getters: {

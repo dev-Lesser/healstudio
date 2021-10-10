@@ -278,7 +278,7 @@ export default {
             this.loading = false;
         },
         async getReviews(gymId, skip, limit){
-            const [success, res] = await get_reviews(gymId, skip, limit);
+            const [success, res] = await get_reviews(gymId, skip, limit, null);
             if (!success) this.status = -1;
             else {
                 this.$store.state.reviews = res;

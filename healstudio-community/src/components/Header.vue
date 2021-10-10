@@ -6,7 +6,8 @@
     class="header"
   >
     <v-icon class="mr-5" v-show="$route.name == 'Home'" @click="$store.state.selected = !$store.state.selected">mdi-format-align-justify</v-icon>
-    <v-btn outlined  @click="$router.push('/')">검색 홈</v-btn>
+    <v-btn outlined  class="mr-5" @click="$router.push('/')">검색 홈</v-btn>
+    <v-btn outlined  @click="$router.push('/board')">자유게시판</v-btn>
     <v-spacer />
     
     <div class="header_hello_user" v-if="user_id">
