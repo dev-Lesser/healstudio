@@ -3,7 +3,7 @@
         
         <v-card  class="ma-3 pa-3" flat>
             <v-avatar  color="indigo" size="200">
-                <v-icon dark>
+                <v-icon dark size="90">
                     mdi-account-circle
                 </v-icon>
             </v-avatar>
@@ -19,32 +19,33 @@
                 class="review_list"
             >
             <v-list-item>
-            <div class="user_profile_favorite">
-                찜한목록
-            </div>
+                <v-list-item-content>
+                    <div class="user_profile_favorite">
+                        찜한목록
+                    </div>
+                </v-list-item-content>
             </v-list-item>
+            <v-divider />
             <v-list-item>
-            <div class="user_profile_review">
-                나의 리뷰
-            </div>
+                <v-list-item-content>
+                    <div class="user_profile_review">
+                        나의 리뷰
+                    </div>
+                </v-list-item-content>
             </v-list-item>
+            <v-divider />
             </v-list>
         </v-card>
-        <v-flex xs12 sm8 md8>
-            <v-card>
-                <v-card-subtitle>
-                    아이디 : {{userMeta.user}}
-                </v-card-subtitle>
-                <v-card-subtitle>
-                    찜한 헬스장 개수 : {{userDetails.length}}
-                </v-card-subtitle>
-                <v-card-subtitle>
-                    내가 쓴 리뷰 개수 : {{userReviews.length}}
-                </v-card-subtitle>
-                ip : {{userMeta.ip}}
-                회원가입: {{userMeta.created_at}}
-                최근로그인: {{userMeta.last_login}}
-            </v-card>
+        <v-flex xs12 sm12 md8>
+            <v-flex xs12 md12>
+                <user-meta :user-meta="userMeta" :favGymLenth="userDetails.length" :reviewsLenth="userReviews.length" />
+            </v-flex>
+            <v-flex xs12 sm12 md12>
+                <user-favorite-table  :favGym="userDetails" />
+            </v-flex>
+            <v-flex xs12 sm12 md12>
+                <user-reviews-table  :data="userReviews" />
+            </v-flex>
         </v-flex>
     </v-layout>
 </template>
@@ -55,7 +56,15 @@ import {
 import {
     get_user_details
 } from '@/assets/auth'
+import UserMeta from '@/components/profile/UserMeta'
+import UserFavoriteTable from '@/components/profile/UserFavoriteTable'
+import UserReviewsTable from '@/components/profile/UserReviewsTable'
 export default {
+    components:{
+        UserMeta,
+        UserFavoriteTable,
+        UserReviewsTable
+    },
     data() {
         return {
             user_id: null,
@@ -94,6 +103,7 @@ export default {
             const [success, res] = await get_reviews('all', skip, limit, this.user_id)
             console.log(success)
             this.$store.state.userReviews = res;
+            console.log(res)
         }
     },
     computed:{
@@ -114,12 +124,11 @@ export default {
     display: flex;
     justify-content: center;
     /* align-items: center; */
+    font-family:'Jeju Gothic', sans-serif;
 }
 .user_profile_bar{
-    
+    margin-top: 30px;
     font-size: 20px;
-    font-style: normal;
-    font-weight: 300;
     line-height: 24px;
     color: var(--color-fg-muted);
 }

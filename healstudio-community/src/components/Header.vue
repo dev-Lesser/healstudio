@@ -14,8 +14,8 @@
       {{helloText}}
     </div>
     
-    <v-btn outlined class="ml-5" v-if="user_id=='null'" @click="$router.push('/login')">로그인</v-btn>
-    <v-btn outlined class="ml-5" v-else @click="logout">로그아웃</v-btn>
+    <v-btn outlined class="ml-5 mr-3" v-if="user_id=='null'" @click="$router.push('/login')">로그인</v-btn>
+    <v-btn outlined class="ml-5 mr-3" v-else @click="logout">로그아웃</v-btn>
     <v-btn  @click="gotoUserPage" light>My Page</v-btn>
     
     
