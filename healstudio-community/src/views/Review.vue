@@ -38,6 +38,19 @@ import { get_gym_by_id, get_reviews } from '@/assets/api'
         },
         async mounted(){
             this.loading = true;
+            this.$store.state.selected = true;
+            const [success, res] = await get_gym_by_id(this.$route.params.id);
+            
+            if (!success) this.status = -1;
+            else {
+                this.$store.state.selectedData = res;
+                this.loading = false;
+            }
+            await this.getReviews(this.$route.params.id, 0, 5)
+
+        },
+        async updated(){
+            this.loading = true;
             if (this.$store.state.selectedData == null){  
                 this.$store.state.selected = true;
                 const [success, res] = await get_gym_by_id(this.$route.params.id);
@@ -48,7 +61,7 @@ import { get_gym_by_id, get_reviews } from '@/assets/api'
                     this.loading = false;
                 }
             }
-            await this.getReviews(this.$route.params.id, 0, 5)
+            // await this.getReviews(this.$route.params.id, 0, 5)
 
         },
         computed: {

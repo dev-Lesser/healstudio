@@ -27,7 +27,7 @@
                     <v-divider />
                 </div>
                 <div v-for="gym, key in favGym" :key="key" class="favorite_gym_contents">
-                    <v-list-item :to="`/review/${gym.gymInfo.id}`">
+                    <v-list-item :to="`/review/${gym.gymInfo.id}`" @click="selectGym(gym.gymInfo)">
                         <div class="favorite_gym_img">
                             <v-img width="50" height="50" :src="gym.gymInfo.imageUrl"></v-img>
                         </div>
@@ -55,7 +55,13 @@ export default {
     methods:{
         handleFavorite(e){
             console.log(e)
-        }
+        },
+        async selectGym(gym) {
+            this.$store.state.selected = false
+            this.$store.state.selectedData = gym;
+            console.log(gym)
+            this.$store.state.selected = true;
+        },
     }
 }
 </script>

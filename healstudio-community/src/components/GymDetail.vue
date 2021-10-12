@@ -194,7 +194,6 @@ import {handle_favorite, check_favorite} from '@/assets/api'
                 const [_, res] = await check_favorite(user_id, this.$route.params.id , uuid)
                 _;
                 this.isFavorite = res
-                console.log(this.isFavorite)
             }
         },
         async beforeUpdate(){
@@ -203,11 +202,6 @@ import {handle_favorite, check_favorite} from '@/assets/api'
                 sheet.style.position = "static"
                 sheet.style.left = '0px'
             }
-            // if (this.$route.name != 'Home'){
-            //     const [user_id, uuid] = [window.localStorage.getItem('user_id'), window.localStorage.getItem("token")]
-            //     this.isFavorite = await check_favorite(user_id, this.$route.params.id , uuid)
-            //     console.log(this.isFavorite)
-            // }
         },
         
         methods:{

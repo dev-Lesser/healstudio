@@ -92,7 +92,6 @@ export default {
             if (!success) this.status = -1;
             else {
                 this.$store.state.userDetails = res
-                console.log(res)
                 this.$store.state.userMeta = res[0] // 하나만 meta 정보 보여주기 위함
                 this.loading = false;
             }
@@ -101,9 +100,8 @@ export default {
             this.loading = true;
             const [skip, limit]= [0, 5];
             const [success, res] = await get_reviews('all', skip, limit, this.user_id)
-            console.log(success)
+            success;
             this.$store.state.userReviews = res;
-            console.log(res)
         }
     },
     computed:{
