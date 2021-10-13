@@ -4,6 +4,9 @@
             찜한 헬스장이 없습니다
         </div>
         <div v-else>
+            <v-card-title>
+                찜한 목록
+            </v-card-title>
             <v-list
                 two-line
                 class="review_list"
