@@ -453,3 +453,20 @@ def handleFavorite(gymId):
                 headers={'Content-Type': 'application/json'},
                 status_code=403)
 
+@app.route('/boards', methods=['GET'], cors=True)
+def getBoards():
+    collection = db['board']
+    if app.current_request.method == 'GET':
+        e = app.current_request.to_dict()
+        params = e.get('query_params')
+        skip = int(params.get('skip')) if params.get('skip') else 0;
+        limit = 20
+        res = collection.find(
+            {},{'_id':0} # 있으면 찜한 목록이기 때문에 pull 함
+        ).skip(skip).limit(limit)
+        return Response(body=list(res),
+            headers={'Content-Type': 'application/json'},
+            status_code=200)
+        
+    
+

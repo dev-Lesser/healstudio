@@ -16,7 +16,6 @@
                 <div class="review-header">
                     <v-list-item>
                         <div class="review_gym_img_header">
-
                         </div>
                         <div class="review_gym_name_header">
                             헬스장
@@ -32,6 +31,9 @@
                         </div>
                         <div class="review_date_header">
                             작성일/수정일
+                        </div>
+                        <div class="review_actions">
+                            수정/삭제
                         </div>
                     </v-list-item>
                     <v-divider />
@@ -50,14 +52,12 @@
                         </div>
                         <div class="review_rate">
                             <v-rating
-                            v-model="review.point"
                             :value="review.point"
                             background-color="grey"
                             length="5"
-                            read-only
+                            readonly
                             color="yellow accent-4"
                             dense
-                            half-increments
                             size="15"
                             ></v-rating> 
                         </div>
@@ -66,6 +66,21 @@
                         </div>
                         <div class="review_date">
                             {{review.updated_at}}
+                        </div>
+                        <div class="review_actions">
+                            <v-icon 
+                                small
+                                class="mr-2"
+                                color="rgb(116, 116, 216)"
+                                @click="openEditReview(review)"
+                            >
+                                mdi-pencil
+                            </v-icon>
+                            <v-icon
+                                small
+                                color="rgb(216, 116, 116)"
+                                @click="openDeleteReview(review)"
+                            >mdi-delete</v-icon>
                         </div>
                     </v-list-item>
                     <v-divider />
@@ -126,5 +141,9 @@ export default {
 .review_date{
     width: 15%;
     font-size: 12px;
+}
+.review_actions{
+    width: 30px;
+    font-size: 10px;
 }
 </style>
