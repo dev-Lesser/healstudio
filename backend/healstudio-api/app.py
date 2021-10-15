@@ -462,7 +462,7 @@ def getBoards():
         skip = int(params.get('skip')) if params.get('skip') else 0;
         limit = 20
         res = collection.find(
-            {},{'_id':0} # 있으면 찜한 목록이기 때문에 pull 함
+            {'type':'board'},{'_id':0} # 있으면 찜한 목록이기 때문에 pull 함
         ).skip(skip).limit(limit)
         return Response(body=list(res),
             headers={'Content-Type': 'application/json'},

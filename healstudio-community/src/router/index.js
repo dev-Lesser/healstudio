@@ -7,6 +7,7 @@ import UserPage from "@/views/UserPage"
 import Review from "@/views/Review"
 import Trainer from "@/views/Trainer"
 import Board from "@/views/Board"
+import BoardDetails from "@/views/BoardDetails"
 Vue.use(VueRouter);
 
 const routes = [
@@ -45,9 +46,14 @@ const routes = [
     component: UserPage,
   },
   {
-    path: "/board",
+    path: "/boards",
     name: "Board",
     component: Board,
+  },
+  {
+    path: "/board/:id",
+    name: "BoardDetails",
+    component: BoardDetails,
   },
 
 ]
