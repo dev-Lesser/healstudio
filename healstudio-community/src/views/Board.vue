@@ -7,13 +7,18 @@
             </v-card-title>
             <v-divider />
                 <div v-for="board, key in boards" :key="key" class="board_contents">
-                    <v-list-item :to="`/board/${board.id}?user=${board.user}`" >
-                        <div>{{board.user}}</div>
-                        <div>{{board.contents}}</div>
+                    <v-list-item :to="`/boards/${board.id}?user=${board.user}`" >
                         <div>{{board.id}}</div>
+                        <div>{{board.contents}}</div>
+                        <div>{{board.user}}</div>
                         <div>{{board.favorites}}</div>
                     </v-list-item>
+                    <v-divider/>
                 </div>
+                페이지 네이션 필요
+                <v-card-actions>
+                    <v-btn :to="`/board/post`"> 글작성</v-btn>
+                </v-card-actions>
             </v-card>
         </v-flex>
     </v-layout>

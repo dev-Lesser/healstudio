@@ -12,3 +12,13 @@
         </v-flex>
     </v-layout>
 </template>
+<style scoped>
+.board_page_layout{
+    display: flex;
+    justify-content: center;
+}
+.board_page_title{
+    font-size: 24px;
+    font-family:'Jeju Gothic', sans-serif;
+}   
+</style>

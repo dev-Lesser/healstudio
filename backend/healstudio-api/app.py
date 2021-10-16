@@ -24,10 +24,6 @@ collection = db[COLLECTION_NAME]
 
 app = Chalice(app_name='healstudio-api')
 
-@app.route('/', methods=['GET'], cors=True)
-def index():
-    return {'hello': 'world'}
-
 # login
 @app.route('/auth/login', methods=['POST'], cors=True)
 def login():

@@ -8,6 +8,8 @@ import Review from "@/views/Review"
 import Trainer from "@/views/Trainer"
 import Board from "@/views/Board"
 import BoardDetails from "@/views/BoardDetails"
+
+import CreateBoard from "@/components/board/CreateBoard"
 Vue.use(VueRouter);
 
 const routes = [
@@ -51,9 +53,14 @@ const routes = [
     component: Board,
   },
   {
-    path: "/board/:id",
+    path: "/boards/:id",
     name: "BoardDetails",
     component: BoardDetails,
+  },
+  {
+    path: "/board/post",
+    name: "CreateBoard",
+    component: CreateBoard,
   },
 
 ]
