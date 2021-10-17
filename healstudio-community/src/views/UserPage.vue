@@ -20,17 +20,17 @@
             >
             <v-list-item>
                 <v-list-item-content>
-                    <div class="user_profile_favorite">
+                    <a href="#user_favorite" class="user_profile_favorite" >
                         찜한목록
-                    </div>
+                    </a>
                 </v-list-item-content>
             </v-list-item>
             <v-divider />
             <v-list-item>
                 <v-list-item-content>
-                    <div class="user_profile_review">
+                    <a href="#user_reviews" class="user_profile_review">
                         나의 리뷰
-                    </div>
+                    </a>
                 </v-list-item-content>
             </v-list-item>
             <v-divider />
@@ -41,10 +41,10 @@
                 <user-meta :user-meta="userMeta" :favGymLenth="userDetails.length" :reviewsLenth="userReviews.length" />
             </v-flex>
             <v-flex xs12 sm12 md12>
-                <user-favorite-table  :favGym="userDetails" />
+                <user-favorite-table  id="user_favorite" :favGym="userDetails" />
             </v-flex>
             <v-flex xs12 sm12 md12>
-                <user-reviews-table  :data="userReviews" />
+                <user-reviews-table id="user_reviews" :data="userReviews" />
             </v-flex>
         </v-flex>
     </v-layout>
@@ -130,4 +130,49 @@ export default {
     line-height: 24px;
     color: var(--color-fg-muted);
 }
+.user_profile_favorite{
+    color: black;
+    text-decoration: none;
+}
+.user_profile_favorite:after{
+    background: none repeat scroll 0 0 transparent;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 2px;
+    left: 50%;
+    position: absolute;
+    background: #FFC0FF;
+    transition: width 0.3s ease 0s, left 0.3s ease 0s;
+    width: 0;
+
+}
+.user_profile_review:hover:after { 
+  width: 100%; 
+  left: 0; 
+}
+
+.user_profile_review{
+    color: black;
+    text-decoration: none;
+}
+.user_profile_review:after{
+    background: none repeat scroll 0 0 transparent;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 2px;
+    left: 50%;
+    position: absolute;
+    background: #FFC0FF;
+    transition: width 0.3s ease 0s, left 0.3s ease 0s;
+    width: 0;
+
+}
+.user_profile_favorite:hover:after { 
+  width: 100%; 
+  left: 0; 
+}
+
+
 </style>
