@@ -11,7 +11,6 @@
             <v-list
                 two-line
                 class="review_list"
-                height="410"
             >
                 <div class="review-header">
                     <v-list-item>

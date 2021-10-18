@@ -455,12 +455,49 @@ def getBoards():
     if app.current_request.method == 'GET':
         e = app.current_request.to_dict()
         params = e.get('query_params')
+        # print(params)
         skip = int(params.get('skip')) if params.get('skip') else 0;
-        limit = 20
+        limit = 15
         res = collection.find(
             {'type':'board'},{'_id':0} # 있으면 찜한 목록이기 때문에 pull 함
         ).skip(skip).limit(limit)
-        return Response(body=list(res),
+        r = []
+        for i in res:
+            item = i
+            item['created_at'] = i['created_at'].strftime('%Y-%m-%d')
+            item['updated_at'] = i['updated_at'].strftime('%Y-%m-%d')
+            r.append(item)
+        return Response(body=r,
+            headers={'Content-Type': 'application/json'},
+            status_code=200)
+@app.route('/board/{_id}', methods=['GET'], cors=True)
+def getBoard(_id):
+    collection = db['board']
+    if app.current_request.method == 'GET':
+        e = app.current_request.to_dict()
+        params = e.get('query_params')
+        user = params.get('user')
+        skip = int(params.get('skip')) if params.get('skip') else 0;
+        limit = 15
+        board = collection.find_one(
+            {'id': int(_id),'user':user,'type':'board'},{'_id':0, 'related_id':0, 'type':0} # 있으면 찜한 목록이기 때문에 pull 함
+        )
+        res = collection.find(
+            {'related_id': user+':'+_id,'type':'reply'},{'_id':0, 'related_id':0} # 있으면 찜한 목록이기 때문에 pull 함
+        ).sort([('created_at', 1)]).skip(skip).limit(limit)
+        r = []
+        for i in res:
+            item = i
+            item['created_at'] = i['created_at'].strftime('%Y-%m-%d %H:%M:%S')
+            item['updated_at'] = i['updated_at'].strftime('%Y-%m-%d %H:%M:%S')
+            r.append(item)
+        board['created_at'] = board['created_at'].strftime('%Y-%m-%d %H:%M:%S')
+        board['updated_at'] = board['updated_at'].strftime('%Y-%m-%d %H:%M:%S')
+        
+        return Response(body={
+            'contents':board,
+            'replies': r
+            },
             headers={'Content-Type': 'application/json'},
             status_code=200)
         
