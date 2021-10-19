@@ -2,15 +2,8 @@
     <div class="board_contents">
         
         <v-flex xs12 sm12 md8>
-            <v-card-actions>
-                <v-spacer/>
-                작성자 : {{data.user}}
-            </v-card-actions>
-            <v-card-actions>
-                <v-spacer/>
-                작성일 : {{data.created_at}}
-            </v-card-actions>
-            <v-card outlined :min-height="150" class="d-flex flex-row align-center">
+            
+            <v-card outlined :min-height="150" class="d-flex flex-row align-center ma-3">
                 {{data.contents}}
             </v-card>
             <v-layout style="display:flex; justify-content:center;">
@@ -29,7 +22,7 @@
                         <div class="mb-3">
                         지금 바로 게시물을 작성해 보세요
                         </div>
-                        <v-btn block color="primary"><v-icon small class="mr-3">mdi-pencil</v-icon>작성하기</v-btn>
+                        <v-btn block color="primary" to="/board/post"><v-icon small class="mr-3">mdi-pencil</v-icon>작성하기</v-btn>
                     </v-card>
             </v-flex>
             </v-layout>

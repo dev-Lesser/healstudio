@@ -1,10 +1,16 @@
 <template>
     <v-layout wrap class="reply_page_layout">
         <v-flex xs12 sm8 md8>
-            <v-card class="ma-3 pa-3" :min-height="400">
+            <v-card class="ma-3 pa-3" :min-height="400" color="grey lighten-4">
             <v-card-title class="reply_page_title">
                 자유게시판
             </v-card-title>
+            <v-card-actions>
+                작성자 : {{contents.user}}
+            </v-card-actions>
+            <v-card-actions>
+                작성일 : {{contents.created_at}}
+            </v-card-actions>
             <v-divider />
                 <Contents :data="contents" />
             </v-card>
