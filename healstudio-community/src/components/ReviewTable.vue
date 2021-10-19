@@ -60,7 +60,7 @@
                     </div>
                     <div class="review-content">
                     {{review.contents}}
-                    <div v-if="user_id==review.user">
+                    <div v-if="uuid==review.user">
                         <v-icon 
                             small
                             class="mr-2"
@@ -204,6 +204,7 @@ export default {
             updateId: null,
             delete_overlay: false,
             user_id: window.localStorage.getItem(`user_id`),
+            uuid: window.localStorage.getItem(`token`),
             start: 1,
             current: 1,
             length: 5,
@@ -226,7 +227,6 @@ export default {
         },
 
         openCreateReview(){
-            console.log(window.localStorage.getItem("user_id"))
             if (window.localStorage.getItem("user_id")=='null') {
                 alert('로그인이 필요한 서비스 입니다')
                 this.$router.push('/login');
@@ -234,7 +234,6 @@ export default {
             else (this.$store.state.overlay = true)
         },
         openEditReview(item){            
-            console.log(item)
             if (this.user_id=='null') {
                 alert('로그인이 필요한 서비스 입니다')
                 this.$router.push('/login');

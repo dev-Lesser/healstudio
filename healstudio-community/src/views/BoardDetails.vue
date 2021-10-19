@@ -88,7 +88,7 @@ export default {
     methods:{
         async getBoard(id, user, skip, limit){
             const [success, res] = await get_board(id, user, skip, limit);
-            console.log(success, res)
+            success;
             this.contents = res.contents
             this.replies = res.replies
         },

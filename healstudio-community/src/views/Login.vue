@@ -38,7 +38,6 @@
                     alert("아이디와 비밀번호를 확인해주세요.");
                     return;
                 }
-                console.log(res.user_id)
                 window.localStorage.setItem("user_id", res.user_id);
                 window.localStorage.setItem("token", res.token);
                 this.$router.push("/");

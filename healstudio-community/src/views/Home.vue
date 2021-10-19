@@ -94,7 +94,6 @@ export default {
     },
     watch:{
         gyms(){
-            // console.log(this.$store.state.gyms)
         },
         locations(){
             
