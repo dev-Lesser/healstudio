@@ -9,6 +9,7 @@ import pymongo
 import datetime
 import bcrypt
 from authorize import auth
+from utils import utils
 load_dotenv(verbose=True)
 DB_HOST = os.getenv('DB_HOST')
 DB_USER = os.getenv('DB_USER')
@@ -206,24 +207,14 @@ def getReviews(gymId):
             
             
         ]))
-        results = []
-        for i in res:
-            item = i
-            item['created_at'] = item['created_at'].strftime("%Y-%m-%d %H:%M:%S")
-            item['updated_at'] = item['updated_at'].strftime("%Y-%m-%d %H:%M:%S")
-            results.append(item)
+        results = utils.convertDatetime(res)
         return Response(body=results,
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
     ## user 가 없다면 > 모든 user 가 gym 에대한 리뷰를 updated_at 로 소팅하여 가져옴
     if gymId.isdigit():
         res = list(collection.find({"related_gym_id": gymId},{"_id":0}).sort([(sort_by,-1)]).skip(skip).limit(limit))
-        results = []
-        for i in res:
-            item = i
-            item['created_at'] = item['created_at'].strftime("%Y-%m-%d %H:%M:%S")
-            item['updated_at'] = item['updated_at'].strftime("%Y-%m-%d %H:%M:%S")
-            results.append(item)
+        results = utils.convertDatetime(res)
         return Response(body=results,
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
@@ -460,13 +451,8 @@ def getBoards():
         limit = 15
         res = collection.find(
             {'type':'board'},{'_id':0} # 있으면 찜한 목록이기 때문에 pull 함
-        ).skip(skip).limit(limit)
-        r = []
-        for i in res:
-            item = i
-            item['created_at'] = i['created_at'].strftime('%Y-%m-%d')
-            item['updated_at'] = i['updated_at'].strftime('%Y-%m-%d')
-            r.append(item)
+        ).sort([('updated_at',-1)]).skip(skip).limit(limit)
+        r = utils.convertDatetime(res)
         return Response(body=r,
             headers={'Content-Type': 'application/json'},
             status_code=200)
@@ -485,12 +471,7 @@ def getBoard(_id):
         res = collection.find(
             {'related_id': user+':'+_id,'type':'reply'},{'_id':0, 'related_id':0} # 있으면 찜한 목록이기 때문에 pull 함
         ).sort([('created_at', 1)]).skip(skip).limit(limit)
-        r = []
-        for i in res:
-            item = i
-            item['created_at'] = i['created_at'].strftime('%Y-%m-%d %H:%M:%S')
-            item['updated_at'] = i['updated_at'].strftime('%Y-%m-%d %H:%M:%S')
-            r.append(item)
+        r = utils.convertDatetime(res)
         board['created_at'] = board['created_at'].strftime('%Y-%m-%d %H:%M:%S')
         board['updated_at'] = board['updated_at'].strftime('%Y-%m-%d %H:%M:%S')
         
@@ -502,4 +483,42 @@ def getBoard(_id):
             status_code=200)
         
     
+@app.route('/board', methods=['POST'], cors=True)
+def postBoard():
+    collection = db['board']
+    user_collection = db['users']
+    data = json.loads(app.current_request.raw_body.decode())
+    user_id = data.get('user_id')
+    uid = data.get('uid')
+    contents = data.get('contents')
+    if len(contents.strip()) <10 or len(contents.strip())> 500:
+        return Response(body='too large 500, too small 10',
+        headers={'Content-Type': 'text/html'},
+        status_code=403)
 
+    if not user_collection.find_one({"user":user_id, "uuid": uid}):
+        return Response(body='uuid is required',
+        headers={'Content-Type': 'text/html'},
+        status_code=403)
+    
+        
+    isExist = collection.find_one({"type": "board"}, sort=[('id', -1)])
+    if isExist:
+        _id = isExist.get('id') + 1
+    else:
+        _id = 1
+    collection.insert_one({
+        'user': user_id,
+        'contents': contents.strip(),
+        'id': _id,
+        'related_id': user_id + ':' + str(_id),
+        'favorites': 0,
+        'type': 'board',
+        'created_at': datetime.datetime.now(),
+        'updated_at': datetime.datetime.now()
+
+    })
+    return Response(body=_id,
+        headers={'Content-Type': 'application/json'},
+        status_code=201)
+    

@@ -25,3 +25,21 @@ export const get_board = async (id, user, skip, limit) => {
     }
     return [false, null]
 }
+
+export const create_board = async (user_id, uid, contents) => {
+    const body = { user_id, uid, contents }
+    var data = JSON.stringify(body);
+    console.log(data)
+    const result = await axios({
+        method: 'post',
+        url: BASE_URL+'/board',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    })
+    if (result.status == 201) {
+        return [true, result.data]
+    }
+    return [false, null]
+}

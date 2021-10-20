@@ -23,7 +23,7 @@
                     color="#96AFDD"
                     :rules="limitLetters"
                     ></v-textarea>
-                <v-btn block color="primary">작성하기</v-btn>
+                <v-btn block color="primary" @click="createBoard">작성하기</v-btn>
             </v-card>
         </v-flex>
     </v-layout>
@@ -32,6 +32,9 @@
 // import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
 // import { Bold, Italic, Link, HardBreak, Heading } from 'tiptap-extensions'
 // import StarterKit from '@tiptap/starter-kit'
+import {
+    create_board
+} from '@/assets/board'
 export default { 
     components: { 
         // EditorContent, 
@@ -41,27 +44,28 @@ export default {
         return { 
             editor: null, 
             contents: null,
-            limitLetters: [v => v.length <= 200 || '최대 200자'],
-            user: window.localStorage.getItem('user_id')
+            limitLetters: [v => v.length <= 500 || '최대 500자'],
+            user: window.localStorage.getItem('user_id'),
+            uuid: window.localStorage.getItem('token')
         } 
     },
     async mounted() {
-        // this.editor = new Editor({
-        // extensions: [
-        //     new Bold(),
-        //     new Italic(),
-        //     new Link(),
-        //     new HardBreak(),
-        //     new Heading(),
-            
-        // ],
-        // })
-    // console.log(this.editor)
-    // console.log(this.contents)
+
     },
     async updated(){
     },
-
+    methods:{
+        async createBoard(){
+            if (this.contents.length >500) return
+            console.log(this.user, this.uuid, this.contents)
+            const [success,res] = await create_board(this.user, this.uuid, this.contents);
+            console.log(success, res)
+            if(!success) return
+            else{
+                this.$router.push('/boards')
+            }
+        }
+    },
     beforeDestroy() {
         this.editor.destroy()
     },
