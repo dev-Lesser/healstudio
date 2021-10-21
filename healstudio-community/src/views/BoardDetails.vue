@@ -15,6 +15,10 @@
                 작성일 : {{contents.created_at}}
             </v-card-actions>
             <v-divider />
+            <v-card-actions>
+                제목 : {{contents.title}}
+            </v-card-actions>
+            <v-divider />
                 <Contents :data="contents" />
             </v-card>
             <v-card class="ma-3 pa-3">

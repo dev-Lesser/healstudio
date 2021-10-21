@@ -12,12 +12,6 @@
                 작성자 : {{user}}
             </v-card-actions>
             <v-divider />
-                <!-- <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
-                    <v-btn :class="{ 'is-active': isActive.bold() }" @click="commands.bold">
-                        Bold
-                    </v-btn>
-                </editor-menu-bar>
-                <editor-content v-model="contents" class="editor__content" :editor="editor" /> -->
                 <v-text-field
                     v-model="title"
                     label="제목"
@@ -51,7 +45,7 @@ export default {
     }, 
     data() {
         return { 
-            editor: null, 
+            title: null, 
             contents: null,
             limitLetters: [v => v.length <= 500 || '최대 500자'],
             user: window.localStorage.getItem('user_id'),

@@ -101,7 +101,10 @@ export default {
         if (this.$route.query.page == undefined || this.$route.query.page==1) {
             await this.getBoards(0);
         }
-        else await this.getBoards((this.$route.query.page-1) * this.length, this.length)
+        else {
+            this.$store.state.current = this.$route.query.page;
+            await this.getBoards((this.$route.query.page-1) * this.length, this.length)
+        }
     },
     methods:{
     
