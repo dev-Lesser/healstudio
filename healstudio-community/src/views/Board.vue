@@ -1,10 +1,77 @@
 <template>
     <v-layout wrap class="board_page_layout">
+        
+        <v-flex xs12 sm12 md12>
+            <v-card flat :min-height="150" color="#f5f5f5" class="board_adv_values">
+                <v-row>
+                    <v-col :cols="6">
+                        <div>
+                            등록 헬스장 <strong>More than</strong>
+                            <div class="number_space">
+                                <ICountUp
+                                :delay="delay"
+                                :endVal="meta.space"
+                                :options="options"
+                                @ready="loop"
+                                />
+                            </div>
+                        </div>
+                    </v-col>
+                    <v-col :cols="6">
+                        <div>
+                            활동지수 
+                            <div class="number_space">
+                                <ICountUp
+                                :delay="delay"
+                                :endVal="meta.board"
+                                :options="options"
+                                @ready="onReady"
+                                /> 게시글
+                                /
+                                <ICountUp
+                                :delay="delay"
+                                :endVal="meta.reply"
+                                :options="options"
+                                @ready="onReady"
+                                /> 리플
+                            </div>
+                        </div>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col :cols="6">
+                        <div>
+                            유저수 
+                            <div class="number_space">
+                                <ICountUp
+                                :delay="delay"
+                                :endVal="meta.user"
+                                :options="options"
+                                />
+                            </div> 
+                        </div>
+                    </v-col>
+                    <v-col :cols="6">
+                        <div>
+                            리뷰수 
+                            <div class="number_space">
+                                <ICountUp
+                                :delay="delay"
+                                :endVal="meta.review"
+                                :options="options"
+                                />
+                            </div>
+                        </div>
+                    </v-col>
+                </v-row>
+                
+            </v-card>
+        </v-flex>
         <v-flex xs12 sm8 md8>
             <v-card class="ma-3 pa-3" >
-            <v-card-title class="board_page_title">
+            <div class="board_page_title">
                 자유게시판
-            </v-card-title>
+            </div>
             <v-card-actions>
                 <v-card-subtitle >
                     자유게시판 자유롭게 떠들어 제껴 봅시다. 공지사항 준수
@@ -24,7 +91,7 @@
                     <div class="board_id_header">ID</div>
                     <div class="board_contents_header">제목</div>
                     <div class="board_user_header">작성자</div>
-                    <div class="board_favorites_header">좋아요수</div>
+                    <div class="board_favorites_header"><v-icon small color="rgb(128, 140, 247)">mdi-thumb-up</v-icon></div>
                 </v-list-item>
                 <v-divider/>
                     <v-list
@@ -33,20 +100,20 @@
                     <div v-for="board, key in boards" :key="key">
                         <v-list-item  v-if="key%2" dense :to="`/boards/${board.id}?user=${board.user}`" >
                             <div class="board_id">{{board.id}}</div>
-                            <div class="board_contents">{{board.contents}}</div>
+                            <div class="board_contents">{{board.title}}</div>
                             <div class="board_user">{{board.user}}</div>
                             <div class="board_favorites">{{board.favorites}}</div>
                         </v-list-item>
                         <v-list-item class="board_block_line" v-else dense :to="`/boards/${board.id}?user=${board.user}`" >
                             <div class="board_id">{{board.id}}</div>
-                            <div class="board_contents">{{board.contents}}</div>
+                            <div class="board_contents">{{board.title}}</div>
                             <div class="board_user">{{board.user}}</div>
                             <div class="board_favorites">{{board.favorites}}</div>
                         </v-list-item>
                         <v-divider/>
                     </div>
-                    <div v-if="boards.length<15" >
-                        <div v-for="i,key in 15-boards.length" :key="key">
+                    <div v-if="boards.length<length" >
+                        <div v-for="i,key in length-boards.length" :key="key">
                             <v-list-item dense>
                                 <div class="board_no_contents"></div>
                             </v-list-item>
@@ -71,30 +138,48 @@
     </v-layout>
 </template>
 <script>
+import ICountUp from 'vue-countup-v2';
 import {
     get_boards
 } from '@/assets/board'
 export default {
+    components:{
+        ICountUp
+    },
     data() {
         return {
             query: null,
             boards: null,
             pages: 5,
             limit: 100,
-            length: 15,
+            length: 12,
             end: 5,
-            start:1,
-            height: Math.round((window.innerHeight - 443) )
+            start: this.$store.state.current,
+            height: Math.round((window.innerHeight - 443) ),
+            delay: 300,
+            endVal: 11700,
+            
+            options: {
+                useEasing: true,
+                useGrouping: true,
+                separator: ',',
+                decimal: '.',
+                prefix: '',
+                suffix: ''
+            }
             // current: 1,
         }
     },
     async mounted(){
-        if (this.$route.query.page == undefined || this.$route.query.page==1) await this.getBoards(0);
-        else await this.getBoards((this.$route.query.page-1) * this.length)
+        if (this.$route.query.page == undefined || this.$route.query.page==1) {
+            await this.getBoards(0);
+        }
+        else await this.getBoards((this.$route.query.page-1) * this.length, this.length)
     },
     methods:{
-        async getBoards(skip){
-            const [success, res] = await get_boards(skip)
+    
+        async getBoards(skip, limit){
+            const [success, res] = await get_boards(skip, limit)
             success;
             this.boards = res;
         },
@@ -121,6 +206,9 @@ export default {
     computed:{
         current(){
             return this.$store.state.current;
+        },
+        meta(){
+            return this.$store.state.meta;
         }
     },
     watch:{
@@ -141,13 +229,26 @@ export default {
 }
 </script>
 <style scoped>
+.number_space{
+    color:rgb(128, 140, 247);
+    font-size: 24px;
+}
 .board_page_layout{
     display: flex;
     justify-content: center;
     font-family:'Jeju Gothic', sans-serif;
 }
+.board_adv_values{
+    display: flex;
+    padding: 30px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
 .board_page_title{
-    font-size: 24px;
+    font-size: 25px;
+    margin-top: 10px;
+    margin-left: 20px;
     font-family:'Jeju Gothic', sans-serif;
 }
 /* 게시물 CSS */
@@ -193,7 +294,7 @@ export default {
     }
 .selected_page {
     color: white;
-    background-color: #B2C9CF;
+    background-color: #849599;
 }
 .pagination_page {
         cursor: pointer;

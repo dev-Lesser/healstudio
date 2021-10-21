@@ -15,6 +15,13 @@
                     </v-btn>
                 </editor-menu-bar>
                 <editor-content v-model="contents" class="editor__content" :editor="editor" /> -->
+                <v-text-field
+                    v-model="title"
+                    label="제목"
+                    outlined
+                    clearable
+                    dense
+                ></v-text-field>
                 <v-textarea
                     v-model="contents"
                     class="mt-5"
@@ -29,9 +36,6 @@
     </v-layout>
 </template>
 <script> 
-// import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
-// import { Bold, Italic, Link, HardBreak, Heading } from 'tiptap-extensions'
-// import StarterKit from '@tiptap/starter-kit'
 import {
     create_board
 } from '@/assets/board'
@@ -56,9 +60,9 @@ export default {
     },
     methods:{
         async createBoard(){
+            if (this.title.length >30 || this.title.length<3) return
             if (this.contents.length >500) return
-            console.log(this.user, this.uuid, this.contents)
-            const [success,res] = await create_board(this.user, this.uuid, this.contents);
+            const [success,res] = await create_board(this.user, this.uuid, this.title, this.contents);
             console.log(success, res)
             if(!success) return
             else{

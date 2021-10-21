@@ -4,7 +4,7 @@
         <v-flex xs12 sm12 md8>
             
             <v-card outlined :min-height="150" class="d-flex flex-row align-center ma-3">
-                {{data.contents}}
+                <div v-html=data.contents></div>
             </v-card>
             <v-layout style="display:flex; justify-content:center;">
                 <v-flex xs12 sm8 md6>
@@ -34,6 +34,9 @@ export default {
     props: {
         data: Object
     },
+    mounted(){
+        console.log(this.data.contents)
+    }
 }
 </script>
 <style scoped>

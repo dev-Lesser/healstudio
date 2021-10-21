@@ -46,6 +46,7 @@ export default new Vuex.Store({
         userMeta: null,
         userReviews: null,
         current: 1,
+        meta: null
     },
     getters: {
         getBrand: state => state.brand,

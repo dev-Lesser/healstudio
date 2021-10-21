@@ -13,7 +13,7 @@
 
 <script>
 import Header from './components/Header';
-
+import {get_meta} from '@/assets/api'
 export default {
   name: 'App',
 
@@ -24,6 +24,17 @@ export default {
   data: () => ({
     //
   }),
+  async created(){
+    if (this.$store.state.meta == null) await this.getMeta();
+    
+  },
+  methods:{
+    async getMeta(){
+      const [success, res] = await get_meta()
+      success;
+      this.$store.state.meta = res;
+    }
+  }
 };
 </script>
 <style scoped>

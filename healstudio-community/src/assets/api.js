@@ -2,6 +2,15 @@ import axios from "axios"
 
 const BASE_URL = "http://localhost:8000"
 
+export const get_meta = async () => {
+    const url = `${BASE_URL}/metadata`
+    const result = await axios.get(url, {})
+    if (result.status == 200) {
+        return [true, result.data]
+    }
+    return [false, null]
+}
+
 export const login = async (user_id, password) => {
     const body = { user_id, password }
     var data = JSON.stringify(body);

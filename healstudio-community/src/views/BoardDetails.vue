@@ -90,6 +90,7 @@ export default {
     },
     async mounted(){
         await this.getBoard(this.$route.params.id, this.$route.query.user, this.skip, this.limit)
+        
     },
     methods:{
         async getBoard(id, user, skip, limit){

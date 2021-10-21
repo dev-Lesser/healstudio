@@ -1,3 +1,4 @@
+from re import T
 from chalice import Chalice, Response
 from chalice import BadRequestError
 # from chalicelib import users
@@ -124,13 +125,42 @@ def searchByQuery():
             headers={'Content-Type': 'application/json'},
             status_code=200)
 
-# region
+# meta data
 @app.route('/regions', methods=['GET'], cors=True)
 def searchRegions():
     collection = db['region']
     regions = collection.distinct('region')
  
     return regions
+
+# region
+@app.route('/metadata', methods=['GET'], cors=True)
+def getMeta():
+    board_collection    = db['board']
+    user_collection     = db['users']
+    space_collection    = db['space']
+    trainers_collection = db['board']
+    review_collection   = db['reviews']
+    find_board = {"type":"board"}
+    find_reply = {"type": "reply"}
+    find_all = {}
+    board_count = board_collection.count_documents(find_board)
+    reply_count = board_collection.count_documents(find_reply)
+    user_count = user_collection.count_documents(find_all)
+    space_count = space_collection.count_documents(find_all)
+    trainer_count = trainers_collection.count_documents(find_all)
+    review_count = review_collection.count_documents(find_all)
+    results = {
+        'board': board_count,
+        'reply': reply_count,
+        'user' : user_count,
+        'space': space_count,
+        'trainer': trainer_count,
+        'review': review_count
+    }
+    return Response(body=results,
+                headers={'Content-Type': 'application/json'},
+                status_code=200)
 
 @app.route('/region', methods=['GET'], cors=True)
 def searchRegionDetail():
@@ -448,7 +478,7 @@ def getBoards():
         params = e.get('query_params')
         # print(params)
         skip = int(params.get('skip')) if params.get('skip') else 0;
-        limit = 15
+        limit = int(params.get('limit')) if params.get('limit') else 12;
         res = collection.find(
             {'type':'board'},{'_id':0} # 있으면 찜한 목록이기 때문에 pull 함
         ).sort([('updated_at',-1)]).skip(skip).limit(limit)
@@ -490,7 +520,12 @@ def postBoard():
     data = json.loads(app.current_request.raw_body.decode())
     user_id = data.get('user_id')
     uid = data.get('uid')
+    title = data.get('title')
     contents = data.get('contents')
+    if len(title.strip()) < 2 or len(contents.strip())> 30:
+        return Response(body='too large 30, too small 2',
+        headers={'Content-Type': 'text/html'},
+        status_code=403)
     if len(contents.strip()) <10 or len(contents.strip())> 500:
         return Response(body='too large 500, too small 10',
         headers={'Content-Type': 'text/html'},
@@ -509,6 +544,7 @@ def postBoard():
         _id = 1
     collection.insert_one({
         'user': user_id,
+        'title': title.strip(),
         'contents': contents.strip(),
         'id': _id,
         'related_id': user_id + ':' + str(_id),
