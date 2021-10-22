@@ -1,5 +1,8 @@
 <template>
     <v-layout wrap class="reply_page_layout">
+        <v-flex xs12 sm12 md12>
+            <Meta :meta="meta"/>
+        </v-flex>
         <v-flex xs12 sm8 md8>
             <v-card class="ma-3 pa-3" :min-height="400" color="grey lighten-4">
             <v-card-title class="reply_page_title">
@@ -72,9 +75,11 @@ import {
     get_board
 } from '@/assets/board'
 import Contents from '@/components/board/Contents'
+import Meta from '@/components/board/Meta'
 export default {
     components:{
-        Contents
+        Contents,
+        Meta
     },
     data() {
         return {
@@ -108,6 +113,11 @@ export default {
         },
         async createReply(){
             console.log(this.replyContents)
+        }
+    },
+    computed:{
+        meta() {
+                return this.$store.state.meta;
         }
     }
 }

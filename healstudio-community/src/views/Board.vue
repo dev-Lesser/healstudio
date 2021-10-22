@@ -2,70 +2,7 @@
     <v-layout wrap class="board_page_layout">
         
         <v-flex xs12 sm12 md12>
-            <v-card flat :min-height="150" color="#f5f5f5" class="board_adv_values">
-                <v-row>
-                    <v-col :cols="6">
-                        <div>
-                            등록 헬스장 <strong>More than</strong>
-                            <div class="number_space">
-                                <ICountUp
-                                :delay="delay"
-                                :endVal="meta.space"
-                                :options="options"
-                                @ready="loop"
-                                />
-                            </div>
-                        </div>
-                    </v-col>
-                    <v-col :cols="6">
-                        <div>
-                            활동지수 
-                            <div class="number_space">
-                                <ICountUp
-                                :delay="delay"
-                                :endVal="meta.board"
-                                :options="options"
-                                @ready="onReady"
-                                /> 게시글
-                                /
-                                <ICountUp
-                                :delay="delay"
-                                :endVal="meta.reply"
-                                :options="options"
-                                @ready="onReady"
-                                /> 리플
-                            </div>
-                        </div>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col :cols="6">
-                        <div>
-                            유저수 
-                            <div class="number_space">
-                                <ICountUp
-                                :delay="delay"
-                                :endVal="meta.user"
-                                :options="options"
-                                />
-                            </div> 
-                        </div>
-                    </v-col>
-                    <v-col :cols="6">
-                        <div>
-                            리뷰수 
-                            <div class="number_space">
-                                <ICountUp
-                                :delay="delay"
-                                :endVal="meta.review"
-                                :options="options"
-                                />
-                            </div>
-                        </div>
-                    </v-col>
-                </v-row>
-                
-            </v-card>
+            <Meta :meta="meta"/>
         </v-flex>
         <v-flex xs12 sm8 md8>
             <v-card class="ma-3 pa-3" >
@@ -138,13 +75,13 @@
     </v-layout>
 </template>
 <script>
-import ICountUp from 'vue-countup-v2';
+import Meta from '@/components/board/Meta'
 import {
     get_boards
 } from '@/assets/board'
 export default {
     components:{
-        ICountUp
+        Meta
     },
     data() {
         return {
@@ -156,17 +93,7 @@ export default {
             end: 5,
             start: this.$store.state.current,
             height: Math.round((window.innerHeight - 443) ),
-            delay: 300,
-            endVal: 11700,
             
-            options: {
-                useEasing: true,
-                useGrouping: true,
-                separator: ',',
-                decimal: '.',
-                prefix: '',
-                suffix: ''
-            }
             // current: 1,
         }
     },
@@ -207,9 +134,10 @@ export default {
         current(){
             return this.$store.state.current;
         },
-        meta(){
-            return this.$store.state.meta;
-        }
+        meta() {
+                return this.$store.state.meta;
+            }
+        
     },
     watch:{
         current() {
@@ -229,13 +157,11 @@ export default {
 }
 </script>
 <style scoped>
-.number_space{
-    color:rgb(128, 140, 247);
-    font-size: 24px;
-}
+
 .board_page_layout{
     display: flex;
     justify-content: center;
+    align-items: center;
     font-family:'Jeju Gothic', sans-serif;
 }
 .board_adv_values{

@@ -1,5 +1,8 @@
 <template>
     <v-layout wrap class="board_page_layout">
+        <v-flex xs12 sm12 md12>
+            <Meta :meta="meta"/>
+        </v-flex>
         <v-flex xs12 sm8 md8>
             <v-card class="ma-3 pa-3" height=800>
             <v-card-title class="board_page_title">
@@ -39,9 +42,11 @@
 import {
     create_board
 } from '@/assets/board'
+import Meta from '@/components/board/Meta'
+
 export default { 
     components: { 
-        // EditorContent, 
+        Meta, 
         // EditorMenuBar
     }, 
     data() {
@@ -68,6 +73,11 @@ export default {
             else{
                 this.$router.push('/boards')
             }
+        }
+    },
+    computed:{
+        meta() {
+                return this.$store.state.meta;
         }
     },
     beforeDestroy() {

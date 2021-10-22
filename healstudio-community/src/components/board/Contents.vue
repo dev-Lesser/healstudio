@@ -11,7 +11,7 @@
                     <v-card-title>
                         좋아요/ 추천
                     </v-card-title>
-                    <v-card outlined class="ma-3 pa-3">
+                    <v-card outlined class="ma-3 pa-9">
                         <v-card-actions >
                             <div class="favorites_number_box">
                                 {{data.favorites}}
