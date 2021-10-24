@@ -14,6 +14,7 @@ export const get_meta = async () => {
 export const login = async (user_id, password) => {
     const body = { user_id, password }
     var data = JSON.stringify(body);
+    console.log(data)
     const result = await axios({
         method: 'post',
         url: BASE_URL+'/auth/login',

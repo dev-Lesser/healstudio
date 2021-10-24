@@ -14,9 +14,9 @@
       {{helloText}}
     </div>
     
-    <v-btn outlined class="ml-5 mr-3" v-if="user_id=='null'" @click="$router.push('/login')">로그인</v-btn>
+    <v-btn outlined class="ml-5 mr-3" v-if="user_id==null" @click="$router.push('/login')">로그인</v-btn>
     <v-btn outlined class="ml-5 mr-3" v-else @click="logout">로그아웃</v-btn>
-    <v-btn  @click="gotoUserPage" light>My Page</v-btn>
+    <v-btn  @click="gotoUserPage" v-if="user_id!=null" light>My Page</v-btn>
     
     
   </v-app-bar>
@@ -53,13 +53,13 @@ export default {
   methods:{
     async isLogin(){
       this.user_id = window.localStorage.getItem("user_id")
-      if (this.user_id!='null'){
+      if (this.user_id!=null){
         this.helloText = `반갑습니다 ${this.user_id} 님!`
       }
     },
     async logout(){
-      window.localStorage.setItem("token", 'null');
-      window.localStorage.setItem("user_id", 'null');
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("user_id");
       this.$router.go()
 
     },

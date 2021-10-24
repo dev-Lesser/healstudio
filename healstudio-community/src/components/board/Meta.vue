@@ -74,4 +74,10 @@
     color:rgb(128, 140, 247);
     font-size: 24px;
 }
+.board_adv_values{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
 </style>
