@@ -25,7 +25,7 @@
 
 <script>
     // import bcrypt from "bcrypt-nodejs"; //# todo
-    import { login } from "@/assets/api";
+    import { login } from "@/assets/auth";
     export default {
         data: () => ({
             id: null,

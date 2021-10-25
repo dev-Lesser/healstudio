@@ -85,14 +85,19 @@
                     <v-divider />
                 </div>
             </v-list>
+            <Pagination />
         </div>
     </v-card>
 </template>
 <script>
+import Pagination from '@/components/Pagination'
 export default {
     props: {
         data: Array,
     },
+    components:{
+        Pagination
+    }
 }
 </script>
 <style scoped>
@@ -131,6 +136,7 @@ export default {
 }
 .review_contents{
     width: 20%;
+    padding:0 15px 0 0;
     font-size: 12px;
 
 }

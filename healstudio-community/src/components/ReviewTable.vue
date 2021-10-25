@@ -96,16 +96,7 @@
             <no-data />
         </v-list>
         <!-- 페이지네이션 -->
-        <div class="d-flex flex-row justify-center">
-                <v-icon class="pagination_page" @click="handlePrevClick" :color="start == 1 ? '#adadad' : '#757575'">mdi-chevron-left</v-icon>
-                <div class="pagination_page d-flex flex-row justify-center align-center" 
-                    v-for="p in pages" :key="p" 
-                    :class="{ selected_page: current == p }" 
-                    @click="handlePageClick(p)">
-                    {{ p }}
-                </div>
-                <v-icon class="pagination_page" @click="handleNextClick" :color="end == limit ? '#adadad' : '#757575'">mdi-chevron-right</v-icon>
-            </div>
+        <Pagination />
         <v-progress-linear
             indeterminate
             color="black"
@@ -175,7 +166,7 @@
 <script>
 import ContentsForm from '@/components/ContentsForm'
 import NoData from '@/components/NoData'
-
+import Pagination from '@/components/Pagination'
 import {
     delete_review,
     get_reviews ,
@@ -185,6 +176,7 @@ export default {
     components: {
         ContentsForm,
         NoData,
+        Pagination,
     },
     props:{
         metaData: Object,
@@ -289,27 +281,27 @@ export default {
                 this.loading = true;
                 this.current = page;
                 await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
-            },
-            async handlePrevClick() {
-                
-                if (this.start == 1)  return;
-                
-                this.loading = true;
-                const current = this.start - this.length;
-                this.start = current;
-                this.current = current;
-                await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
-            },
-            async handleNextClick() {
-                
-                if (this.end == this.limit) return;
-                this.loading = true;
-                const page = this.start + this.length;
-                this.start = page;
-                this.current = page;
-                await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
-                
-            },
+        },
+        async handlePrevClick() {
+            
+            if (this.start == 1)  return;
+            
+            this.loading = true;
+            const current = this.start - this.length;
+            this.start = current;
+            this.current = current;
+            await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
+        },
+        async handleNextClick() {
+            
+            if (this.end == this.limit) return;
+            this.loading = true;
+            const page = this.start + this.length;
+            this.start = page;
+            this.current = page;
+            await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
+            
+        },
     },
 
     async beforeUnmount(){
@@ -357,25 +349,5 @@ export default {
     width: 15%;
 }
 
-.pagination-bar {
-        display: inline-block;
-        padding-left: 0;
-        margin: 20px 0;
-        border-radius: 4px;
-    }
-.selected_page {
-    color: white;
-    background-color: #B2C9CF;
-}
-.pagination_page {
-        cursor: pointer;
-        width: 34px;
-        height: 34px;
-        border-radius: 17px;
-        text-align: center;
-        margin: 4px;
-    }
-.bottom_button{
-    bottom: 1px;
-}
+
 </style>

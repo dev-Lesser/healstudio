@@ -11,23 +11,6 @@ export const get_meta = async () => {
     return [false, null]
 }
 
-export const login = async (user_id, password) => {
-    const body = { user_id, password }
-    var data = JSON.stringify(body);
-    console.log(data)
-    const result = await axios({
-        method: 'post',
-        url: BASE_URL+'/auth/login',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        data: data
-    })
-    if (result.status == 200) {
-        return [true, result.data]
-    }
-    return [false, null]
-}
 export const get_region_list = async () => {
     const url = `${BASE_URL}/regions`
     const result = await axios.get(url, {})

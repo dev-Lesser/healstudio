@@ -47,13 +47,18 @@
                     <v-divider />
                 </div>
             </v-list>
+            <Pagination ></Pagination>
         </div>
     </v-card>
 </template>
 <script>
+import Pagination from '@/components/Pagination'
 export default {
     props:{
         favGym: Array
+    },
+    components:{
+        Pagination
     },
     methods:{
         handleFavorite(e){
@@ -79,6 +84,7 @@ export default {
 }
 .favorite_gym_address{
     width: 50%;
+    padding: 0 10px 0 5px;
     font-size: 13px;
 }
 .favorite_gym_heart{

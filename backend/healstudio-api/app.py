@@ -1,4 +1,3 @@
-from re import T
 from chalice import Chalice, Response
 from chalice import BadRequestError
 # from chalicelib import users
@@ -91,7 +90,7 @@ def signup():
     }
     collection.insert_one(results)
     return Response(body={
-        'token':'token',
+        'token':uid,
         'user_id': user_id,
         },
         headers={'Content-Type': 'application/json'},

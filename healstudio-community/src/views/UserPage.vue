@@ -11,9 +11,7 @@
             <div class="user_profile_bar">
                 {{userMeta.user}}
             </div>
-            <div class="user_profile_edit">
-                <v-btn> Edit profile </v-btn>
-            </div>
+           
             <v-list
                 two-line
                 class="review_list"
@@ -76,6 +74,7 @@ export default {
     async mounted(){
         this.user_id = window.localStorage.getItem("user_id")
         this.uuid = window.localStorage.getItem("token")
+        
         if (this.user_id !== this.$route.params.id && this.uuid !== this.$route.query.uid) {
             alert('권한이 없습니다. 로그인을 해주세요.')
             this.$router.push('/login')
@@ -92,7 +91,8 @@ export default {
             if (!success) this.status = -1;
             else {
                 this.$store.state.userDetails = res
-                this.$store.state.userMeta = res[0] // 하나만 meta 정보 보여주기 위함
+                console.log(res)
+                this.$store.state.userMeta = res // 하나만 meta 정보 보여주기 위함 > 리뷰가 없을때 활동이 없을때 에러가 남
                 this.loading = false;
             }
         },
