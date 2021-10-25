@@ -27,7 +27,15 @@
             <v-list-item>
                 <v-list-item-content>
                     <a href="#user_reviews" class="user_profile_review">
-                        나의 리뷰
+                        작성 리뷰
+                    </a>
+                </v-list-item-content>
+            </v-list-item>
+            <v-divider />
+            <v-list-item>
+                <v-list-item-content>
+                    <a href="#user_reviews" class="user_profile_review">
+                        작성글
                     </a>
                 </v-list-item-content>
             </v-list-item>
@@ -90,9 +98,9 @@ export default {
             const [success, res] = await get_user_details(this.user_id, this.uuid);
             if (!success) this.status = -1;
             else {
-                this.$store.state.userDetails = res
+                this.$store.state.userDetails = res.results
                 console.log(res)
-                this.$store.state.userMeta = res // 하나만 meta 정보 보여주기 위함 > 리뷰가 없을때 활동이 없을때 에러가 남
+                this.$store.state.userMeta = res.user // 하나만 meta 정보 보여주기 위함 > 리뷰가 없을때 활동이 없을때 에러가 남
                 this.loading = false;
             }
         },

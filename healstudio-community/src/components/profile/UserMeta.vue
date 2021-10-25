@@ -23,7 +23,7 @@
                     </v-col>
                     <v-col>
                         <div class="display_number_box">
-                            {{favGymLenth}}
+                            <ICountUp :delay="delay" :endVal="favGymLenth" :options="options" />
                         </div>
                     </v-col>
                 </v-row>
@@ -31,12 +31,12 @@
                 <v-row class="display_contents">
                     <v-col>
                         <div>
-                            내가 쓴 리뷰 개수
+                            리뷰 개수
                         </div>
                     </v-col>
                     <v-col>
                         <div class="display_number_box">
-                            {{reviewsLenth}}
+                            <ICountUp :delay="delay" :endVal="reviewsLenth" :options="options" />
                         </div>
                     </v-col>
                 </v-row>
@@ -80,6 +80,8 @@
     </v-card>
 </template>
 <script>
+import ICountUp from 'vue-countup-v2';
+        
 export default {
     props: {
         userMeta: Object,
@@ -87,6 +89,22 @@ export default {
         reviewsLenth: Number
 
     },
+    components: {
+        ICountUp
+    },
+    data(){
+        return {
+            delay: 300,
+            options: {
+                useEasing: true,
+                useGrouping: true,
+                separator: ',',
+                decimal: '.',
+                prefix: '',
+                suffix: ''
+            }
+        }
+    }
 }
 </script>
 <style scoped>

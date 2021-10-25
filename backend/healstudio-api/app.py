@@ -407,14 +407,20 @@ def getUserDetails(user_id):
                             }},
             ])
         results_bucket = list()
+        user_info = collection.find_one({'user':user_id, 'uuid': uid},{'_id':0,'uuid':0,'password':0, 'admin':0})
+        user_info['ip'] = auth.hidden_ip(user_info['ip'])
+        user_info['created_at'] = user_info['created_at'].strftime('%Y-%m-%d')
+        user_info['last_login'] = user_info['last_login'].strftime('%Y-%m-%d')
         for i in results:
             item = i
             item['created_at'] = i['created_at'].strftime('%Y-%m-%d')
             item['last_login'] = i['last_login'].strftime('%Y-%m-%d')
             item['ip'] = auth.hidden_ip(i['ip'])
             results_bucket.append(item)
-        
-        return Response(body=results_bucket,
+        return Response(body={
+            'user': user_info,
+            'results':results_bucket
+            },
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
         

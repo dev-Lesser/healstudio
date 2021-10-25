@@ -9,11 +9,12 @@
         <div class="box-title-wrap">
             <div class="box-title">
                 <div >
+                <v-icon class="image-region-tag" small v-if="isFavorite && $route.name !== 'Home'" color="rgb(255, 116, 116)" @click="handleFavorite">mdi-heart</v-icon>
+                <v-icon class="image-region-tag" small v-else-if="!isFavorite && $route.name !== 'Home'" @click="handleFavorite">mdi-heart</v-icon>
                 {{selectedData.name}}
                 
                 <show-desc :desc="desc" />
-                <v-icon class="image-region-tag" small v-if="isFavorite && $route.name !== 'Home'" color="rgb(255, 116, 116)" @click="handleFavorite">mdi-heart</v-icon>
-                <v-icon class="image-region-tag" small v-else-if="!isFavorite && $route.name !== 'Home'" @click="handleFavorite">mdi-heart</v-icon>
+                
                 </div>
                 <v-rating
                 v-model="rating"

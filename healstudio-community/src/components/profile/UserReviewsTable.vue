@@ -31,9 +31,7 @@
                         <div class="review_date_header">
                             작성일/수정일
                         </div>
-                        <div class="review_actions">
-                            수정/삭제
-                        </div>
+                     
                     </v-list-item>
                     <v-divider />
                 </div>
@@ -66,21 +64,7 @@
                         <div class="review_date">
                             {{review.updated_at}}
                         </div>
-                        <div class="review_actions">
-                            <v-icon 
-                                small
-                                class="mr-2"
-                                color="rgb(116, 116, 216)"
-                                @click="openEditReview(review)"
-                            >
-                                mdi-pencil
-                            </v-icon>
-                            <v-icon
-                                small
-                                color="rgb(216, 116, 116)"
-                                @click="openDeleteReview(review)"
-                            >mdi-delete</v-icon>
-                        </div>
+                        
                     </v-list-item>
                     <v-divider />
                 </div>
