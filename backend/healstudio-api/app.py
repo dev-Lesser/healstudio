@@ -481,9 +481,18 @@ def getBoards():
     if app.current_request.method == 'GET':
         e = app.current_request.to_dict()
         params = e.get('query_params')
-        # print(params)
         skip = int(params.get('skip')) if params.get('skip') else 0;
         limit = int(params.get('limit')) if params.get('limit') else 12;
+        user = params.get('user')
+        if user:
+            print(user)
+            res = collection.find(
+                {'user': user, 'type':'board'},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
+            ).sort([('updated_at',-1)]).skip(0).limit(5) # user 페이지
+            r = utils.convertDatetime(res)
+            return Response(body=r,
+                headers={'Content-Type': 'application/json'},
+                status_code=200)
         res = collection.find(
             {'type':'board'},{'_id':0} # 있으면 찜한 목록이기 때문에 pull 함
         ).sort([('updated_at',-1)]).skip(skip).limit(limit)

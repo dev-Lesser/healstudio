@@ -50,6 +50,9 @@
                 <user-favorite-table  id="user_favorite" :favGym="userDetails" />
             </v-flex>
             <v-flex xs12 sm12 md12>
+                <user-board-table  id="user_favorite" :boards="userBoards" />
+            </v-flex>
+            <v-flex xs12 sm12 md12>
                 <user-reviews-table id="user_reviews" :data="userReviews" />
             </v-flex>
         </v-flex>
@@ -62,13 +65,18 @@ import {
 import {
     get_user_details
 } from '@/assets/auth'
+import {
+    get_boards
+} from '@/assets/board'
 import UserMeta from '@/components/profile/UserMeta'
 import UserFavoriteTable from '@/components/profile/UserFavoriteTable'
+import UserBoardTable from '@/components/profile/UserBoardTable'
 import UserReviewsTable from '@/components/profile/UserReviewsTable'
 export default {
     components:{
         UserMeta,
         UserFavoriteTable,
+        UserBoardTable,
         UserReviewsTable
     },
     data() {
@@ -91,6 +99,7 @@ export default {
 
         await this.getUserDetails()
         await this.getAllReviews()
+        await this.getAllBoards()
     },
     methods:{
         async getUserDetails(){
@@ -99,7 +108,6 @@ export default {
             if (!success) this.status = -1;
             else {
                 this.$store.state.userDetails = res.results
-                console.log(res)
                 this.$store.state.userMeta = res.user // 하나만 meta 정보 보여주기 위함 > 리뷰가 없을때 활동이 없을때 에러가 남
                 this.loading = false;
             }
@@ -110,6 +118,13 @@ export default {
             const [success, res] = await get_reviews('all', skip, limit, this.user_id)
             success;
             this.$store.state.userReviews = res;
+        },
+        async getAllBoards(){
+            this.loading = true;
+            const [skip, limit]= [0, 5];
+            const [success, res] = await get_boards(skip, limit, this.user_id )
+            success;
+            this.$store.state.userBoards = res;
         }
     },
     computed:{
@@ -118,6 +133,9 @@ export default {
         },
         userReviews(){
             return this.$store.state.userReviews;
+        },
+        userBoards(){
+            return this.$store.state.userBoards;
         },
         userMeta(){
             return this.$store.state.userMeta;

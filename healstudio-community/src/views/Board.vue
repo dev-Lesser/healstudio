@@ -99,17 +99,17 @@ export default {
     },
     async mounted(){
         if (this.$route.query.page == undefined || this.$route.query.page==1) {
-            await this.getBoards(0);
+            await this.getBoards(0, this.length, null);
         }
         else {
             this.$store.state.current = this.$route.query.page;
-            await this.getBoards((this.$route.query.page-1) * this.length, this.length)
+            await this.getBoards((this.$route.query.page-1) * this.length, this.length, null)
         }
     },
     methods:{
     
-        async getBoards(skip, limit){
-            const [success, res] = await get_boards(skip, limit)
+        async getBoards(skip, limit, user){
+            const [success, res] = await get_boards(skip, limit, user)
             success;
             this.boards = res;
         },

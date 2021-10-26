@@ -219,14 +219,14 @@ export default {
         },
 
         openCreateReview(){
-            if (window.localStorage.getItem("user_id")=='null') {
+            if (!window.localStorage.getItem("user_id")) {
                 alert('로그인이 필요한 서비스 입니다')
                 this.$router.push('/login');
             }
             else (this.$store.state.overlay = true)
         },
         openEditReview(item){            
-            if (this.user_id=='null') {
+            if (!window.localStorage.getItem("user_id")) {
                 alert('로그인이 필요한 서비스 입니다')
                 this.$router.push('/login');
                 return
@@ -238,7 +238,7 @@ export default {
             this.$store.state.overlay = true; // 창을 펼친다
         },
         openDeleteReview(item){
-            if (this.user_id=='null') {
+            if (!window.localStorage.getItem("user_id")) {
                 alert('로그인이 필요한 서비스 입니다')
                 this.$router.push('/login');
                 return

@@ -10,7 +10,6 @@
             <v-list
                 two-line
                 class="review_list"
-                height="410"
             >
                 <div class="review-header">
                     <v-list-item>
@@ -47,18 +46,13 @@
                     <v-divider />
                 </div>
             </v-list>
-            <Pagination ></Pagination>
         </div>
     </v-card>
 </template>
 <script>
-import Pagination from '@/components/Pagination'
 export default {
     props:{
         favGym: Array
-    },
-    components:{
-        Pagination
     },
     methods:{
         handleFavorite(e){

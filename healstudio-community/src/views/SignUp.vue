@@ -15,13 +15,13 @@
             <v-form class="signup-form">
                 <v-text-field v-model="id" 
                 :rules="[rules.required, rules.counterIdMin, rules.counterIdMax]"
-                color="#52abc4" dense outlined label="아이디" @keyup.enter="signUp" />
+                color="#52abc4" dense outlined label="아이디*" @keyup.enter="signUp" />
                 <v-text-field v-model="pw" 
                 :rules="[rules.required, rules.counterPwMin, rules.counterPwMax, rules.checkPw]"
-                color="#52abc4" dense outlined label="비밀번호" type="password" @keyup.enter="signUp" />
+                color="#52abc4" dense outlined label="비밀번호*" type="password" @keyup.enter="signUp" />
                 <v-text-field v-model="pwCheck" 
                 :rules="[rules.required, rules.same]"
-                color="#52abc4" dense outlined label="비밀번호 확인" type="password" @keyup.enter="signUp" />
+                color="#52abc4" dense outlined label="비밀번호 확인*" type="password" @keyup.enter="signUp" />
                 <v-btn class="login-btn-submit" color="#52abc4" dark @click="signUp">
                     회원가입
                 </v-btn>
@@ -38,7 +38,7 @@ export default {
             id: null,
             pw: null,
             pwCheck: null,
-            reg: '/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/',
+            reg: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$/,
             rules: {
                 required: value => !!value || '필수항목입니다.',
                 counterIdMin: value => (value.length >= 6 ) || '너무 짧습니다 (6자이상)',
@@ -46,7 +46,7 @@ export default {
                 counterPwMin: value => value.length >= 8 || '너무 짧습니다 (8자이상)',
                 counterPwMax: value => value.length <= 20 || '너무 깁니다 (20자이하)',
                 same: () => this.pw==this.pwCheck || '비밀번호가 일치하지 않습니다',
-                checkPw: ()=> !(this.reg.test(this.pw) && this.pw.search(/\s/) == -1) || '숫자+영대소문자+특수문자 공백은 빼주세요'
+                checkPw: ()=> (this.reg.test(this.pw) && this.pw.search(/\s/) == -1) || '숫자+영대소문자+특수문자 | 공백은 빼주세요'
 
             },
         }

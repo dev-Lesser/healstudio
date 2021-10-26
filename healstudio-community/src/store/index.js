@@ -45,6 +45,7 @@ export default new Vuex.Store({
         userDetails: null,
         userMeta: null,
         userReviews: null,
+        userBoards: null,
         current: 1,
         meta: null
     },

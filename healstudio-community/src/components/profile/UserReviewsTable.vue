@@ -31,7 +31,6 @@
                         <div class="review_date_header">
                             작성일/수정일
                         </div>
-                     
                     </v-list-item>
                     <v-divider />
                 </div>
@@ -69,18 +68,15 @@
                     <v-divider />
                 </div>
             </v-list>
-            <Pagination />
         </div>
     </v-card>
 </template>
 <script>
-import Pagination from '@/components/Pagination'
 export default {
     props: {
         data: Array,
     },
     components:{
-        Pagination
     }
 }
 </script>

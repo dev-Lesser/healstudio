@@ -2,11 +2,12 @@ import axios from "axios"
 
 const BASE_URL = "http://localhost:8000"
 
-export const get_boards = async (skip, limit) => {
+export const get_boards = async (skip, limit, user) => {
     const url = `${BASE_URL}/boards`
     const result = await axios.get(url, {params: {
         skip: skip,
-        limit: limit
+        limit: limit,
+        user: user
     }})
     if (result.status == 200) {
         return [true, result.data]
