@@ -1,98 +1,117 @@
 <template>
     <v-layout wrap class="board_page_layout">
         <v-flex xs12 sm12 md12>
-            <Meta :meta="meta"/>
+            <Meta :meta="meta" />
         </v-flex>
         <v-flex xs12 sm8 md8>
-            <v-card class="ma-3 pa-3" height=800>
-            <v-card-title class="board_page_title">
-                글 작성
-            </v-card-title>
-            <v-card-actions>
-                작성자 : {{user}}
-            </v-card-actions>
-            <v-divider />
-                <v-text-field
-                    v-model="title"
-                    label="제목"
-                    outlined
-                    clearable
-                    dense
-                ></v-text-field>
-                <v-textarea
-                    v-model="contents"
-                    class="mt-5"
-                    height="500"
-                    outlined
-                    color="#96AFDD"
-                    :rules="limitLetters"
-                    ></v-textarea>
-                <v-btn block color="primary" @click="createBoard">작성하기</v-btn>
+            <v-card class="ma-3 pa-3">
+                <v-card-title class="board_page_title">
+                    글 작성
+                </v-card-title>
+                <v-card-actions>
+                    작성자 : {{user}}
+                </v-card-actions>
+                <v-divider />
+                <v-text-field v-model="title" label="제목" outlined clearable dense></v-text-field>
+                <tiptap-vuetify v-model="contents" :extensions="extensions" :height="300"/>
+                <v-btn block class="mt-3" color="primary" @click="createBoard">작성하기</v-btn>
             </v-card>
         </v-flex>
     </v-layout>
 </template>
-<script> 
-import {
-    create_board
-} from '@/assets/board'
-import Meta from '@/components/board/Meta'
-
-export default { 
-    components: { 
-        Meta, 
-        // EditorMenuBar
-    }, 
-    data() {
-        return { 
-            title: null, 
-            contents: null,
-            limitLetters: [v => v.length <= 500 || '최대 500자'],
-            user: window.localStorage.getItem('user_id'),
-            uuid: window.localStorage.getItem('token')
-        } 
-    },
-    async mounted() {
-
-    },
-    async updated(){
-    },
-    methods:{
-        async createBoard(){
-            if (this.title.length >30 || this.title.length<3) return
-            if (this.contents.length >500) return
-            const [success,res] = await create_board(this.user, this.uuid, this.title, this.contents);
-            console.log(success, res)
-            if(!success) return
-            else{
-                this.$router.push('/boards')
+<script>
+    import {
+        create_board
+    } from '@/assets/board'
+    import Meta from '@/components/board/Meta'
+    import {
+        TiptapVuetify,
+        Heading,
+        Bold,
+        Italic,
+        Strike,
+        Underline,
+        BulletList,
+        OrderedList,
+        ListItem,
+        Link,
+        History,
+        Image
+    } from 'tiptap-vuetify'
+    export default {
+        components: {
+            Meta,
+            TiptapVuetify,
+        },
+        data() {
+            return {
+                title: null,
+                contents: null,
+                limitLetters: [v => v.length <= 500 || '최대 500자'],
+                user: window.localStorage.getItem('user_id'),
+                uuid: window.localStorage.getItem('token'),
+                extensions: [
+                    History,
+                    Link,
+                    Underline,
+                    Strike,
+                    Italic,
+                    ListItem,
+                    BulletList,
+                    OrderedList,
+                    [Heading, {
+                        options: {
+                        levels: [1, 2, 3]
+                        }
+                    }],
+                    Bold,
+                    Image
+                    ],
             }
-        }
-    },
-    computed:{
-        meta() {
+        },
+        async mounted() {
+            if (!this.user) {
+                alert('로그인이 필요한 기능입니다.')
+                this.$router.push('/login')
+            }
+        },
+        methods: {
+            async createBoard() {
+                if (this.title.length > 30 || this.title.length < 3) return
+                if (this.contents.length > 500) return
+                const success = await create_board(this.user, this.uuid, this.title, this.contents);
+                if (!success) return
+                else {
+                    this.$router.push('/boards')
+                }
+            }
+        },
+        computed: {
+            meta() {
                 return this.$store.state.meta;
-        }
-    },
-    beforeDestroy() {
-        this.editor.destroy()
-    },
-    watch:{
-        contents(){
-            
+            }
+        },
+        beforeDestroy() {
+            this.editor.destroy()
+        },
+        watch: {
+            contents() {
+            },
         }
     }
-}
 </script>
 
 <style scoped>
-.board_page_layout{
-    display: flex;
-    justify-content: center;
-    font-family:'Jeju Gothic', sans-serif;
+    .board_page_layout {
+        display: flex;
+        justify-content: center;
+        font-family: 'Jeju Gothic', sans-serif;
+    }
+    .board_page_title {
+        font-size: 24px;
+        font-family: 'Jeju Gothic', sans-serif;
+    }
+    .tiptap-vuetify-editor .ProseMirror {
+min-height: 200px;
 }
-.board_page_title{
-    font-size: 24px;
-    font-family:'Jeju Gothic', sans-serif;
-}   
 </style>

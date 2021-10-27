@@ -40,7 +40,7 @@ export const create_board = async (user_id, uid, title, contents) => {
         data: data
     })
     if (result.status == 201) {
-        return [true, result.data]
+        return true
     }
-    return [false, null]
+    return false
 }

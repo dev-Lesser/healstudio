@@ -1,11 +1,12 @@
 <template>
     <div class="board_contents">
         
-        <v-flex xs12 sm12 md8>
+        <v-flex xs12 sm12 md12>
             
-            <v-card outlined :min-height="150" class="d-flex flex-row align-center ma-3">
+            <v-card :min-height="150" class="d-flex flex-row align-center ma-3 pa-3" flat>
                 <div v-html=data.contents></div>
             </v-card>
+            <v-divider/>
             <v-layout style="display:flex; justify-content:center;">
                 <v-flex xs12 sm8 md6>
                     <v-card-title>

@@ -485,7 +485,6 @@ def getBoards():
         limit = int(params.get('limit')) if params.get('limit') else 12;
         user = params.get('user')
         if user:
-            print(user)
             res = collection.find(
                 {'user': user, 'type':'board'},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
             ).sort([('updated_at',-1)]).skip(0).limit(5) # user 페이지
@@ -536,7 +535,7 @@ def postBoard():
     uid = data.get('uid')
     title = data.get('title')
     contents = data.get('contents')
-    if len(title.strip()) < 2 or len(contents.strip())> 30:
+    if len(title.strip()) < 2 or len(title.strip())> 30:
         return Response(body='too large 30, too small 2',
         headers={'Content-Type': 'text/html'},
         status_code=403)
@@ -569,6 +568,39 @@ def postBoard():
 
     })
     return Response(body=_id,
+        headers={'Content-Type': 'application/json'},
+        status_code=201)
+    
+@app.route('/board', methods=['PATCH'], cors=True)
+def patchBoard():
+    collection = db['board']
+    user_collection = db['users']
+    data = json.loads(app.current_request.raw_body.decode())
+    user_id = data.get('user_id')
+    uid = data.get('uid')
+    title = data.get('title')
+    contents = data.get('contents')
+    if len(title.strip()) < 2 or len(contents.strip())> 30:
+        return Response(body='too large 30, too small 2',
+        headers={'Content-Type': 'text/html'},
+        status_code=403)
+    if len(contents.strip()) <10 or len(contents.strip())> 500:
+        return Response(body='too large 500, too small 10',
+        headers={'Content-Type': 'text/html'},
+        status_code=403)
+
+    if not user_collection.find_one({"user":user_id, "uuid": uid}):
+        return Response(body='uuid is required',
+        headers={'Content-Type': 'text/html'},
+        status_code=403)
+    
+    collection.insert_one({
+        'title': title.strip(),
+        'contents': contents.strip(),
+        'updated_at': datetime.datetime.now()
+
+    })
+    return Response(body='_id',
         headers={'Content-Type': 'application/json'},
         status_code=201)
     

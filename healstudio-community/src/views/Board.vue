@@ -15,7 +15,7 @@
                 </v-card-subtitle>
                 <v-spacer/>
                 <v-card-actions>
-                    <v-btn :to="`/board/post`" dark> 글작성</v-btn>
+                    <v-btn :to="`/board/post`" dark> 글 작성</v-btn>
                 </v-card-actions>
             </v-card-actions>
             <v-spacer/>
