@@ -1,5 +1,5 @@
 <template>
-<v-flex xs12 sm12 md12 >
+<v-flex xs12 sm12 md12 v-if="metaData!=null">
 
     <v-card  class="ma-3 pa-3" >
         <v-card-title>
@@ -11,7 +11,7 @@
         <v-list
             two-line
             class="review_list"
-            v-if="data.length>0"
+            v-if="data!=null&&data.length>0"
             height="450"
         >
         <div class="trainer-header">
@@ -122,13 +122,12 @@ export default {
     },
     data(){
         return {
+            loading: false,
             listWidth: window.innerWidth - 602,
             listHeight: Math.round((window.innerHeight - 483) / 100) * 100,
         }
     },
-    mounted(){
-        console.log(this.$route.name)
-    },
+
     methods:{
         async init(){
             this.$store.state.overlay = false

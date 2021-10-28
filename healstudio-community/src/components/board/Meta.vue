@@ -1,5 +1,5 @@
 <template>
-    <v-card flat :min-height="150" color="#f5f5f5" class="board_adv_values">
+    <v-card flat :min-height="150" color="#f5f5f5" class="board_adv_values" v-if="meta!=null">
         <v-row>
             <v-col :cols="6">
                 <div>
@@ -61,12 +61,6 @@
                 }
             }
         },
-        mounted(){
-            console.log(this.meta)
-        },
-        computed: {
-            
-        }
     }
 </script>
 <style scoped>

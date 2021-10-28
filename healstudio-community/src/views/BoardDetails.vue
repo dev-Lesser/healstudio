@@ -8,11 +8,13 @@
             <v-card-title class="reply_page_title">
                 자유게시판
             </v-card-title>
-            <v-card-actions>
-                작성자 : {{contents.user}}
+            <v-card-actions >
+                <v-spacer></v-spacer>
+                <div>작성자 : {{contents.user}}</div>
             </v-card-actions>
-            <v-card-actions>
-                작성일 : {{contents.created_at}}
+            <v-card-actions >
+                <v-spacer></v-spacer>
+                <div>작성일 : {{contents.created_at}}</div>
             </v-card-actions>
             <v-divider />
             <v-card-actions>

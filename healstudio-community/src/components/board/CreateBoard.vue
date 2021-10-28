@@ -91,9 +91,6 @@
                 return this.$store.state.meta;
             }
         },
-        beforeDestroy() {
-            this.editor.destroy()
-        },
         watch: {
             contents() {
             },

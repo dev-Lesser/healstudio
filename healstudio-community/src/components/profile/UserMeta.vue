@@ -23,7 +23,7 @@
                     </v-col>
                     <v-col>
                         <div class="display_number_box">
-                            <ICountUp :delay="delay" :endVal="favGymLenth" :options="options" />
+                            <ICountUp :delay="delay" :endVal="favGymLength" :options="options" />
                         </div>
                     </v-col>
                 </v-row>
@@ -36,7 +36,20 @@
                     </v-col>
                     <v-col>
                         <div class="display_number_box">
-                            <ICountUp :delay="delay" :endVal="reviewsLenth" :options="options" />
+                            <ICountUp :delay="delay" :endVal="reviewsLength" :options="options" />
+                        </div>
+                    </v-col>
+                </v-row>
+                <v-divider />
+                <v-row class="display_contents">
+                    <v-col>
+                        <div>
+                            작성글
+                        </div>
+                    </v-col>
+                    <v-col>
+                        <div class="display_number_box">
+                            <ICountUp :delay="delay" :endVal="boardsLength" :options="options" />
                         </div>
                     </v-col>
                 </v-row>
@@ -85,12 +98,16 @@ import ICountUp from 'vue-countup-v2';
 export default {
     props: {
         userMeta: Object,
-        favGymLenth: Number,
-        reviewsLenth: Number
+        favGymLength: Number,
+        reviewsLength: Number,
+        boardsLength: Number,
 
     },
     components: {
         ICountUp
+    },
+    mounted(){
+        console.log(this.boardsLength)
     },
     data(){
         return {

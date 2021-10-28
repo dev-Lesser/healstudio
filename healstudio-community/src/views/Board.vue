@@ -29,6 +29,7 @@
                     <div class="board_contents_header">제목</div>
                     <div class="board_user_header">작성자</div>
                     <div class="board_favorites_header"><v-icon small color="rgb(128, 140, 247)">mdi-thumb-up</v-icon></div>
+                    <div class="board_date_header">작성일</div>
                 </v-list-item>
                 <v-divider/>
                     <v-list
@@ -40,16 +41,18 @@
                             <div class="board_contents">{{board.title}}</div>
                             <div class="board_user">{{board.user}}</div>
                             <div class="board_favorites">{{board.favorites}}</div>
+                            <div class="board_date">{{board.created_at}}</div>
                         </v-list-item>
                         <v-list-item class="board_block_line" v-else dense :to="`/boards/${board.id}?user=${board.user}`" >
                             <div class="board_id">{{board.id}}</div>
                             <div class="board_contents">{{board.title}}</div>
                             <div class="board_user">{{board.user}}</div>
                             <div class="board_favorites">{{board.favorites}}</div>
+                            <div class="board_date">{{board.created_at}}</div>
                         </v-list-item>
                         <v-divider/>
                     </div>
-                    <div v-if="boards.length<length" >
+                    <div v-if="boards!=null && boards.length<length" >
                         <div v-for="i,key in length-boards.length" :key="key">
                             <v-list-item dense>
                                 <div class="board_no_contents"></div>
@@ -151,7 +154,6 @@ export default {
                 }
             })
             .catch(() => {
-                console.log(this.current)
                 this.getBoards((this.current-1)*this.length)
             });
     },
@@ -207,6 +209,13 @@ export default {
 }
 .board_favorites{
     width: 10%;
+    font-size: 12px;
+}
+.board_date_header,
+.board_date{
+    width: 10%;
+}
+.board_date{
     font-size: 12px;
 }
 .board_block_line{

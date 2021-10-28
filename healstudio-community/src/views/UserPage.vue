@@ -1,5 +1,5 @@
 <template>
-    <v-layout wrap class="user_page_layout">
+    <v-layout wrap class="user_page_layout" v-if="userMeta!=null&&userDetails!=null&&userBoards!=null">
         
         <v-card  class="ma-3 pa-3" flat>
             <v-avatar  color="indigo" size="200">
@@ -11,7 +11,6 @@
             <div class="user_profile_bar">
                 {{userMeta.user}}
             </div>
-           
             <v-list
                 two-line
                 class="review_list"
@@ -44,7 +43,7 @@
         </v-card>
         <v-flex xs12 sm12 md8>
             <v-flex xs12 md12>
-                <user-meta :user-meta="userMeta" :favGymLenth="userDetails.length" :reviewsLenth="userReviews.length" />
+                <user-meta :user-meta="userMeta" :favGymLength="userDetails.length" :reviewsLength="userReviews.length" :boardsLength="userBoards.length"/>
             </v-flex>
             <v-flex xs12 sm12 md12>
                 <user-favorite-table  id="user_favorite" :favGym="userDetails" />

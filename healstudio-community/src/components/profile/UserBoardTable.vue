@@ -3,7 +3,7 @@
         
         <div>
             <v-card-title>
-                작성글
+                최근 작성글
             </v-card-title>
             <div v-if="boards.length==0">
                 작성글이 없습니다.
@@ -21,7 +21,7 @@
                             제목
                         </div>
                         <div class="board_favorites_header">
-                            좋아요수
+                            <v-icon small color="rgb(128, 140, 247)">mdi-thumb-up</v-icon>
                         </div>
                         <div class="board_date_header">
                             작성일
@@ -56,9 +56,6 @@
 export default {
     props:{
         boards: Array
-    },
-    mounted(){
-        console.log(this.boards);
     },
     methods:{
         async selectGym(gym) {

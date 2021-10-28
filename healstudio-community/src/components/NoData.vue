@@ -20,7 +20,6 @@ export default {
         }        
     },
     mounted(){
-        console.log(this.$route.name)
         if (this.$route.name == "Trainer") this.content = "트레이너 리뷰"
         else if (this.$route.name == "Review") this.content = "헬스장 리뷰"
         

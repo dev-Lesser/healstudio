@@ -1,5 +1,5 @@
 <template>
-<v-flex xs12 sm12 md12 >
+<v-flex xs12 sm12 md12 v-if="metaData!=null">
     <v-card  class="ma-3 pa-3" >
         <v-card-title>
             {{metaData.name}}
@@ -10,7 +10,7 @@
         <v-list
             two-line
             class="review_list"
-            v-if="data.length>0"
+            v-if="data!=null&&data.length>0"
             height="410"
         >
             <div class="review-header">
@@ -251,7 +251,6 @@ export default {
         },
         
         async deleteReview(){
-            // console.log(item)
             const [success, res] = await delete_review(
                 this.updateId,
                 this.$route.params.id,
