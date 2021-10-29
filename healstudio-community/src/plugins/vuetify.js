@@ -1,10 +1,15 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib/framework';
+import  ko  from 'vuetify/es5/locale/ko'
 
 Vue.use(Vuetify);
 
 export default new Vuetify({
     lang: {
-        current: 'ko' // en | es | fr | pl | ru | uk | ptbr | tr | he | nl
+        locales: {
+            ko,
+        },
+        current: 'ko',
+    
     }
 });

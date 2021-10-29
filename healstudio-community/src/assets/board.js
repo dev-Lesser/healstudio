@@ -33,7 +33,7 @@ export const create_board = async (user_id, uid, title, contents) => {
     var data = JSON.stringify(body);
     const result = await axios({
         method: 'post',
-        url: BASE_URL+'/board',
+        url: `${BASE_URL}/board`,
         headers: {
             'Content-Type': 'application/json'
         },

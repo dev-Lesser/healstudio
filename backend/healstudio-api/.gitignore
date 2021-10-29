@@ -2,3 +2,5 @@
 .chalice/venv/
 dev.json
 .env
+config.json
+deployed

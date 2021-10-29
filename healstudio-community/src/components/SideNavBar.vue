@@ -132,7 +132,6 @@
         },
         async created() {
             const [success, regions] = await get_region_list();
-            // console.log(status, data)
             if (!success) this.status = -1;
             // No contents
             else {
@@ -171,19 +170,23 @@
         },
         methods: {
             async searchByQuery(event){
+                console.log(123)
                 event.preventDefault() 
                 this.$store.state.selected = false;
                 this.loading = true
                 const skipCount = (this.current - 1) * 20
                 
                 const [success, gyms] = await search_by_query(this.query, skipCount, 20);
-                console.log(gyms)
                 if (!success) {
-                    console.log(success)
                     this.status = -1;
                 }
                 else {
                     this.$store.state.gyms = gyms
+                    const locations = gyms.map(e => {
+                        return [e.y, e.x] // 반대임
+                    });
+                    this.$store.state.locations = locations;
+                    console.log(locations)
                 }
 
                 this.loading = false;
@@ -219,13 +222,15 @@
                 this.loading = true
                 const skipCount = (skip - 1) * 20
                 const [success, gyms] = await search_by_query(this.query, skipCount, 20);
-                const locations = gyms.map(e => {
-                    return [e.y, e.x] // 반대임
-                });
-                this.$store.state.locations = locations;
+                
                 if (!success) this.status = -1;
                 else {
+                    
                     this.$store.state.gyms = gyms
+                    const locations = gyms.map(e => {
+                        return [e.y, e.x] // 반대임
+                    });
+                    this.$store.state.locations = locations;
                     this.loading = false;
                 }
             }

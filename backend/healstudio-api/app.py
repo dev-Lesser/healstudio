@@ -2,22 +2,32 @@ from chalice import Chalice, Response
 from chalice import BadRequestError
 # from chalicelib import users
 import json, os
-from dotenv import load_dotenv
 
 import requests
 import pymongo
 import datetime
 import bcrypt
-from authorize import auth
-from utils import utils
-load_dotenv(verbose=True)
+from chalicelib.authorize import auth
+from chalicelib.utils import utils
+
+from pathlib import Path
+from dotenv import load_dotenv
+
+basepath = Path()
+basedir = str(basepath.cwd())
+envars = basepath.cwd() / 'chalicelib/.env'
+load_dotenv(envars)
+
 DB_HOST = os.getenv('DB_HOST')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_NAME = os.getenv('DB_NAME')
 COLLECTION_NAME = os.getenv('COLLECTION_NAME')
 
-client = pymongo.MongoClient('mongodb://{host}'.format(
+# client = pymongo.MongoClient('mongodb+srv://{user}:{password}@{host}'.format(
+#     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
+# ))
+client = pymongo.MongoClient('mongodb://localhost:27017'.format(
     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
 ))
 db = client[DB_NAME]
@@ -119,7 +129,6 @@ def searchByQuery():
     if query != '':
         res = list(collection.find({"$text": {"$search": query}},{"_id":0,"checkParse":0}).skip(skip).limit(limit))
     else: res = list(collection.find({},{"_id":0, "checkParse":0}).skip(skip).limit(limit))
-    
     return Response(body=res,
             headers={'Content-Type': 'application/json'},
             status_code=200)
@@ -539,8 +548,8 @@ def postBoard():
         return Response(body='too large 30, too small 2',
         headers={'Content-Type': 'text/html'},
         status_code=403)
-    if len(contents.strip()) <10 or len(contents.strip())> 500:
-        return Response(body='too large 500, too small 10',
+    if len(contents.strip()) <10:
+        return Response(body='too small 10',
         headers={'Content-Type': 'text/html'},
         status_code=403)
 

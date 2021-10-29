@@ -1,5 +1,5 @@
 <template>
-    <v-layout wrap class="reply_page_layout">
+    <v-layout wrap class="reply_page_layout" v-if="!!contents">
         <v-flex xs12 sm12 md12>
             <Meta :meta="meta"/>
         </v-flex>
@@ -96,7 +96,7 @@ export default {
             contents: null,
             now: new Date(),
             limitLetters: [v => v.length <= 50 || '최대 50자'],
-            replyContents: null
+            replyContents: '',
         }
     },
     async mounted(){
@@ -118,7 +118,6 @@ export default {
             else return date.split()[0]
         },
         async createReply(){
-            console.log(this.replyContents)
         }
     },
     computed:{

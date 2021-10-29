@@ -6,10 +6,9 @@ const BASE_URL = "http://localhost:8000"
 export const login = async (user_id, password) => {
     const body = { user_id, password }
     var data = JSON.stringify(body);
-    console.log(data)
     const result = await axios({
         method: 'post',
-        url: BASE_URL+'/auth/login',
+        url: `${BASE_URL}/auth/login`,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -26,7 +25,7 @@ export const signup = async (user_id, password) => {
     var data = JSON.stringify(body);
     const result = await axios({
         method: 'post',
-        url: BASE_URL+'/auth/signup',
+        url: `${BASE_URL}/auth/signup`,
         headers: {
             'Content-Type': 'application/json'
         },

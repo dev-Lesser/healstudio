@@ -35,9 +35,6 @@ export default {
     props: {
         data: Object
     },
-    mounted(){
-        console.log(this.data.contents)
-    }
 }
 </script>
 <style scoped>

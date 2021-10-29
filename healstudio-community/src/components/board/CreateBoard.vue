@@ -78,7 +78,6 @@
         methods: {
             async createBoard() {
                 if (this.title.length > 30 || this.title.length < 3) return
-                if (this.contents.length > 500) return
                 const success = await create_board(this.user, this.uuid, this.title, this.contents);
                 if (!success) return
                 else {
@@ -93,6 +92,7 @@
         },
         watch: {
             contents() {
+                console.log(this.contents)
             },
         }
     }
@@ -108,7 +108,10 @@
         font-size: 24px;
         font-family: 'Jeju Gothic', sans-serif;
     }
-    .tiptap-vuetify-editor .ProseMirror {
-min-height: 200px;
-}
+    .v-btn__content{
+        display: none;
+    }
+    .tiptap-vuetify-editor__content img {
+        width: 100%;
+        }
 </style>

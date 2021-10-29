@@ -7,12 +7,8 @@
             <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
             
             <l-marker  :lat-lng="markerLatLng"></l-marker>
-            <!-- <div v-if="locations">
-                <l-marker v-for="key in latlon" :key="key" :lat-lng="latlon[key]"></l-marker>
-            </div> -->
-            <!-- <v-marker v-for="key in locations" :key="`marker__${key}`" :lat-lng="locations[key]">
+            <l-marker v-for="item,key in locations" :key="key" :lat-lng="item"></l-marker>
             
-            </v-marker> -->
         </l-map>
         
 </v-layout>
@@ -26,7 +22,6 @@ import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 import GymDetail from "@/components/GymDetail"
 import SideNavBar from '@/components/SideNavBar'
 import { Icon } from 'leaflet';
-import { search_by_query } from '@/assets/api'
 export default {
     components: {
         LMap,
@@ -46,7 +41,7 @@ export default {
             zoom: 12,
             center: [37.555, 127.019],
             markerLatLng:[37.555, 127.019],
-            latlon: null,
+            latlon: [[37.555, 127.019],[37.755, 127.019],[37.255, 127.019],[37.415, 127.019],[37.555, 126.019],],
         }
     },
     
@@ -57,17 +52,8 @@ export default {
         iconUrl: require('leaflet/dist/images/marker-icon.png'),
         shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
         });
-        // await this.getGymList(1);
     },
-    async mounted(){
-        
 
-    },
-    async beforeUpdate(){
-       
-            
-        
-    },
     computed: {
         gyms(){
             return this.$store.state.selectedData;
@@ -77,20 +63,6 @@ export default {
         }
     },
     methods:{
-        async getGymList(skip) {
-            this.loading = true
-            const skipCount = (skip - 1) * 20
-            const [success, gyms] = await search_by_query(this.query, skipCount, 20);
-            const locations = gyms.map(e => {
-                return [e.y, e.x] // 반대임
-            });
-            this.$store.state.locations = locations;
-            if (!success) this.status = -1;
-            else {
-                this.$store.state.gyms = gyms
-                this.loading = false;
-            }
-        }
     },
     watch:{
         gyms(){
