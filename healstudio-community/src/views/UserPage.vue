@@ -18,7 +18,7 @@
             <v-list-item>
                 <v-list-item-content>
                     <a href="#user_favorite" class="user_profile_favorite" >
-                        찜한목록
+                        찜한목록 (5개)
                     </a>
                 </v-list-item-content>
             </v-list-item>
@@ -43,7 +43,7 @@
         </v-card>
         <v-flex xs12 sm12 md8>
             <v-flex xs12 md12>
-                <user-meta :user-meta="userMeta" :favGymLength="userDetails.length" :reviewsLength="userReviews.length" :boardsLength="userBoards.length"/>
+                <user-meta :user-meta="userMeta" :favGymLength="favCount" :reviewsLength="reviewCount" :boardsLength="boardCount"/>
             </v-flex>
             <v-flex xs12 sm12 md12>
                 <user-favorite-table  id="user_favorite" :favGym="userDetails" />
@@ -83,7 +83,10 @@ export default {
             user_id: null,
             uuid : null,
             loading: false,
-            status: 0
+            status: 0,
+            favCount: 0,
+            reviewCount: 0,
+            boardCount: 0,
         }
     },
     async mounted(){
@@ -93,7 +96,6 @@ export default {
         if (this.user_id !== this.$route.params.id && this.uuid !== this.$route.query.uid) {
             alert('권한이 없습니다. 로그인을 해주세요.')
             this.$router.push('/login')
-
         }
 
         await this.getUserDetails()
@@ -108,6 +110,7 @@ export default {
             else {
                 this.$store.state.userDetails = res.results
                 this.$store.state.userMeta = res.user // 하나만 meta 정보 보여주기 위함 > 리뷰가 없을때 활동이 없을때 에러가 남
+                this.favCount = res.fav_count
                 this.loading = false;
             }
         },
@@ -115,15 +118,18 @@ export default {
             this.loading = true;
             const [skip, limit]= [0, 5];
             const [success, res] = await get_reviews('all', skip, limit, this.user_id)
+
             success;
-            this.$store.state.userReviews = res;
+            this.$store.state.userReviews = res.results;
+            this.reviewCount = res.review_count
         },
         async getAllBoards(){
             this.loading = true;
             const [skip, limit]= [0, 5];
             const [success, res] = await get_boards(skip, limit, this.user_id )
             success;
-            this.$store.state.userBoards = res;
+            this.$store.state.userBoards = res.results;
+            this.boardCount = res.board_count
         }
     },
     computed:{

@@ -5,7 +5,7 @@
         </div>
         <div v-else>
             <v-card-title>
-                찜한 목록
+                찜한 목록 (5개)
             </v-card-title>
             <v-list
                 two-line

@@ -246,7 +246,15 @@ def getReviews(gymId):
             
         ]))
         results = utils.convertDatetime(res)
-        return Response(body=results,
+        res = list(collection.aggregate([
+            {'$match': {'user': user}},
+            {'$group': { '_id': None, 'count': { '$sum': 1 } } },
+        ]))
+        count = res[0]['count'] if res else 0
+        return Response(body={
+            'results':results,
+            'review_count': count,
+        },
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
     ## user 가 없다면 > 모든 user 가 gym 에대한 리뷰를 updated_at 로 소팅하여 가져옴
@@ -402,7 +410,7 @@ def getUserDetails(user_id):
     params = e.get('query_params')
     uid = params.get('uid')
     skip = int(params.get('skip')) if params.get('skip') else 0
-    limit = int(params.get('limit')) if params.get('limit') else 10
+    limit = int(params.get('limit')) if params.get('limit') else 5
     if user_id and uid:
         results = collection.aggregate([
                 {'$match': {'user': user_id, 'uuid': uid}},
@@ -415,6 +423,14 @@ def getUserDetails(user_id):
                             'gymInfo.x':0, 'gymInfo.y':0,'gymInfo.imgList':0,
                             }},
             ])
+        res = list(collection.aggregate([
+                {'$match': {'user': user_id, 'uuid': uid}},
+                {'$unwind': '$favList'},
+                {'$group': { '_id': None, 'count': { '$sum': 1 } } },
+        ]))
+        
+        count = res[0]['count'] if res else 0
+        
         results_bucket = list()
         user_info = collection.find_one({'user':user_id, 'uuid': uid},{'_id':0,'uuid':0,'password':0, 'admin':0})
         user_info['ip'] = auth.hidden_ip(user_info['ip'])
@@ -428,7 +444,8 @@ def getUserDetails(user_id):
             results_bucket.append(item)
         return Response(body={
             'user': user_info,
-            'results':results_bucket
+            'results':results_bucket,
+            'fav_count': count
             },
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
@@ -498,7 +515,15 @@ def getBoards():
                 {'user': user, 'type':'board'},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
             ).sort([('updated_at',-1)]).skip(0).limit(5) # user 페이지
             r = utils.convertDatetime(res)
-            return Response(body=r,
+            res = list(collection.aggregate([
+                {'$match': {'user': user}},
+                {'$group': { '_id': None, 'count': { '$sum': 1 } } },
+            ]))
+            count = res[0]['count'] if res else 0
+            return Response(body={
+                'results': r,
+                'board_count':count
+                },
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
         res = collection.find(

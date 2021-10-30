@@ -12,7 +12,9 @@
                     작성자 : {{user}}
                 </v-card-actions>
                 <v-divider />
-                <v-text-field v-model="title" label="제목" outlined clearable dense></v-text-field>
+                <v-text-field v-model="title" 
+                :rules="rules"
+                label="제목" outlined clearable dense></v-text-field>
                 <tiptap-vuetify v-model="contents" :extensions="extensions" :height="300"/>
                 <v-btn block class="mt-3" color="primary" @click="createBoard">작성하기</v-btn>
             </v-card>
@@ -50,6 +52,7 @@
                 limitLetters: [v => v.length <= 500 || '최대 500자'],
                 user: window.localStorage.getItem('user_id'),
                 uuid: window.localStorage.getItem('token'),
+                rules: [value=> (!!value&& value.length <= 30) || '최대 30자'],
                 extensions: [
                     History,
                     Link,
@@ -92,7 +95,6 @@
         },
         watch: {
             contents() {
-                console.log(this.contents)
             },
         }
     }
