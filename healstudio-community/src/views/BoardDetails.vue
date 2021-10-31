@@ -3,19 +3,25 @@
         <v-flex xs12 sm12 md12>
             <Meta :meta="meta"/>
         </v-flex>
-        <v-flex xs12 sm8 md8>
-            <v-card class="ma-3 pa-3" :min-height="400" >
-            <v-card-title class="reply_page_title">
-                자유게시판
-            </v-card-title>
-            <v-card-actions >
-                <v-spacer></v-spacer>
-                <div>작성자 : {{contents.user}}</div>
-            </v-card-actions>
-            <v-card-actions >
-                <v-spacer></v-spacer>
-                <div>작성일 : {{contents.created_at}}</div>
-            </v-card-actions>
+        
+        <v-flex xs12 sm8 md8 >
+            <edit-board v-if="isEdit" :meta-contents="contents" />
+            <v-card class="ma-3 pa-3" :min-height="400" v-else >
+                <v-card-title class="reply_page_title">
+                    자유게시판
+                </v-card-title>
+                <v-card-actions >
+                    <v-spacer></v-spacer>
+                    <div>작성자 : {{contents.user}}</div>
+                </v-card-actions>
+                <v-card-actions >
+                    <v-spacer></v-spacer>
+                    <div>작성일 : {{contents.created_at}}</div>
+                </v-card-actions>
+                <v-card-actions v-if="user_id==contents.user">
+                    <v-spacer></v-spacer>
+                    <v-btn @click="editPost">수정하기</v-btn>
+                </v-card-actions>
             <v-divider />
             <v-card-actions>
                 제목 : {{contents.title}}
@@ -80,26 +86,32 @@
 import {
     get_board
 } from '@/assets/board'
+import EditBoard from '@/components/board/EditBoard'
 import Contents from '@/components/board/Contents'
 import Meta from '@/components/board/Meta'
 export default {
     components:{
         Contents,
+        EditBoard,
         Meta
     },
     data() {
         return {
             sameUser: '<작성자>',
             skip:0,
+            isEdit: false,
             limit: 15,
             replies: null,
             contents: null,
             now: new Date(),
             limitLetters: [v => v.length <= 50 || '최대 50자'],
             replyContents: '',
+            user_id: window.localStorage.getItem('user_id'),
+            uuid: window.localStorage.getItem('token')
         }
     },
     async mounted(){
+        console.log(this.user_id, this.uuid)
         await this.getBoard(this.$route.params.id, this.$route.query.user, this.skip, this.limit)
         
     },
@@ -116,6 +128,9 @@ export default {
             if (parseInt(diff)==0) return '방금✨'
             if (0< diff < 60) return parseInt(diff) + '분전✨'
             else return date.split()[0]
+        },
+        async editPost(){
+            this.isEdit = true
         },
         async createReply(){
         }

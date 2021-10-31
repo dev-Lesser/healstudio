@@ -44,3 +44,20 @@ export const create_board = async (user_id, uid, title, contents) => {
     }
     return false
 }
+
+export const edit_board = async (user_id, uid, id, title, contents) => {
+    const body = { user_id, uid, id, title, contents }
+    var data = JSON.stringify(body);
+    const result = await axios({
+        method: 'patch',
+        url: `${BASE_URL}/board`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    })
+    if (result.status == 204) {
+        return true
+    }
+    return false
+}

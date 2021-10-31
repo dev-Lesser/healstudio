@@ -614,11 +614,12 @@ def patchBoard():
     uid = data.get('uid')
     title = data.get('title')
     contents = data.get('contents')
-    if len(title.strip()) < 2 or len(contents.strip())> 30:
+    _id = data.get('id')
+    if len(title.strip()) < 2 or len(title.strip())> 30:
         return Response(body='too large 30, too small 2',
         headers={'Content-Type': 'text/html'},
         status_code=403)
-    if len(contents.strip()) <10 or len(contents.strip())> 500:
+    if len(contents.strip()) <10 :
         return Response(body='too large 500, too small 10',
         headers={'Content-Type': 'text/html'},
         status_code=403)
@@ -627,14 +628,17 @@ def patchBoard():
         return Response(body='uuid is required',
         headers={'Content-Type': 'text/html'},
         status_code=403)
-    
-    collection.insert_one({
-        'title': title.strip(),
-        'contents': contents.strip(),
-        'updated_at': datetime.datetime.now()
+        
+    collection.update_one(
+                            {'user': user_id, 'id':_id, 'type': 'board' }, 
+                            {'$set' : {
+                                'title': title.strip(),
+                                'contents': contents.strip(),
+                                'updated_at': datetime.datetime.now()}
+                            }
+                            )
 
-    })
-    return Response(body='_id',
+    return Response(body=_id,
         headers={'Content-Type': 'application/json'},
-        status_code=201)
+        status_code=204)
     

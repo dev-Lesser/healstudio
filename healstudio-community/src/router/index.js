@@ -10,6 +10,7 @@ import Board from "@/views/Board"
 import BoardDetails from "@/views/BoardDetails"
 
 import CreateBoard from "@/components/board/CreateBoard"
+
 Vue.use(VueRouter);
 
 const routes = [

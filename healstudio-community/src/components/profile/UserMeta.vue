@@ -106,9 +106,6 @@ export default {
     components: {
         ICountUp
     },
-    mounted(){
-        console.log(this.boardsLength)
-    },
     data(){
         return {
             delay: 300,
