@@ -61,3 +61,24 @@ export const edit_board = async (user_id, uid, id, title, contents) => {
     }
     return false
 }
+
+
+export const delete_board = async (user_id, uid, id, title) => {
+    const result = await axios({
+        method: 'delete',
+        url: `${BASE_URL}/board`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        params: {
+            user_id: user_id,
+            uid: uid,
+            id: id,
+            title: title,
+        }
+    })
+    if (result.status == 200) {
+        return true
+    }
+    return false
+}

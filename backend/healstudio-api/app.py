@@ -642,3 +642,26 @@ def patchBoard():
         headers={'Content-Type': 'application/json'},
         status_code=204)
     
+@app.route('/board', methods=['DELETE'], cors=True)
+def deleteBoard():
+    collection = db['board']
+    user_collection = db['users']
+    e = app.current_request.to_dict()
+    params = e.get('query_params')
+    user_id = params.get('user_id')
+    uid = params.get('uid')
+    title = params.get('title')
+    _id = int(params.get('id'))
+
+
+    if not user_collection.find_one({"user":user_id, "uuid": uid}):
+        return Response(body='uuid is required',
+        headers={'Content-Type': 'text/html'},
+        status_code=403)
+    print(user_id, _id, title)
+    collection.delete_one({'user': user_id, 'id':_id, 'title':title, 'type': 'board' })
+
+    return Response(body=_id,
+        headers={'Content-Type': 'application/json'},
+        status_code=200)
+    

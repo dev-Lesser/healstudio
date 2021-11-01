@@ -6,6 +6,7 @@
         
         <v-flex xs12 sm8 md8 >
             <edit-board v-if="isEdit" :meta-contents="contents" />
+            
             <v-card class="ma-3 pa-3" :min-height="400" v-else >
                 <v-card-title class="reply_page_title">
                     자유게시판
@@ -21,6 +22,7 @@
                 <v-card-actions v-if="user_id==contents.user">
                     <v-spacer></v-spacer>
                     <v-btn @click="editPost">수정하기</v-btn>
+                    <v-btn @click="deletePost" color="error">삭제하기</v-btn>
                 </v-card-actions>
             <v-divider />
             <v-card-actions>
@@ -78,6 +80,9 @@
                     😮‍💨 등록리뷰가 없습니다
                 </div>
             </v-list>
+
+            <delete-board v-if="boardDeleteOveray" :meta-contents="contents" />
+
             </v-card>
         </v-flex>
     </v-layout>
@@ -87,12 +92,14 @@ import {
     get_board
 } from '@/assets/board'
 import EditBoard from '@/components/board/EditBoard'
+import DeleteBoard from '@/components/board/DeleteBoard'
 import Contents from '@/components/board/Contents'
 import Meta from '@/components/board/Meta'
 export default {
     components:{
         Contents,
         EditBoard,
+        DeleteBoard,
         Meta
     },
     data() {
@@ -100,6 +107,7 @@ export default {
             sameUser: '<작성자>',
             skip:0,
             isEdit: false,
+            isDelete: false,
             limit: 15,
             replies: null,
             contents: null,
@@ -132,13 +140,20 @@ export default {
         async editPost(){
             this.isEdit = true
         },
+        async deletePost(){
+            this.$store.state.boardDeleteOveray = true
+        },
         async createReply(){
         }
     },
     computed:{
         meta() {
-                return this.$store.state.meta;
+            return this.$store.state.meta;
+        },
+        boardDeleteOveray(){
+            return this.$store.state.boardDeleteOveray;
         }
+        
     }
 }
 </script>

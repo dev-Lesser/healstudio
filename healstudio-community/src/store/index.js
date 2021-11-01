@@ -47,7 +47,8 @@ export default new Vuex.Store({
         userReviews: null,
         userBoards: null,
         current: 1,
-        meta: null
+        meta: null,
+        boardDeleteOveray: false
     },
     getters: {
         getBrand: state => state.brand,
