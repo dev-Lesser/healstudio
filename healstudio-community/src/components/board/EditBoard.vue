@@ -85,7 +85,7 @@
                 const success = await edit_board(this.user, this.uuid, this.metaContents.id, this.title, this.contents);
                 if (!success) return
                 else {
-                    this.$router.push('/boards')
+                    this.$router.go()
                 }
             }
         },

@@ -232,7 +232,7 @@ def getReviews(gymId):
     
     sort_by = params.get('sortBy')
     if not sort_by:
-        sort_by = 'updated_at'
+        sort_by = 'created_at'
     if user and gymId=='all': # 유저가 쓴 것만 가져올 수 있음
         res = list(collection.aggregate([
             {'$match': {'user': user}},
@@ -513,7 +513,7 @@ def getBoards():
         if user:
             res = collection.find(
                 {'user': user, 'type':'board'},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
-            ).sort([('updated_at',-1)]).skip(0).limit(5) # user 페이지
+            ).sort([('created_at',-1)]).skip(0).limit(5) # user 페이지
             r = utils.convertDatetime(res)
             res = list(collection.aggregate([
                 {'$match': {'user': user}},
@@ -528,7 +528,7 @@ def getBoards():
                 status_code=200)
         res = collection.find(
             {'type':'board'},{'_id':0} # 있으면 찜한 목록이기 때문에 pull 함
-        ).sort([('updated_at',-1)]).skip(skip).limit(limit)
+        ).sort([('created_at',-1)]).skip(skip).limit(limit)
         r = utils.convertDatetime(res)
         return Response(body=r,
             headers={'Content-Type': 'application/json'},
@@ -542,19 +542,22 @@ def getBoard(_id):
         user = params.get('user')
         skip = int(params.get('skip')) if params.get('skip') else 0;
         limit = 15
+        
         board = collection.find_one(
             {'id': int(_id),'user':user,'type':'board'},{'_id':0, 'related_id':0, 'type':0} # 있으면 찜한 목록이기 때문에 pull 함
         )
+        # print(_id)
         res = collection.find(
-            {'related_id': user+':'+_id,'type':'reply'},{'_id':0, 'related_id':0} # 있으면 찜한 목록이기 때문에 pull 함
-        ).sort([('created_at', 1)]).skip(skip).limit(limit)
-        r = utils.convertDatetime(res)
+            {'id': int(_id),'type':'reply'},{'_id':0, 'related_id':0} # 있으면 찜한 목록이기 때문에 pull 함
+        ).sort([('created_at', -1)]).skip(skip).limit(limit)
+        r = utils.convertDatetimeHours(res)
         board['created_at'] = board['created_at'].strftime('%Y-%m-%d %H:%M:%S')
         board['updated_at'] = board['updated_at'].strftime('%Y-%m-%d %H:%M:%S')
-        
+        isEnd = True if len(r)<limit else False
         return Response(body={
             'contents':board,
-            'replies': r
+            'replies': r,
+            'isEnd': isEnd
             },
             headers={'Content-Type': 'application/json'},
             status_code=200)
@@ -593,7 +596,7 @@ def postBoard():
         'user': user_id,
         'title': title.strip(),
         'contents': contents.strip(),
-        'id': _id,
+        'id': int(_id),
         'related_id': user_id + ':' + str(_id),
         'favorites': 0,
         'type': 'board',
@@ -658,10 +661,58 @@ def deleteBoard():
         return Response(body='uuid is required',
         headers={'Content-Type': 'text/html'},
         status_code=403)
-    print(user_id, _id, title)
     collection.delete_one({'user': user_id, 'id':_id, 'title':title, 'type': 'board' })
 
     return Response(body=_id,
         headers={'Content-Type': 'application/json'},
         status_code=200)
+    
+@app.route('/reply', methods=['POST','DELETE'], cors=True)
+def handleReply():
+    collection = db['board']
+    user_collection = db['users']
+    if app.current_request.method == 'POST':
+        data = json.loads(app.current_request.raw_body.decode())
+        user_id = data.get('user_id')
+        uid = data.get('uid')
+        _id = data.get('id')
+        contents = data.get('contents')
+        if len(contents.strip()) <5 or len(contents.strip()) >50 :
+            return Response(body='too large 50, too small 5',
+                headers={'Content-Type': 'text/html'},
+                status_code=403)
+        
+        if not user_collection.find_one({"user":user_id, "uuid": uid}):
+            return Response(body='uuid is required',
+                headers={'Content-Type': 'text/html'},
+                status_code=403)
+        item = {
+            'user': user_id,
+            'contents': contents,
+            'id': int(_id),
+            'related_id': user_id + ':' + str(_id),
+            'type': 'reply',
+            'created_at': datetime.datetime.now(),
+            'updated_at': datetime.datetime.now()
+        }
+        collection.insert_one(item)
+        return Response(body=_id,
+            headers={'Content-Type': 'application/json'},
+            status_code=201)
+    elif app.current_request.method == 'DELETE':
+        e = app.current_request.to_dict()
+        params = e.get('query_params')
+        user_id = params.get('user_id')
+        uid = params.get('uid')
+        _id = int(params.get('id'))
+        
+        if not user_collection.find_one({"user":user_id, "uuid": uid}):
+            return Response(body='uuid is required',
+                headers={'Content-Type': 'text/html'},
+                status_code=403)
+        collection.delete_one({'user': user_id, 'id': _id,  'type': 'reply' })
+
+        return Response(body=_id,
+            headers={'Content-Type': 'application/json'},
+            status_code=200)
     

@@ -82,3 +82,38 @@ export const delete_board = async (user_id, uid, id, title) => {
     }
     return false
 }
+
+export const create_reply = async (user_id, uid, id, contents) => {
+    const body = { user_id, uid, id, contents }
+    var data = JSON.stringify(body);
+    const result = await axios({
+        method: 'post',
+        url: `${BASE_URL}/reply`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    })
+    if (result.status == 201) {
+        return true
+    }
+    return false
+}
+export const delete_reply = async (user_id, uid, id) => {
+    const result = await axios({
+        method: 'delete',
+        url: `${BASE_URL}/reply`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        params: {
+            user_id: user_id,
+            uid: uid,
+            id: id,
+        }
+    })
+    if (result.status == 200) {
+        return true
+    }
+    return false
+}

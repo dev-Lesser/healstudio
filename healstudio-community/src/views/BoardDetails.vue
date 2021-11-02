@@ -9,7 +9,7 @@
             
             <v-card class="ma-3 pa-3" :min-height="400" v-else >
                 <v-card-title class="reply_page_title">
-                    자유게시판
+                    * {{contents.title}}
                 </v-card-title>
                 <v-card-actions >
                     <v-spacer></v-spacer>
@@ -25,10 +25,6 @@
                     <v-btn @click="deletePost" color="error">삭제하기</v-btn>
                 </v-card-actions>
             <v-divider />
-            <v-card-actions>
-                제목 : {{contents.title}}
-            </v-card-actions>
-            <v-divider />
                 <Contents :data="contents" />
             </v-card>
             <v-card class="ma-3 pa-3">
@@ -38,16 +34,10 @@
             <v-divider />
             <v-list class="reply_list">  
                 <div style="display:flex; justify-contents:center;">
-                    <v-textarea
+                    <v-text-field
                     v-model="replyContents"
-                    class="ma-3"
-                    auto-grow
-                    outlined
-                    rows="1"
-                    dense
-                    color="#96AFDD"
-                    :rules="limitLetters"
-                    ></v-textarea>
+                    :rules="ruleReply"
+                    label="제목" outlined clearable dense></v-text-field>
                     <v-btn class="ma-3" dark @click="createReply"> 댓글작성 </v-btn>
                 </div> 
                 <v-progress-linear
@@ -56,6 +46,14 @@
                 class="mt-1"
                 height="1"
                 rounded
+                v-if="loading"
+                ></v-progress-linear>
+                <v-progress-linear
+                color="black"
+                class="mt-1"
+                height="1"
+                rounded
+                v-else
                 ></v-progress-linear>
                 <div v-if="replies.length>0">
                     <div v-for="reply, key in replies" :key="key">
@@ -65,6 +63,13 @@
                                 <div v-if="reply.user == contents.user" class="same_user">{{sameUser}}</div>
                             </div>
                             <div class="reply_new" >{{isNew(reply.created_at)}}</div>
+                            <div class="reply_new" v-if="user_id==reply.user">
+                                <v-icon small
+                                color="rgb(216, 116, 116)"
+                                @click="openReplyDelete">
+                                mdi-delete
+                                </v-icon>
+                            </div>
                         </v-list-item>
                         <v-list-item class="reply_block_line" v-else dense >
                             <div class="reply_contents">{{reply.contents}}</div>
@@ -72,6 +77,13 @@
                                 <div v-if="reply.user == contents.user" class="same_user">{{sameUser}}</div>
                             </div>
                             <div class="reply_new" >{{isNew(reply.created_at)}}</div>
+                            <div class="reply_new" v-if="user_id==reply.user">
+                                <v-icon small
+                                color="rgb(216, 116, 116)"
+                                @click="openReplyDelete">
+                                mdi-delete
+                                </v-icon>
+                            </div>
                         </v-list-item>
                         <v-divider/>
                     </div>
@@ -79,17 +91,34 @@
                 <div v-else>
                     😮‍💨 등록리뷰가 없습니다
                 </div>
+                <v-btn block dark @click="loadReply" v-if="!isEnd"> 댓글 더보기 </v-btn>
             </v-list>
-
+            <v-overlay light v-if="isReplyDelete" >
+                <v-card class="ma-3 pa-3" :width="500"
+                light>
+                <v-card-title>
+                    정말로 삭제 하시겠습니까?
+                </v-card-title>
+                <v-divider />
+            
+                <v-card-actions>
+                    <v-btn color="error" @click="deleteReply">삭제하기</v-btn>
+                    <v-spacer />
+                    <v-btn color="primary" @click="closeReply"> 취소 </v-btn>
+                </v-card-actions>
+                </v-card>
+                
+            </v-overlay>
             <delete-board v-if="boardDeleteOveray" :meta-contents="contents" />
-
             </v-card>
         </v-flex>
     </v-layout>
 </template>
 <script>
 import {
-    get_board
+    get_board,
+    create_reply,
+    delete_reply,
 } from '@/assets/board'
 import EditBoard from '@/components/board/EditBoard'
 import DeleteBoard from '@/components/board/DeleteBoard'
@@ -104,22 +133,27 @@ export default {
     },
     data() {
         return {
+            loading: false,
             sameUser: '<작성자>',
             skip:0,
             isEdit: false,
             isDelete: false,
+            isReplyDelete:false,
             limit: 15,
             replies: null,
             contents: null,
+            current: 1,
+            isEnd: false,
             now: new Date(),
             limitLetters: [v => v.length <= 50 || '최대 50자'],
+            ruleReply: [v => (v.length>=5 &&v.length <= 50) || '최소 5자 최대 50자'],
             replyContents: '',
             user_id: window.localStorage.getItem('user_id'),
             uuid: window.localStorage.getItem('token')
         }
     },
     async mounted(){
-        console.log(this.user_id, this.uuid)
+        
         await this.getBoard(this.$route.params.id, this.$route.query.user, this.skip, this.limit)
         
     },
@@ -144,7 +178,36 @@ export default {
             this.$store.state.boardDeleteOveray = true
         },
         async createReply(){
-        }
+            if (!this.user_id && !this.uuid){
+                alert('로그인이 필요한 서비스입니다')
+                this.$router.push('/login')
+            }
+            this.loading = true
+            const success = await create_reply(this.user_id, this.uuid, this.$route.params.id, this.replyContents)
+            if (success) this.$router.go()
+        },
+        async deleteReply(){
+            this.loading = true
+            const success = await delete_reply(this.user_id, this.uuid, this.$route.params.id)
+            if (success) this.isReplyDelete=false; this.$router.go()
+        },
+        async openReplyDelete(){
+            this.isReplyDelete = true;
+        },
+        async closeReply(){
+            this.isReplyDelete = false;
+        },
+        async loadReply(){
+            this.loading = true
+            this.current = this.current +1
+            this.skip = (this.current-1)*this.limit
+            const [success, res] = await get_board(this.$route.params.id, this.$route.query.user, this.skip, this.limit);
+            success;
+            // this.contents = res.contents
+            this.replies = this.replies.concat(res.replies)
+            this.isEnd = res.isEnd
+            this.loading = false
+        },
     },
     computed:{
         meta() {

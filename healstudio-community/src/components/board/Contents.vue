@@ -23,7 +23,7 @@
                         <div class="mb-3">
                         지금 바로 게시물을 작성해 보세요
                         </div>
-                        <v-btn block color="primary" to="/board/post"><v-icon small class="mr-3">mdi-pencil</v-icon>작성하기</v-btn>
+                        <v-btn block color="primary" @click="handlePost"><v-icon small class="mr-3">mdi-pencil</v-icon>작성하기</v-btn>
                     </v-card>
             </v-flex>
             </v-layout>
@@ -33,8 +33,24 @@
 <script>
 export default {
     props: {
-        data: Object
+        data: Object,
+        
     },
+    data(){
+        return {
+            user_id: window.localStorage.getItem('user_id'),
+            uuid: window.localStorage.getItem('token')
+        }
+    },
+    methods:{
+        async handlePost(){
+            if (!this.user_id && !this.uuid){
+                alert('로그인이 필요한 서비스입니다')
+                this.$router.push('/login')
+            }
+            else this.$router.push('/board/post')
+        }
+    }
 }
 </script>
 <style scoped>
