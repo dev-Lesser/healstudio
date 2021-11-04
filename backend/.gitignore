@@ -10,3 +10,4 @@ __pycache__
 .chalice.zip
 .env
 config.json
+.DS_Store

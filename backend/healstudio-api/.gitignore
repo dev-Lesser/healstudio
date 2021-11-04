@@ -4,3 +4,4 @@ dev.json
 .env
 config.json
 deployed
+.DS_Store
