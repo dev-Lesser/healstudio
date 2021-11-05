@@ -510,7 +510,7 @@ def getBoards():
         skip = int(params.get('skip')) if params.get('skip') else 0;
         limit = int(params.get('limit')) if params.get('limit') else 12;
         user = params.get('user')
-        if user:
+        if user: # user 페이지
             res = collection.find(
                 {'user': user, 'type':'board'},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
             ).sort([('created_at',-1)]).skip(0).limit(5) # user 페이지
@@ -526,13 +526,22 @@ def getBoards():
                 },
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
-        res = collection.find(
-            {'type':'board'},{'_id':0} # 있으면 찜한 목록이기 때문에 pull 함
-        ).sort([('created_at',-1)]).skip(skip).limit(limit)
-        r = utils.convertDatetime(res)
-        return Response(body=r,
-            headers={'Content-Type': 'application/json'},
-            status_code=200)
+        else: # 전체 게시판 조회 페이지
+            res = collection.find(
+                {'type':'board'},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
+            ).sort([('created_at',-1)]).skip(skip).limit(limit)
+            r = utils.convertDatetime(res)
+            # print(r)
+            results = []
+            for item in r:
+                if item.get('isDeleted'):
+                    item['title'] = '작성자에 의해 삭제되었습니다'
+                    results.append(item)
+                else:
+                    results.append(item)
+            return Response(body=r,
+                headers={'Content-Type': 'application/json'},
+                status_code=200)
 @app.route('/board/{_id}', methods=['GET'], cors=True)
 def getBoard(_id):
     collection = db['board']
@@ -551,6 +560,9 @@ def getBoard(_id):
             {'id': int(_id),'type':'reply'},{'_id':0, 'related_id':0} # 있으면 찜한 목록이기 때문에 pull 함
         ).sort([('created_at', -1)]).skip(skip).limit(limit)
         r = utils.convertDatetimeHours(res)
+        if board.get('isDeleted'):
+            board['title'] = '작성자에 의해 삭제되었습니다'
+            board['contents'] = '작성자에 의해 삭제되었습니다'
         board['created_at'] = board['created_at'].strftime('%Y-%m-%d %H:%M:%S')
         board['updated_at'] = board['updated_at'].strftime('%Y-%m-%d %H:%M:%S')
         isEnd = True if len(r)<limit else False
@@ -661,7 +673,11 @@ def deleteBoard():
         return Response(body='uuid is required',
         headers={'Content-Type': 'text/html'},
         status_code=403)
-    collection.delete_one({'user': user_id, 'id':_id, 'title':title, 'type': 'board' })
+    collection.update_one({'user': user_id, 'id':_id, 'title':title, 'type': 'board' },
+                          {'$set' : {
+                              'isDeleted': True,
+                                }
+                            })  ### 삭제하였을 경우 isDeleted 라는 변수에 True 를 넣어주자 그래서 리플라이들은 남을수있게
 
     return Response(body=_id,
         headers={'Content-Type': 'application/json'},

@@ -37,15 +37,18 @@
                     >   
                     <div v-for="board, key in boards" :key="key">
                         <v-list-item  v-if="key%2" dense :to="`/boards/${board.id}?user=${board.user}`" >
-                            <div class="board_id">{{board.id}}</div>
-                            <div class="board_contents">{{board.title}}</div>
+                            <div class="board_id" >{{board.id}}</div>
+                            
+                            <div class="board_contents" v-if="!board.isDeleted">{{board.title}}</div>
+                            <div class="board_contents_deleted" v-else>{{board.title}}</div>
                             <div class="board_user">{{board.user}}</div>
                             <div class="board_favorites">{{board.favorites}}</div>
                             <div class="board_date">{{board.created_at}}</div>
                         </v-list-item>
                         <v-list-item class="board_block_line" v-else dense :to="`/boards/${board.id}?user=${board.user}`" >
                             <div class="board_id">{{board.id}}</div>
-                            <div class="board_contents">{{board.title}}</div>
+                            <div class="board_contents" v-if="!board.isDeleted">{{board.title}}</div>
+                            <div class="board_contents_deleted" v-else>{{board.title}}</div>
                             <div class="board_user">{{board.user}}</div>
                             <div class="board_favorites">{{board.favorites}}</div>
                             <div class="board_date">{{board.created_at}}</div>
@@ -220,6 +223,11 @@ export default {
 }
 .board_block_line{
     background-color: #F0EEEE;
+}
+.board_contents_deleted{
+    color: rgb(252, 166, 166);
+    width: 70%;
+    font-size:11px;
 }
 
 

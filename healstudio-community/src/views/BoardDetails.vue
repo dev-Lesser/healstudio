@@ -19,7 +19,7 @@
                     <v-spacer></v-spacer>
                     <div>작성일 : {{contents.created_at}}</div>
                 </v-card-actions>
-                <v-card-actions v-if="user_id==contents.user">
+                <v-card-actions v-if="user_id==contents.user && !contents.isDeleted">
                     <v-spacer></v-spacer>
                     <v-btn @click="editPost">수정하기</v-btn>
                     <v-btn @click="deletePost" color="error">삭제하기</v-btn>
