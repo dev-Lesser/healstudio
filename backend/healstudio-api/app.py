@@ -531,11 +531,10 @@ def getBoards():
                 {'type':'board'},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
             ).sort([('created_at',-1)]).skip(skip).limit(limit)
             r = utils.convertDatetime(res)
-            # print(r)
             results = []
             for item in r:
                 if item.get('isDeleted'):
-                    item['title'] = '작성자에 의해 삭제되었습니다'
+                    item['title'] = utils.deleteByUser()
                     results.append(item)
                 else:
                     results.append(item)
@@ -561,8 +560,8 @@ def getBoard(_id):
         ).sort([('created_at', -1)]).skip(skip).limit(limit)
         r = utils.convertDatetimeHours(res)
         if board.get('isDeleted'):
-            board['title'] = '작성자에 의해 삭제되었습니다'
-            board['contents'] = '작성자에 의해 삭제되었습니다'
+            board['title'] = utils.deleteByUser()
+            board['contents'] = utils.deleteByUser()
         board['created_at'] = board['created_at'].strftime('%Y-%m-%d %H:%M:%S')
         board['updated_at'] = board['updated_at'].strftime('%Y-%m-%d %H:%M:%S')
         isEnd = True if len(r)<limit else False
