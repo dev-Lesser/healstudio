@@ -512,11 +512,11 @@ def getBoards():
         user = params.get('user')
         if user: # user 페이지
             res = collection.find(
-                {'user': user, 'type':'board'},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
-            ).sort([('created_at',-1)]).skip(0).limit(5) # user 페이지
+                {'user': user, 'type':'board', 'isDeleted': {'$ne': True}},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
+            ).sort([('created_at',-1)]).skip(skip).limit(limit) # user 페이지
             r = utils.convertDatetime(res)
             res = list(collection.aggregate([
-                {'$match': {'user': user}},
+                {'$match': {'user': user, 'type':'board','isDeleted': {'$ne': True}}},
                 {'$group': { '_id': None, 'count': { '$sum': 1 } } },
             ]))
             count = res[0]['count'] if res else 0

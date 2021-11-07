@@ -49,7 +49,7 @@
                 <user-favorite-table  id="user_favorite" :favGym="userDetails" />
             </v-flex>
             <v-flex xs12 sm12 md12>
-                <user-board-table  id="user_favorite" :boards="userBoards" />
+                <user-board-table  id="user_favorite" :boards="userBoards" :total="boardCount"/>
             </v-flex>
             <v-flex xs12 sm12 md12>
                 <user-reviews-table id="user_reviews" :data="userReviews" />
