@@ -101,9 +101,7 @@ export default {
         total: function(newtotal){
             this.start = 1;
             this.current = 1;
-            console.log(newtotal, this.view)
             this.limit = Math.ceil(newtotal / this.view);
-            console.log(this.limit)
         },
         view: function (newview) {
             this.limit = Math.ceil(this.total / newview);

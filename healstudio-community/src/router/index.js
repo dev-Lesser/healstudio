@@ -9,7 +9,7 @@ import Trainer from "@/views/Trainer"
 import Board from "@/views/Board"
 import BoardDetails from "@/views/BoardDetails"
 
-import CreateBoard from "@/components/board/CreateBoard"
+import Post from "@/views/Post"
 
 Vue.use(VueRouter);
 
@@ -60,8 +60,8 @@ const routes = [
   },
   {
     path: "/board/post",
-    name: "CreateBoard",
-    component: CreateBoard,
+    name: "Post",
+    component: Post,
   },
 
 ]
