@@ -96,7 +96,11 @@
             <no-data />
         </v-list>
         <!-- 페이지네이션 -->
-        <Pagination />
+        <Pagination 
+            @page-click="pageClick"
+            :total="total"
+            :length="5"
+            />
         <v-progress-linear
             indeterminate
             color="black"
@@ -181,6 +185,7 @@ export default {
     props:{
         metaData: Object,
         data: Array,
+        total: Number
     },
     data(){
         return {
@@ -201,6 +206,7 @@ export default {
             current: 1,
             length: 5,
             limit: 30,
+            // total: null,
         }
     },
     async created(){
@@ -267,39 +273,19 @@ export default {
             
             this.loading = false;
         },
+        async pageClick(page){
+            this.page = page
+            await this.getReviews(this.$route.params.id, (this.page-1)*this.length, this.length)
+        },
         async getReviews(gymId, skip, limit){
             const [success, res] = await get_reviews(gymId, skip, limit, null);
             if (!success) this.status = -1;
             else {
-                this.$store.state.reviews = res;
+                this.$store.state.reviews = res.results;
+                console.log(res)
+                this.total = res.review_count;
                 this.loading = false;
             }
-        },
-        async handlePageClick(page) {
-                if (this.current == page) return
-                this.loading = true;
-                this.current = page;
-                await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
-        },
-        async handlePrevClick() {
-            
-            if (this.start == 1)  return;
-            
-            this.loading = true;
-            const current = this.start - this.length;
-            this.start = current;
-            this.current = current;
-            await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
-        },
-        async handleNextClick() {
-            
-            if (this.end == this.limit) return;
-            this.loading = true;
-            const page = this.start + this.length;
-            this.start = page;
-            this.current = page;
-            await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
-            
         },
     },
 

@@ -259,9 +259,14 @@ def getReviews(gymId):
                 status_code=200)
     ## user 가 없다면 > 모든 user 가 gym 에대한 리뷰를 updated_at 로 소팅하여 가져옴
     if gymId.isdigit():
+        
+        count = collection.count_documents({"related_gym_id": gymId})
         res = list(collection.find({"related_gym_id": gymId},{"_id":0}).sort([(sort_by,-1)]).skip(skip).limit(limit))
         results = utils.convertDatetime(res)
-        return Response(body=results,
+        return Response(body={
+                    'results': results,
+                    'review_count': count
+                },
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
     else: return Response(body='error gymId: \t [%s]' % gymId,

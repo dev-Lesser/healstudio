@@ -9,7 +9,7 @@
                 <ad-box />
             </v-layout>
             <v-layout>
-                <review-table :meta-data="selectedData" :data="reviews"/>
+                <review-table :meta-data="selectedData" :data="reviews" :total="total"/>
             </v-layout>
         </v-container>
     </v-card>
@@ -34,6 +34,7 @@ import { get_gym_by_id, get_reviews } from '@/assets/api'
                 desc: null,
                 selectedRoadAddress: false,
                 loading: false,
+                total: null
             }
         },
         async mounted(){
@@ -80,7 +81,8 @@ import { get_gym_by_id, get_reviews } from '@/assets/api'
                 const [success, res] = await get_reviews(gymId, skip, limit);
                 if (!success) this.status = -1;
                 else {
-                    this.$store.state.reviews = res;
+                    this.$store.state.reviews = res.results;
+                    this.total = res.review_count
                     this.loading = false;
                 }
             }

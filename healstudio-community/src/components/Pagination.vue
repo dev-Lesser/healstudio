@@ -11,40 +11,78 @@
     </div>
 </template>
 <script>
+
 export default {
+    name: "Pagination",
     data() {
         return {
-            pages: 5,
-            end: 100,
             loading: false,
             start: 1,
             current: 1,
-            length: 5,
-            limit: 30,
+            limit: Math.ceil(this.total/this.length),
+            tmpBoards: this.boards,
+            user_id: this.$route.params.id,
+            view: 5
         }
     },
+    
+    props:{
+        total: Number,
+        length: Number
+    },
+    computed:{
+        pages: function () {
+            return Array.from(
+                { length: this.end - this.start +1},
+                (e, i) => i + this.start
+                
+            );
+        },
+        end: function(){
+            return Math.min(this.start + this.length -1, this.limit)
+        },
+        
+    },
+    watch:{
+        total: function(newtotal){
+            this.start = 1;
+            this.current = 1;
+            this.limit = Math.ceil(newtotal / this.view);
+        },
+        view: function (newview) {
+            this.limit = Math.ceil(this.total / newview);
+        },
+    },
     methods:{
+        async selectGym(gym) {
+            this.$store.state.selected = false
+            this.$store.state.selectedData = gym;
+            this.$store.state.selected = true;
+        },
         async handlePageClick(page) {
-                if (this.current == page) return
-                this.loading = true;
-                this.current = page;
+            if (this.current == page) return
+            this.loading = true;
+            this.current = page;
+            this.$emit("page-click", page);
         },
         async handlePrevClick() {
             if (this.start == 1)  return;
             this.loading = true;
             const current = this.start - this.length;
             this.start = current;
-            this.current = current;
+            this.end = this.start + this.length -1
+            this.$emit("page-click", current);
         },
         async handleNextClick() {
             if (this.end == this.limit) return;
             this.loading = true;
             const page = this.start + this.length;
             this.start = page;
+            this.end = this.start + this.length -1
             this.current = page;
-            // await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
-            
+            this.$emit("page-click", page);
         },
+
     }
 }
 </script>

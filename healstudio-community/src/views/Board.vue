@@ -65,16 +65,11 @@
                     </div>
                     </v-list>
                 
-                <div class="d-flex flex-row justify-center">
-                    <v-icon class="pagination_page" @click="handlePrevClick" :color="start == 1 ? '#adadad' : '#757575'">mdi-chevron-left</v-icon>
-                    <div class="pagination_page d-flex flex-row justify-center align-center" 
-                        v-for="p in pages" :key="p" 
-                        :class="{ selected_page: current == p }" 
-                        @click="handlePageClick(p)">
-                        {{ p }}
-                    </div>
-                    <v-icon class="pagination_page" @click="handleNextClick" :color="end == limit ? '#adadad' : '#757575'">mdi-chevron-right</v-icon>
-                </div>
+                <Pagination 
+                @page-click="pageClick"
+                :total="meta.board"
+                :length="12"
+                />
                 
             </v-card>
         </v-flex>
@@ -82,19 +77,21 @@
 </template>
 <script>
 import Meta from '@/components/board/Meta'
+import Pagination from '@/components/Pagination'
 import {
     get_boards
 } from '@/assets/board'
 export default {
     components:{
-        Meta
+        Meta,
+        Pagination,
     },
     data() {
         return {
             query: null,
             boards: null,
-            pages: 5,
-            limit: 100,
+            page: this.$route.query.page!=undefined ? this.$route.query.page : 1,
+            limit: 5,
             length: 12,
             end: 5,
             start: this.$store.state.current,
@@ -113,31 +110,15 @@ export default {
         }
     },
     methods:{
-    
+        async pageClick(page) {
+            this.page = page;
+            await this.getBoards((this.page-1) * this.length,this.length, null);
+        },
         async getBoards(skip, limit, user){
             const [success, res] = await get_boards(skip, limit, user)
             success;
             this.boards = res;
         },
-        async handlePageClick(p){
-            this.$store.state.current = p;
-            this.$router.push(`/boards?page=${p}`)
-            
-        },
-        async handlePrevClick(){
-            if (this.start == 1)  return;
-            this.$store.state.current = this.$store.state.current -1
-            this.start = this.$store.state.current + this.pages
-            this.end = this.start + this.pages
-            this.$router.push(`/boards?page=${this.$store.state.current}`)
-        },
-        async handleNextClick(){
-            if (this.end == this.limit)  return;
-            this.$store.state.current = this.$store.state.current + 1
-            this.start = this.$store.state.current - this.pages
-            this.end = this.start + this.pages
-            this.$router.push(`/boards?page=${this.$store.state.current}`)
-        }
     },
     computed:{
         current(){
@@ -145,22 +126,10 @@ export default {
         },
         meta() {
                 return this.$store.state.meta;
-            }
+        }
         
     },
-    watch:{
-        current() {
-            this.$router
-                .push({
-                query: {
-                    page: this.current
-                }
-            })
-            .catch(() => {
-                this.getBoards((this.current-1)*this.length)
-            });
-    },
-}
+
 
 }
 </script>

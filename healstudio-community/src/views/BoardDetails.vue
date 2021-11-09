@@ -168,8 +168,11 @@ export default {
             const dateDiff =  this.now.getTime() - new Date(date).getTime()
             const diff = dateDiff/(1000*60)
             if (parseInt(diff)==0) return '방금✨'
-            if (0< diff < 60) return parseInt(diff) + '분전✨'
-            else return date.split()[0]
+            if (0<= diff&& diff< 60) return parseInt(diff) + '분전✨'
+            if(60<= diff&& diff< 60*24) {
+                return date.split(' ')[1].split(':').slice(0,2).join(':')
+            }
+            else return date.split(' ')[0]
         },
         async editPost(){
             this.isEdit = true

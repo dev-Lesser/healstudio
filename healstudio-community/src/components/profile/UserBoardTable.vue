@@ -48,18 +48,11 @@
                     <v-divider />
                 </div>
             </v-list>
-            <keep-alive>
-                <div class="d-flex flex-row justify-center">
-                    <v-icon class="pagination_page" @click="handlePrevClick" :color="start == 1 ? '#adadad' : '#757575'">mdi-chevron-left</v-icon>
-                    <div class="pagination_page d-flex flex-row justify-center align-center" 
-                        v-for="p in pages" :key="p" 
-                        :class="{ selected_page: current == p }" 
-                        @click="handlePageClick(p)">
-                        {{ p }}
-                    </div>
-                    <v-icon class="pagination_page" @click="handleNextClick" :color="end == limit ? '#adadad' : '#757575'">mdi-chevron-right</v-icon>
-                </div>
-            </keep-alive>
+            <Pagination 
+                @page-click="pageClick"
+                :total="total"
+                :length="5"
+                />
         </div>
     </v-card>
 </template>
@@ -67,10 +60,14 @@
 import {
     get_boards
 } from '@/assets/board'
+import Pagination from '@/components/Pagination'
 export default {
     props:{
         boards: Array,
         total: Number
+    },
+    components:{
+        Pagination
     },
     data(){
         return {
@@ -78,71 +75,22 @@ export default {
             start: 1,
             current: 1,
             length: 5,
-            limit: Math.ceil(this.total/5),
             tmpBoards: this.boards,
             user_id: this.$route.params.id,
-            view: 5
         }
     },
-    computed:{
-        pages: function () {
-            return Array.from(
-                { length: this.end - this.start +1},
-                (e, i) => i + this.start
-                
-            );
-        },
-        end: function(){
-            return Math.min(this.start + this.length -1, this.limit)
-        },
-        
-    },
-    watch:{
-        total: function(newtotal){
-            this.start = 1;
-            this.current = 1;
-            this.limit = Math.ceil(newtotal / this.view);
-        },
-        view: function (newview) {
-            this.limit = Math.ceil(this.total / newview);
-        },
-    },
+
     methods:{
+        async pageClick(page) {
+            this.page = page;
+            const [success, res] = await get_boards((this.page-1)*this.length, this.length, this.user_id );
+            if (!success) return
+            this.tmpBoards = res.results
+        },
         async selectGym(gym) {
             this.$store.state.selected = false
             this.$store.state.selectedData = gym;
             this.$store.state.selected = true;
-        },
-        async handlePageClick(page) {
-            if (this.current == page) return
-            this.loading = true;
-            this.current = page;
-            const [success, res] = await get_boards((this.current-1)*this.length, this.length, this.user_id );
-            if (!success) return
-            this.tmpBoards = res.results
-        },
-        async handlePrevClick() {
-            if (this.start == 1)  return;
-            this.loading = true;
-            const current = this.start - this.length;
-            this.start = current;
-            this.end = this.start + this.length -1
-            this.current = current;
-            const [success, res] = await get_boards((this.current-1)*this.length, this.length, this.user_id );
-            if (!success) return
-            this.tmpBoards = res.results
-        },
-        async handleNextClick() {
-            if (this.end == this.limit) return;
-            this.loading = true;
-            const page = this.start + this.length;
-            this.start = page;
-            this.end = this.start + this.length -1
-            this.current = page;
-            const [success, res] = await get_boards((this.current-1)*this.length, this.length, this.user_id );
-            if (!success) return
-            this.tmpBoards = res.results
-            
         },
 
     }
