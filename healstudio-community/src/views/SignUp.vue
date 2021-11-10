@@ -60,9 +60,20 @@ export default {
                 alert("입력란이 비었습니다")
                 return
             }
+            if (this.id.length <6 || this.id.length>20){
+                alert("아이디는 6자이상 20자 이하입니다.")
+                return
+            }
+            if (this.pw.length<6 || this.pw.length>20){
+                alert("비밀번호는 6자이상 20자 이하입니다.")
+                return
+            }
             if (this.pw!==this.pwCheck){
                 alert("비밀번호가 일치하지 않습니다")
                 return
+            }
+            if  (!this.reg.test(this.pw) || this.pw.search(/\s/) != -1){
+                alert("비밀번호 형식이 일치하지 않습니다. (영어 대소문자 + 특수기호 + 숫자)")
             }
             const [success, res] = await signup(this.id, this.pw);
             success;

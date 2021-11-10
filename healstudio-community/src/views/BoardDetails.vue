@@ -58,11 +58,13 @@
                 <div v-if="replies.length>0">
                     <div v-for="reply, key in replies" :key="key">
                         <v-list-item  v-if="key%2" dense >
-                            <div class="reply_contents">{{reply.contents}}</div>
+                            <div class="reply_new" >{{isNew(reply.created_at)}}</div>
                             <div class="reply_user">{{reply.user}}
                                 <div v-if="reply.user == contents.user" class="same_user">{{sameUser}}</div>
                             </div>
-                            <div class="reply_new" >{{isNew(reply.created_at)}}</div>
+                            <div class="reply_contents">{{reply.contents}}</div>
+                            
+                            
                             <div class="reply_new" v-if="user_id==reply.user">
                                 <v-icon small
                                 color="rgb(216, 116, 116)"
@@ -72,11 +74,13 @@
                             </div>
                         </v-list-item>
                         <v-list-item class="reply_block_line" v-else dense >
-                            <div class="reply_contents">{{reply.contents}}</div>
+                            <div class="reply_new" >{{isNew(reply.created_at)}}</div>
                             <div class="reply_user">{{reply.user}}
                                 <div v-if="reply.user == contents.user" class="same_user">{{sameUser}}</div>
                             </div>
-                            <div class="reply_new" >{{isNew(reply.created_at)}}</div>
+                            <div class="reply_contents">{{reply.contents}}</div>
+                            
+                            
                             <div class="reply_new" v-if="user_id==reply.user">
                                 <v-icon small
                                 color="rgb(216, 116, 116)"
@@ -153,9 +157,7 @@ export default {
         }
     },
     async mounted(){
-        
         await this.getBoard(this.$route.params.id, this.$route.query.user, this.skip, this.limit)
-        
     },
     methods:{
         async getBoard(id, user, skip, limit){
