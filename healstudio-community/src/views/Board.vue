@@ -34,24 +34,25 @@
                 <v-divider/>
                     <v-list
                     class="board_list"
+                    
                     >   
                     <div v-for="board, key in boards" :key="key">
                         <v-list-item  v-if="key%2" dense :to="`/boards/${board.id}?user=${board.user}`" >
                             <div class="board_id" >{{board.id}}</div>
                             
-                            <div class="board_contents" v-if="!board.isDeleted">{{board.title}}</div>
+                            <div class="board_contents" v-if="!board.isDeleted">{{board.title}}<img v-if="isNew(board.created_at)[0]" class="ml-2" :src="newIcon"></div>
                             <div class="board_contents_deleted" v-else>{{board.title}}</div>
                             <div class="board_user">{{board.user}}</div>
                             <div class="board_favorites">{{board.favorites}}</div>
-                            <div class="board_date">{{board.created_at}}</div>
+                            <div class="board_date">{{isNew(board.created_at)[1]}}</div>
                         </v-list-item>
                         <v-list-item class="board_block_line" v-else dense :to="`/boards/${board.id}?user=${board.user}`" >
                             <div class="board_id">{{board.id}}</div>
-                            <div class="board_contents" v-if="!board.isDeleted">{{board.title}}</div>
+                            <div class="board_contents" v-if="!board.isDeleted">{{board.title}}<img v-if="isNew(board.created_at)[0]" class="ml-2" :src="newIcon"></div>
                             <div class="board_contents_deleted" v-else>{{board.title}}</div>
                             <div class="board_user">{{board.user}}</div>
                             <div class="board_favorites">{{board.favorites}}</div>
-                            <div class="board_date">{{board.created_at}}</div>
+                            <div class="board_date">{{isNew(board.created_at)[1]}}</div>
                         </v-list-item>
                         <v-divider/>
                     </div>
@@ -68,6 +69,7 @@
                 <Pagination 
                 @page-click="pageClick"
                 :total="meta.board"
+                :current-num="current"
                 :length="12"
                 />
                 
@@ -81,6 +83,7 @@ import Pagination from '@/components/Pagination'
 import {
     get_boards
 } from '@/assets/board'
+import newIcon from '@/assets/new.gif'
 export default {
     components:{
         Meta,
@@ -88,47 +91,72 @@ export default {
     },
     data() {
         return {
+            newIcon: newIcon,
+            now: new Date(),
             query: null,
             boards: null,
             page: this.$route.query.page!=undefined ? this.$route.query.page : 1,
-            limit: 5,
             length: 12,
-            end: 5,
-            start: this.$store.state.current,
             height: Math.round((window.innerHeight - 443) ),
-            
-            // current: 1,
         }
     },
     async mounted(){
-        if (this.$route.query.page == undefined || this.$route.query.page==1) {
+        if (this.$route.query.page == undefined || this.$route.query.page=='1') {
+            this.$store.state.current = 1
             await this.getBoards(0, this.length, null);
         }
         else {
-            this.$store.state.current = this.$route.query.page;
+            this.$store.state.current = parseInt(this.$route.query.page)
             await this.getBoards((this.$route.query.page-1) * this.length, this.length, null)
         }
     },
     methods:{
         async pageClick(page) {
             this.page = page;
+            this.$store.state.current = this.page
+            
             await this.getBoards((this.page-1) * this.length,this.length, null);
         },
         async getBoards(skip, limit, user){
+
             const [success, res] = await get_boards(skip, limit, user)
             success;
             this.boards = res;
         },
+        isNew(date){
+            const dateDiff =  this.now.getTime() - new Date(date).getTime()
+            const diff = dateDiff/(1000*60)
+            if (parseInt(diff)==0) return [true, '방금✨']
+            if (0<= diff&& diff< 60*12) return [true, parseInt(diff) + '분전']
+            if(60*12<= diff&& diff< 60*24) {
+                return [true, date.split(' ')[1].split(':').slice(0,2).join(':')]
+            }
+            else return [false, date.split(' ')[0]]
+        },
+        
     },
     computed:{
         current(){
             return this.$store.state.current;
         },
         meta() {
-                return this.$store.state.meta;
-        }
+            return this.$store.state.meta;
+        },
         
     },
+    watch:{
+        current() {
+            this.$router
+                .push({
+                query: {
+                    page: this.current
+                }
+            })
+            .catch(() => {
+                this.getBoards((this.current-1)*this.length)
+            });
+        },
+    }
 
 
 }

@@ -519,7 +519,7 @@ def getBoards():
             res = collection.find(
                 {'user': user, 'type':'board', 'isDeleted': {'$ne': True}},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
             ).sort([('created_at',-1)]).skip(skip).limit(limit) # user 페이지
-            r = utils.convertDatetime(res)
+            r = utils.convertDatetimeHours(res)
             res = list(collection.aggregate([
                 {'$match': {'user': user, 'type':'board','isDeleted': {'$ne': True}}},
                 {'$group': { '_id': None, 'count': { '$sum': 1 } } },
@@ -535,7 +535,7 @@ def getBoards():
             res = collection.find(
                 {'type':'board'},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
             ).sort([('created_at',-1)]).skip(skip).limit(limit)
-            r = utils.convertDatetime(res)
+            r = utils.convertDatetimeHours(res)
             results = []
             for item in r:
                 if item.get('isDeleted'):

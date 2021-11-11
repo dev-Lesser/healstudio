@@ -18,17 +18,18 @@ export default {
         return {
             loading: false,
             start: 1,
-            current: 1,
             limit: Math.ceil(this.total/this.length),
             tmpBoards: this.boards,
             user_id: this.$route.params.id,
-            view: 5
+            view: 5,
+            current: this.currentNum,
         }
     },
     
     props:{
         total: Number,
-        length: Number
+        length: Number,
+        currentNum: Number
     },
     computed:{
         pages: function () {
@@ -46,7 +47,7 @@ export default {
     watch:{
         total: function(newtotal){
             this.start = 1;
-            this.current = 1;
+            // this.current = 1;
             this.limit = Math.ceil(newtotal / this.view);
         },
         view: function (newview) {
