@@ -51,6 +51,7 @@
             <Pagination 
                 @page-click="pageClick"
                 :total="total"
+                :current-num="1"
                 :length="5"
                 />
         </div>

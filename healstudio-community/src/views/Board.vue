@@ -127,9 +127,9 @@ export default {
             const dateDiff =  this.now.getTime() - new Date(date).getTime()
             const diff = dateDiff/(1000*60)
             if (parseInt(diff)==0) return [true, '방금✨']
-            if (0<= diff&& diff< 60*12) return [true, parseInt(diff) + '분전']
-            if(60*12<= diff&& diff< 60*24) {
-                return [true, date.split(' ')[1].split(':').slice(0,2).join(':')]
+            if (0<= diff&& diff< 60) return [true, parseInt(diff) + '분전']
+            if(60<= diff&& diff< 60*24) {
+                return [true, parseInt(diff/60) + '시간전']
             }
             else return [false, date.split(' ')[0]]
         },

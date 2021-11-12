@@ -7,7 +7,8 @@
   >
     <v-icon class="mr-5" v-show="$route.name == 'Home'" @click="$store.state.selected = !$store.state.selected">mdi-format-align-justify</v-icon>
     <v-btn outlined  class="mr-5" @click="$router.push('/')">검색 홈</v-btn>
-    <v-btn outlined  @click="$router.push('/boards')">자유게시판</v-btn>
+    <v-btn outlined  v-if="$route.name!='Board'" @click="$router.push('/boards')">자유게시판</v-btn>
+    <v-btn outlined  v-else depress>자유게시판</v-btn>
     <v-spacer />
     
     <div class="header_hello_user" v-if="user_id">
@@ -31,11 +32,11 @@ export default {
     }
   },
   async created(){
-    await this.isLogin();
-    
+    await this.isLogin();    
   },
   async updated(){
     await this.isLogin();
+    
   },
   computed:{
     token(){

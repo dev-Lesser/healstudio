@@ -84,7 +84,8 @@
                 const success = await create_board(this.user, this.uuid, this.title, this.contents);
                 if (!success) return
                 else {
-                    this.$router.push('/boards')
+                    this.$store.state.current = 1
+                    this.$router.push('/boards?page=1')
                 }
             }
         },
