@@ -18,7 +18,7 @@ COLLECTION_NAME = os.getenv('COLLECTION_NAME')
 
 auth_routes = Blueprint(__name__)
 
-client = pymongo.MongoClient('mongodb://localhost:27017'.format(
+client = pymongo.MongoClient('mongodb://{host}'.format(
     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
 ))
 db = client[DB_NAME]

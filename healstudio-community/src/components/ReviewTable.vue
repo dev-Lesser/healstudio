@@ -100,6 +100,7 @@
             @page-click="pageClick"
             :total="total"
             :length="5"
+            :current-num="1"
             />
         <v-progress-linear
             indeterminate
