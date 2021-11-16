@@ -48,9 +48,21 @@ def getBoards():
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
         else: # 전체 게시판 조회 페이지
-            res = collection.find(
-                {'type':'board'},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
-            ).sort([('created_at',-1)]).skip(skip).limit(limit)
+            res = collection.aggregate([
+                {'$match':{'type':'board'}},
+                {'$sort': {'created_at': -1}},
+                {'$skip': skip}, {'$limit': limit},
+                {'$project':{
+                    '_id': 0,
+                    'user': 1,
+                    'title': 1,
+                    'id': 1,
+                    'isDeleted':1,
+                    'created_at':1,
+                    'updated_at':1,
+                    'favorites': {'$cond': {'if': {'$isArray': '$favorites'}, 'then':{'$size':'$favorites'},'else':0}} # Array 형식 get size
+                }},
+            ])
             r = utils.convertDatetimeHours(res)
             results = []
             for item in r:
@@ -72,10 +84,22 @@ def getBoard(_id):
         skip = int(params.get('skip')) if params.get('skip') else 0;
         limit = 15
         
-        board = collection.find_one(
-            {'id': int(_id),'user':user,'type':'board'},{'_id':0, 'related_id':0, 'type':0} # 있으면 찜한 목록이기 때문에 pull 함
-        )
-        # print(_id)
+        board = list(collection.aggregate([
+            {'$match':{'id': int(_id), 'user':user,'type':'board'}},
+            {'$project':{
+                '_id': 0,
+                'user': 1,
+                'title': 1,
+                'id': 1,
+                'contents':1,
+                'created_at':1,
+                'updated_at':1,
+                'isDeleted':1,
+                'favorites': {'$cond': {'if': {'$isArray': '$favorites'}, 'then':{'$size':'$favorites'},'else':0}}
+            }},
+        ]))
+        if board:
+            board = board[0]
         res = collection.find(
             {'id': int(_id),'type':'reply'},{'_id':0, 'related_id':0} # 있으면 찜한 목록이기 때문에 pull 함
         ).sort([('created_at', -1)]).skip(skip).limit(limit)
@@ -130,7 +154,7 @@ def postBoard():
         'contents': contents.strip(),
         'id': int(_id),
         'related_id': user_id + ':' + str(_id),
-        'favorites': 0,
+        'favorites': [],
         'type': 'board',
         'created_at': datetime.datetime.now(),
         'updated_at': datetime.datetime.now()
@@ -249,4 +273,34 @@ def handleReply():
         return Response(body=_id,
             headers={'Content-Type': 'application/json'},
             status_code=200)
+
     
+@board_routes.route('/board/{_id}/favorite', methods=['PATCH'], cors=True)
+def handleBoardFavorite(_id):
+    collection = db['board']
+    user_collection = db['users']
+    data = json.loads(board_routes.current_request.raw_body.decode())
+    user_id = data.get('user_id')
+    creater_id = data.get('creater_id')
+    uid = data.get('uid')
+
+    if not user_collection.find_one({"user":user_id, "uuid": uid}):
+        return Response(body='uuid is required',
+            headers={'Content-Type': 'text/html'},
+            status_code=403)
+    if creater_id:
+        res = collection.find_one(
+                {'user': creater_id, 'favorites': { '$in': [user_id] }} # 있으면 빼고 없으면 넣어라
+            )
+        query = {'user': creater_id, 'id':int(_id), 'related_id':creater_id+':%s'%_id, 'type': 'board'}
+
+        if not res:
+            collection.update_one(query, {'$push': {'favorites': user_id}})
+        else:
+            print(res)
+            collection.update_one(query, {'$pull': {'favorites': user_id}})
+        # collection.insert_one(item)
+        # print(res)
+        return Response(body=_id+":%s"%creater_id,
+            headers={'Content-Type': 'application/json'},
+            status_code=204)
