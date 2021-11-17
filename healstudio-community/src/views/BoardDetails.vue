@@ -5,7 +5,7 @@
         </v-flex>
         
         <v-flex xs12 sm8 md8 >
-            <edit-board v-if="isEdit" @isEdit="handleEdit" :meta-contents="contents" />
+            <edit-board v-if="isEdit" @isEdit="handleEdit" @changeTitle="changeTitle" @changeContents="changeContents" :meta-contents="contents" />
             
             <v-card class="ma-3 pa-3" :min-height="400" v-else >
                 <v-card-title class="reply_page_title">
@@ -181,6 +181,12 @@ export default {
         },
         async handleEdit(isEdit){
             this.isEdit = isEdit
+        },
+        async changeTitle(title){
+            this.contents.title = title
+        },
+        async changeContents(contents){
+            this.contents.contents = contents
         },
         async deletePost(){
             this.$store.state.boardDeleteOveray = true

@@ -86,6 +86,8 @@
                 if (!success) return
                 else {
                     this.$emit('isEdit',false)
+                    this.$emit('changeTitle',this.title)
+                    this.$emit('changeContents',this.contents)
                 }
             }
         },
