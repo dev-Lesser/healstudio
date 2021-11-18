@@ -81,9 +81,14 @@ def getBoard(_id):
         e = board_routes.current_request.to_dict()
         params = e.get('query_params')
         user = params.get('user')
+        login_user = params.get('login_user')
+
         skip = int(params.get('skip')) if params.get('skip') else 0;
         limit = 15
-        
+        res = collection.find_one(
+            {'id': int(_id), 'user':user,'type':'board', 'favorites': { '$in': [login_user] }} # 있으면 빼고 없으면 넣어라
+        )
+        isFavorite = True if res else False
         board = list(collection.aggregate([
             {'$match':{'id': int(_id), 'user':user,'type':'board'}},
             {'$project':{
@@ -112,6 +117,7 @@ def getBoard(_id):
         isEnd = True if len(r)<limit else False
         return Response(body={
             'contents':board,
+            'isFavorite':isFavorite,
             'replies': r,
             'isEnd': isEnd
             },
@@ -296,11 +302,11 @@ def handleBoardFavorite(_id):
 
         if not res:
             collection.update_one(query, {'$push': {'favorites': user_id}})
+            return Response(body=True, # 들어감
+                headers={'Content-Type': 'application/json'},
+                status_code=200)
         else:
-            print(res)
             collection.update_one(query, {'$pull': {'favorites': user_id}})
-        # collection.insert_one(item)
-        # print(res)
-        return Response(body=_id+":%s"%creater_id,
-            headers={'Content-Type': 'application/json'},
-            status_code=204)
+            return Response(body=False, # 뺌
+                headers={'Content-Type': 'application/json'},
+                status_code=200)

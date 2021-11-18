@@ -15,10 +15,11 @@ export const get_boards = async (skip, limit, user) => {
     return [false, null]
 }
 
-export const get_board = async (id, user, skip, limit) => {
+export const get_board = async (id, user, login_user, skip, limit) => {
     const url = `${BASE_URL}/board/${id}`
     const result = await axios.get(url, {params: {
         user: user,
+        login_user: login_user,
         skip: skip,
         limit: limit
     }})
@@ -114,6 +115,24 @@ export const delete_reply = async (user_id, uid, id) => {
     })
     if (result.status == 200) {
         return true
+    }
+    return false
+}
+
+export const handle_favorite = async (user_id, uid, id, creater_id) => {
+    const body = { user_id, uid, creater_id }
+    const url = `${BASE_URL}/board/${id}/favorite`
+    var data = JSON.stringify(body);
+    const result = await axios({
+        method: 'patch',
+        url: url,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    })
+    if (result.status == 200) {
+        return [true, result.data]
     }
     return false
 }

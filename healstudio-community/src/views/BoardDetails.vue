@@ -25,7 +25,7 @@
                     <v-btn @click="deletePost" color="error">삭제하기</v-btn>
                 </v-card-actions>
             <v-divider />
-                <Contents :data="contents" />
+                <Contents :data="contents" :isFavorite="isFavorite"/>
             </v-card>
             <v-card class="ma-3 pa-3">
                 <v-card-actions>
@@ -140,6 +140,7 @@ export default {
             loading: false,
             sameUser: '<작성자>',
             skip:0,
+            isFavorite: false,
             isEdit: false,
             isDelete: false,
             isReplyDelete:false,
@@ -157,14 +158,15 @@ export default {
         }
     },
     async mounted(){
-        await this.getBoard(this.$route.params.id, this.$route.query.user, this.skip, this.limit)
+        await this.getBoard(this.$route.params.id, this.$route.query.user, this.user_id, this.skip, this.limit)
     },
     methods:{
-        async getBoard(id, user, skip, limit){
-            const [success, res] = await get_board(id, user, skip, limit);
+        async getBoard(id, user, login_user, skip, limit){
+            const [success, res] = await get_board(id, user, login_user, skip, limit);
             success;
             this.contents = res.contents
             this.replies = res.replies
+            this.isFavorite = res.isFavorite
         },
         isNew(date){
             const dateDiff =  this.now.getTime() - new Date(date).getTime()
@@ -222,6 +224,7 @@ export default {
             this.isEnd = res.isEnd
             this.loading = false
         },
+        
     },
     computed:{
         meta() {

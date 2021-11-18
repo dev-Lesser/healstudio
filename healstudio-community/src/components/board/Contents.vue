@@ -18,7 +18,8 @@
                                 {{data.favorites}}
                             </div>
                         <v-spacer />
-                        <v-icon size=64 >mdi-heart</v-icon>
+                        <v-icon size=64 v-if="isfav" @click="handleFavorite" color="rgb(216, 116, 116)">mdi-heart</v-icon>
+                        <v-icon size=64 v-else @click="handleFavorite">mdi-heart</v-icon>
                         </v-card-actions>
                         <div class="mb-3">
                         지금 바로 게시물을 작성해 보세요
@@ -31,15 +32,19 @@
     </div>
 </template>
 <script>
+import {
+    handle_favorite 
+} from '@/assets/board'
 export default {
     props: {
         data: Object,
-        
+        isFavorite: Boolean,
     },
     data(){
         return {
             user_id: window.localStorage.getItem('user_id'),
-            uuid: window.localStorage.getItem('token')
+            uuid: window.localStorage.getItem('token'),
+            isfav: this.isFavorite
         }
     },
     methods:{
@@ -49,6 +54,25 @@ export default {
                 this.$router.push('/login')
             }
             else this.$router.push('/board/post')
+        },
+        async handleFavorite(){
+            if (!this.user_id && !this.uuid){
+                alert('로그인이 필요한 서비스입니다')
+                this.$router.push('/login')
+            }
+            else{
+                const [success, res] = await handle_favorite(this.user_id, this.uuid, this.$route.params.id, this.$route.query.user)
+                if (success){
+                    if (res) {
+                        this.data.favorites ++;
+                        this.isfav = true;
+                    }
+                    else {
+                        this.data.favorites --;
+                        this.isfav = false;
+                    }
+                }
+            }
         }
     }
 }
