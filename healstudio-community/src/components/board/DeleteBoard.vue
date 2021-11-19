@@ -8,9 +8,9 @@
             <v-divider />
         
             <v-card-actions>
-                <v-btn color="error" @click="deleteReview">삭제하기</v-btn>
+                <v-btn color="error" @click="deleteBoard">삭제하기</v-btn>
                 <v-spacer />
-                <v-btn color="primary" @click="closeReview"> 취소 </v-btn>
+                <v-btn color="primary" @click="closeBoard"> 취소 </v-btn>
             </v-card-actions>
             </v-card>
             
@@ -29,14 +29,14 @@ export default {
         }
     },
     methods:{
-        async deleteReview(){
+        async deleteBoard(){
             const success = await delete_board(this.user_id, this.uuid, this.metaContents.id, this.metaContents.title)
             if (success) {
                 this.$store.state.boardDeleteOveray = false
                 this.$router.push('/boards')
             }
         },
-        async closeReview(){
+        async closeBoard(){
             this.$store.state.boardDeleteOveray=false;
         }
     },

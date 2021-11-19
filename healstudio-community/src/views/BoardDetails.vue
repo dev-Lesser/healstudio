@@ -32,12 +32,18 @@
                     댓글
                 </v-card-actions>
             <v-divider />
-            <v-list class="reply_list">  
+            <v-list class="reply_list" two-line>  
+                <v-system-bar
+                    color="primary"
+                    v-if="replyCreated"
+                    >
+                    댓글을 등록하였습니다.
+                    </v-system-bar>
                 <div style="display:flex; justify-contents:center;">
                     <v-text-field
                     v-model="replyContents"
                     :rules="ruleReply"
-                    label="제목" outlined clearable dense></v-text-field>
+                    label="내용" outlined clearable dense></v-text-field>
                     <v-btn class="ma-3" dark @click="createReply"> 댓글작성 </v-btn>
                 </div> 
                 <v-progress-linear
@@ -55,6 +61,7 @@
                 rounded
                 v-else
                 ></v-progress-linear>
+                <v-btn block @click="loadReply" v-if="!isEnd&&replies.length==15" height="65" outlined> 이전 댓글 더보기 </v-btn>
                 <div v-if="replies.length>0">
                     <div v-for="reply, key in replies" :key="key">
                         <v-list-item  v-if="key%2" dense >
@@ -95,7 +102,7 @@
                 <div v-else>
                     😮‍💨 등록리뷰가 없습니다
                 </div>
-                <v-btn block dark @click="loadReply" v-if="!isEnd"> 댓글 더보기 </v-btn>
+                
             </v-list>
             <v-overlay light v-if="isReplyDelete" >
                 <v-card class="ma-3 pa-3" :width="500"
@@ -152,6 +159,7 @@ export default {
             now: new Date(),
             limitLetters: [v => v.length <= 50 || '최대 50자'],
             ruleReply: [v => (v.length>=5 &&v.length <= 50) || '최소 5자 최대 50자'],
+            replyCreated: false,
             replyContents: '',
             user_id: window.localStorage.getItem('user_id'),
             uuid: window.localStorage.getItem('token')
@@ -200,14 +208,27 @@ export default {
             }
             this.loading = true
             const success = await create_reply(this.user_id, this.uuid, this.$route.params.id, this.replyContents)
-            if (success) this.$router.go()
+            if (success) {
+                this.loading=false
+                const date = new Date()
+                const now = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) 
+                        + "-" + ("0" + date.getDate()).slice(-2) + " " + ("0" + date.getHours() ).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" +("0" + date.getSeconds()).slice(-2)
+                this.replyCreated = true
+                this.replies.push({created_at: now, user: this.user_id, contents: this.replyContents})
+                this.replyContents = null
+                
+                setTimeout(()=>{this.replyCreated= false}, 3000);
+
+            }
         },
-        async deleteReply(){
+        async deleteReply(e,i){
             this.loading = true
+            console.log(e,i)
             const success = await delete_reply(this.user_id, this.uuid, this.$route.params.id)
-            if (success) this.isReplyDelete=false; this.$router.go()
+            if (success) this.isReplyDelete=false; 
         },
-        async openReplyDelete(){
+        async openReplyDelete(e){
+            console.log(e)
             this.isReplyDelete = true;
         },
         async closeReply(){
@@ -217,10 +238,10 @@ export default {
             this.loading = true
             this.current = this.current +1
             this.skip = (this.current-1)*this.limit
-            const [success, res] = await get_board(this.$route.params.id, this.$route.query.user, this.skip, this.limit);
+            const [success, res] = await get_board(this.$route.params.id, this.$route.query.user, this.user_id, this.skip, this.limit);
             success;
             // this.contents = res.contents
-            this.replies = this.replies.concat(res.replies)
+            this.replies = res.replies.concat(this.replies)
             this.isEnd = res.isEnd
             this.loading = false
         },

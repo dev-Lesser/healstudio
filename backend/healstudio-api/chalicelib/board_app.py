@@ -32,10 +32,23 @@ def getBoards():
         limit = int(params.get('limit')) if params.get('limit') else 12;
         user = params.get('user')
         if user: # user 페이지
-            res = collection.find(
-                {'user': user, 'type':'board', 'isDeleted': {'$ne': True}},{'_id':0, 'contents':0} # 있으면 찜한 목록이기 때문에 pull 함
-            ).sort([('created_at',-1)]).skip(skip).limit(limit) # user 페이지
+            res = collection.aggregate([
+                {'$match':{'user': user, 'type':'board', 'isDeleted': {'$ne': True}}},
+                {'$sort': {'created_at': -1}},
+                {'$skip': skip}, {'$limit': limit},
+                {'$project':{
+                    '_id': 0,
+                    'user': 1,
+                    'title': 1,
+                    'id': 1,
+                    'isDeleted':1,
+                    'created_at':1,
+                    'updated_at':1,
+                    'favorites': {'$cond': {'if': {'$isArray': '$favorites'}, 'then':{'$size':'$favorites'},'else':0}} # Array 형식 get size
+                }},
+            ])
             r = utils.convertDatetimeHours(res)
+
             res = list(collection.aggregate([
                 {'$match': {'user': user, 'type':'board','isDeleted': {'$ne': True}}},
                 {'$group': { '_id': None, 'count': { '$sum': 1 } } },
@@ -106,9 +119,10 @@ def getBoard(_id):
         if board:
             board = board[0]
         res = collection.find(
-            {'id': int(_id),'type':'reply'},{'_id':0, 'related_id':0} # 있으면 찜한 목록이기 때문에 pull 함
+            {'related_id': int(_id),'type':'reply'},{'_id':0, 'related_id':0} # 있으면 찜한 목록이기 때문에 pull 함
         ).sort([('created_at', -1)]).skip(skip).limit(limit)
         r = utils.convertDatetimeHours(res)
+        r.reverse()
         if board.get('isDeleted'):
             board['title'] = utils.deleteByUser()
             board['contents'] = utils.deleteByUser()
@@ -159,7 +173,6 @@ def postBoard():
         'title': title.strip(),
         'contents': contents.strip(),
         'id': int(_id),
-        'related_id': user_id + ':' + str(_id),
         'favorites': [],
         'type': 'board',
         'created_at': datetime.datetime.now(),
@@ -250,11 +263,16 @@ def handleReply():
             return Response(body='uuid is required',
                 headers={'Content-Type': 'text/html'},
                 status_code=403)
+        isExist = collection.find_one({"related_id": int(_id),"type": "reply"}, sort=[('id', -1)])
+        if isExist:
+            review_id_max = isExist.get('id') + 1
+        else:
+            review_id_max = 1
         item = {
             'user': user_id,
             'contents': contents,
-            'id': int(_id),
-            'related_id': user_id + ':' + str(_id),
+            'id': review_id_max,
+            'related_id': int(_id),
             'type': 'reply',
             'created_at': datetime.datetime.now(),
             'updated_at': datetime.datetime.now()

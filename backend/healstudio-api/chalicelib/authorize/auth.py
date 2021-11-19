@@ -21,8 +21,8 @@ def create_uuid(user_id, password, ip):
 
 def hidden_ip(ip):
     ips = ip.split('.') 
+    ips[0] = '*'*3
     ips[1] = '*'*3
-    ips[2] = '*'*3
     result_ip = '.'.join(ips)
     return result_ip
     

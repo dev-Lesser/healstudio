@@ -18,7 +18,7 @@
                                 {{data.favorites}}
                             </div>
                         <v-spacer />
-                        <v-icon size=64 v-if="isfav" @click="handleFavorite" color="rgb(216, 116, 116)">mdi-heart</v-icon>
+                        <v-icon size=64 v-if="isfav" color="rgb(216, 116, 116)">mdi-heart</v-icon>
                         <v-icon size=64 v-else @click="handleFavorite">mdi-heart</v-icon>
                         </v-card-actions>
                         <div class="mb-3">
