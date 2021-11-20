@@ -278,7 +278,7 @@ def handleReply():
             'updated_at': datetime.datetime.now()
         }
         collection.insert_one(item)
-        return Response(body=_id,
+        return Response(body=review_id_max,
             headers={'Content-Type': 'application/json'},
             status_code=201)
     elif board_routes.current_request.method == 'DELETE':

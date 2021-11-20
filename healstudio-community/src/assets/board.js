@@ -96,7 +96,7 @@ export const create_reply = async (user_id, uid, id, contents) => {
         data: data
     })
     if (result.status == 201) {
-        return true
+        return [true, result.data]
     }
     return false
 }

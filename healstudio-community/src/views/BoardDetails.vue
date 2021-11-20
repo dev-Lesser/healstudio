@@ -62,7 +62,7 @@
                 v-else
                 ></v-progress-linear>
                 <v-btn block @click="loadReply" v-if="!isEnd&&replies.length==15" height="65" outlined> 이전 댓글 더보기 </v-btn>
-                <div v-if="replies.length>0">
+                <div v-if="replies.length>0" >
                     <div v-for="reply, key in replies" :key="key">
                         <v-list-item  v-if="key%2" dense >
                             <div class="reply_new" >{{isNew(reply.created_at)}}</div>
@@ -75,7 +75,7 @@
                             <div class="reply_new" v-if="user_id==reply.user">
                                 <v-icon small
                                 color="rgb(216, 116, 116)"
-                                @click="openReplyDelete">
+                                @click="openReplyDelete(reply.id)">
                                 mdi-delete
                                 </v-icon>
                             </div>
@@ -91,7 +91,7 @@
                             <div class="reply_new" v-if="user_id==reply.user">
                                 <v-icon small
                                 color="rgb(216, 116, 116)"
-                                @click="openReplyDelete">
+                                @click="openReplyDelete(reply.id)">
                                 mdi-delete
                                 </v-icon>
                             </div>
@@ -162,7 +162,8 @@ export default {
             replyCreated: false,
             replyContents: '',
             user_id: window.localStorage.getItem('user_id'),
-            uuid: window.localStorage.getItem('token')
+            uuid: window.localStorage.getItem('token'),
+            deleteItemId : null,
         }
     },
     async mounted(){
@@ -207,28 +208,31 @@ export default {
                 this.$router.push('/login')
             }
             this.loading = true
-            const success = await create_reply(this.user_id, this.uuid, this.$route.params.id, this.replyContents)
+            const [success, id] = await create_reply(this.user_id, this.uuid, this.$route.params.id, this.replyContents)
             if (success) {
                 this.loading=false
                 const date = new Date()
                 const now = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) 
                         + "-" + ("0" + date.getDate()).slice(-2) + " " + ("0" + date.getHours() ).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" +("0" + date.getSeconds()).slice(-2)
                 this.replyCreated = true
-                this.replies.push({created_at: now, user: this.user_id, contents: this.replyContents})
-                this.replyContents = null
-                
+                this.replies.push({id: id,created_at: now, user: this.user_id, contents: this.replyContents})
+                this.replyContents = '내용을 입력하세요'
                 setTimeout(()=>{this.replyCreated= false}, 3000);
 
             }
         },
-        async deleteReply(e,i){
+        async deleteReply(){
             this.loading = true
-            console.log(e,i)
-            const success = await delete_reply(this.user_id, this.uuid, this.$route.params.id)
-            if (success) this.isReplyDelete=false; 
+            const success = await delete_reply(this.user_id, this.uuid, this.deleteItemId)
+            if (success) {
+                this.loading = false
+                this.isReplyDelete=false; 
+                this.replies = this.replies.filter(item => item.id!=this.deleteItemId)
+            }
         },
-        async openReplyDelete(e){
-            console.log(e)
+        async openReplyDelete(reply_id){
+            this.deleteItemId = reply_id
+            console.log(reply_id)
             this.isReplyDelete = true;
         },
         async closeReply(){
