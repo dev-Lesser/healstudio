@@ -314,10 +314,11 @@ def handleBoardFavorite(_id):
             status_code=403)
     if creater_id:
         res = collection.find_one(
-                {'user': creater_id, 'favorites': { '$in': [user_id] }} # 있으면 빼고 없으면 넣어라
+                {'user': creater_id, 'id':int(_id),  'favorites': { '$in': [user_id] }} # 있으면 빼고 없으면 넣어라
             )
-        query = {'user': creater_id, 'id':int(_id), 'related_id':creater_id+':%s'%_id, 'type': 'board'}
-
+        query = {'user': creater_id, 'id':int(_id),  'type': 'board'}
+        print(res,query, user_id)
+        # print(collection.find_one(query))
         if not res:
             collection.update_one(query, {'$push': {'favorites': user_id}})
             return Response(body=True, # 들어감

@@ -36,6 +36,8 @@
                 <v-system-bar
                     color="primary"
                     v-if="replyCreated"
+                    dark
+                    class="mb-5"
                     >
                     댓글을 등록하였습니다.
                     </v-system-bar>
@@ -43,7 +45,8 @@
                     <v-text-field
                     v-model="replyContents"
                     :rules="ruleReply"
-                    label="내용" outlined clearable dense></v-text-field>
+                    label="내용" outlined clearable dense
+                    hide-details style="display:flex;align-items:center;"> </v-text-field>
                     <v-btn class="ma-3" dark @click="createReply"> 댓글작성 </v-btn>
                 </div> 
                 <v-progress-linear
@@ -206,6 +209,14 @@ export default {
             if (!this.user_id && !this.uuid){
                 alert('로그인이 필요한 서비스입니다')
                 this.$router.push('/login')
+            }
+            if (this.replyContents.length<5){
+                alert('5자 이상 적어주세요')
+                return;
+            }
+            if (this.replyContents.length>50){
+                alert('50자 이하로 적어주세요')
+                return;
             }
             this.loading = true
             const [success, id] = await create_reply(this.user_id, this.uuid, this.$route.params.id, this.replyContents)

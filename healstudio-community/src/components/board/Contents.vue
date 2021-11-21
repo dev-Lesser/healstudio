@@ -63,6 +63,7 @@ export default {
             else{
                 const [success, res] = await handle_favorite(this.user_id, this.uuid, this.$route.params.id, this.$route.query.user)
                 if (success){
+                    console.log(res)
                     if (res) {
                         this.data.favorites ++;
                         this.isfav = true;
