@@ -3,7 +3,7 @@
         
         <div>
             <v-card-title>
-                최근 작성글
+                작성글
             </v-card-title>
             <div v-if="tmpBoards.length==0">
                 작성글이 없습니다.

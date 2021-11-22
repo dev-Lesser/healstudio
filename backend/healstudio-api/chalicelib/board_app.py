@@ -62,19 +62,21 @@ def getBoards():
                 status_code=200)
         else: # 전체 게시판 조회 페이지
             res = collection.aggregate([
-                {'$match':{'type':'board'}},
+                {'$match': {'type': 'board', }},
                 {'$sort': {'created_at': -1}},
-                {'$skip': skip}, {'$limit': limit},
+                {'$skip': skip}, {'$limit':limit},
+                {'$lookup': {'from':'board', 'localField':'id', 'foreignField':'related_id', 'as':'replyNum'}}, # join
                 {'$project':{
-                    '_id': 0,
-                    'user': 1,
-                    'title': 1,
-                    'id': 1,
+                        '_id': 0,
+                        'user': 1,
+                        'title': 1,
+                        'id': 1,
                     'isDeleted':1,
-                    'created_at':1,
-                    'updated_at':1,
-                    'favorites': {'$cond': {'if': {'$isArray': '$favorites'}, 'then':{'$size':'$favorites'},'else':0}} # Array 형식 get size
-                }},
+                        'created_at':1,
+                        'updated_at':1,
+                        'favorites': {'$cond': {'if': {'$isArray': '$favorites'}, 'then':{'$size':'$favorites'},'else':0}}, # Array 형식 get size
+                        'replyNum': {'$cond': {'if': {'$isArray': '$replyNum'}, 'then':{'$size':'$replyNum'},'else':0}} # Array 형식 get size
+                    }},
             ])
             r = utils.convertDatetimeHours(res)
             results = []
@@ -316,9 +318,7 @@ def handleBoardFavorite(_id):
         res = collection.find_one(
                 {'user': creater_id, 'id':int(_id),  'favorites': { '$in': [user_id] }} # 있으면 빼고 없으면 넣어라
             )
-        query = {'user': creater_id, 'id':int(_id),  'type': 'board'}
-        print(res,query, user_id)
-        # print(collection.find_one(query))
+        query = {'user': creater_id, 'id':int(_id),  'type': 'board'}       
         if not res:
             collection.update_one(query, {'$push': {'favorites': user_id}})
             return Response(body=True, # 들어감

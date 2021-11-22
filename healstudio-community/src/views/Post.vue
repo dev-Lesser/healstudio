@@ -14,8 +14,11 @@
                 <v-divider />
                 <v-text-field v-model="title" 
                 :rules="rules"
-                label="제목" outlined clearable dense></v-text-field>
-                <tiptap-vuetify v-model="contents" :extensions="extensions" :height="300"/>
+                label="제목" 
+                outlined 
+                clearable 
+                dense></v-text-field>
+                <tiptap-vuetify v-model="contents" :extensions="extensions" />
                 <v-btn block class="mt-3" color="primary" @click="createBoard">작성하기</v-btn>
             </v-card>
         </v-flex>
@@ -96,25 +99,30 @@
         },
         watch: {
             contents() {
+                console.log(this.contents)
             },
         }
     }
 </script>
 
 <style scoped>
-    .board_page_layout {
-        display: flex;
-        justify-content: center;
-        font-family: 'Jeju Gothic', sans-serif;
-    }
-    .board_page_title {
-        font-size: 24px;
-        font-family: 'Jeju Gothic', sans-serif;
-    }
-    .v-btn__content{
-        display: none;
-    }
-    .tiptap-vuetify-editor__content img {
-        width: 100%;
-        }
+.board_page_layout {
+    display: flex;
+    justify-content: center;
+    font-family: 'Jeju Gothic', sans-serif;
+}
+.board_page_title {
+    font-size: 24px;
+    font-family: 'Jeju Gothic', sans-serif;
+}
+.v-btn__content{
+    display: none;
+}
+.tiptap-vuetify-editor__content div  p  img {
+    width: 100%;
+}
+.tiptap-vuetify-editor,
+.tiptap-vuetify-editor__content {
+    min-height: 500px;
+}
 </style>

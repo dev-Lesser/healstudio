@@ -47,7 +47,7 @@
                     :rules="ruleReply"
                     label="내용" outlined clearable dense
                     hide-details style="display:flex;align-items:center;"> </v-text-field>
-                    <v-btn class="ma-3" dark @click="createReply"> 댓글작성 </v-btn>
+                    <v-btn class="ma-3" color="primary" @click="createReply"> 댓글작성 </v-btn>
                 </div> 
                 <v-progress-linear
                 indeterminate
