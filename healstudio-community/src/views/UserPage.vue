@@ -95,7 +95,7 @@ export default {
         
         if (this.user_id !== this.$route.params.id && this.uuid !== this.$route.query.uid) {
             alert('권한이 없습니다. 로그인을 해주세요.')
-            this.$router.push('/login')
+            this.$router.back()
         }
 
         await this.getUserDetails()

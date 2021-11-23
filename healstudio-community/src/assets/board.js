@@ -14,6 +14,19 @@ export const get_boards = async (skip, limit, user) => {
     }
     return [false, null]
 }
+export const get_boards_reload = async (skip, limit, user, reload) => {
+    const url = `${BASE_URL}/boards`
+    const result = await axios.get(url, {params: {
+        skip: skip,
+        limit: limit,
+        user: user,
+        reload: reload
+    }})
+    if (result.status == 200) {
+        return [true, result.data]
+    }
+    return [false, null]
+}
 
 export const get_board = async (id, user, login_user, skip, limit) => {
     const url = `${BASE_URL}/board/${id}`

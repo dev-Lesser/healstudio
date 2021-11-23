@@ -4,7 +4,7 @@
             <Meta :meta="meta"/>
         </v-flex>
         
-        <v-flex xs12 sm8 md8 >
+        <v-flex xs12 sm10 md8 >
             <edit-board v-if="isEdit" @isEdit="handleEdit" @changeTitle="changeTitle" @changeContents="changeContents" :meta-contents="contents" />
             
             <v-card class="ma-3 pa-3" :min-height="400" v-else >
@@ -30,9 +30,12 @@
             <v-card class="ma-3 pa-3">
                 <v-card-actions>
                     댓글
+                    <v-spacer/>
+                    <v-btn @click="renewReply"><v-icon dark>mdi-autorenew</v-icon>댓글 새로고침</v-btn>
                 </v-card-actions>
+                
             <v-divider />
-            <v-list class="reply_list" two-line>  
+            <v-list class="reply_list" >  
                 <v-system-bar
                     color="primary"
                     v-if="replyCreated"
@@ -64,7 +67,17 @@
                 rounded
                 v-else
                 ></v-progress-linear>
+                
                 <v-btn block @click="loadReply" v-if="!isEnd&&replies.length==15" height="65" outlined> 이전 댓글 더보기 </v-btn>
+                <v-list-item  dense >
+                    <div class="reply_new" >작성일</div>
+                    <div class="reply_user">작성자
+                        
+                    </div>
+                    <div class="reply_contents" style="font-size:12px;">댓글</div>
+                
+                </v-list-item>
+                <v-divider/>
                 <div v-if="replies.length>0" >
                     <div v-for="reply, key in replies" :key="key">
                         <v-list-item  v-if="key%2" dense >
@@ -255,8 +268,18 @@ export default {
             this.skip = (this.current-1)*this.limit
             const [success, res] = await get_board(this.$route.params.id, this.$route.query.user, this.user_id, this.skip, this.limit);
             success;
-            // this.contents = res.contents
             this.replies = res.replies.concat(this.replies)
+            this.isEnd = res.isEnd
+            this.loading = false
+        },
+        async renewReply(){
+            this.replies = []
+            this.loading = true
+            this.current = 1
+            this.skip = (this.current-1)*this.limit
+            const [success, res] = await get_board(this.$route.params.id, this.$route.query.user, this.user_id, this.skip, this.limit);
+            success;
+            this.replies = res.replies
             this.isEnd = res.isEnd
             this.loading = false
         },

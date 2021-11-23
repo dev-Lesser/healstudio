@@ -60,7 +60,7 @@
                     </div>
                     <div class="review-content">
                     {{review.contents}}
-                    <div v-if="uuid==review.user">
+                    <div v-if="user_id==review.user">
                         <v-icon 
                             small
                             class="mr-2"

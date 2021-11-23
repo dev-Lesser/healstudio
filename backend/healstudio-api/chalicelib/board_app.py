@@ -30,6 +30,7 @@ def getBoards():
         params = e.get('query_params')
         skip = int(params.get('skip')) if params.get('skip') else 0;
         limit = int(params.get('limit')) if params.get('limit') else 12;
+        reload = params.get('reload')
         user = params.get('user')
         if user: # user 페이지
             res = collection.aggregate([
@@ -61,34 +62,53 @@ def getBoards():
                 headers={'Content-Type': 'application/json'},
                 status_code=200)
         else: # 전체 게시판 조회 페이지
-            res = collection.aggregate([
-                {'$match': {'type': 'board', }},
-                {'$sort': {'created_at': -1}},
-                {'$skip': skip}, {'$limit':limit},
-                {'$lookup': {'from':'board', 'localField':'id', 'foreignField':'related_id', 'as':'replyNum'}}, # join
-                {'$project':{
-                        '_id': 0,
-                        'user': 1,
-                        'title': 1,
-                        'id': 1,
-                    'isDeleted':1,
-                        'created_at':1,
-                        'updated_at':1,
-                        'favorites': {'$cond': {'if': {'$isArray': '$favorites'}, 'then':{'$size':'$favorites'},'else':0}}, # Array 형식 get size
-                        'replyNum': {'$cond': {'if': {'$isArray': '$replyNum'}, 'then':{'$size':'$replyNum'},'else':0}} # Array 형식 get size
-                    }},
-            ])
-            r = utils.convertDatetimeHours(res)
-            results = []
-            for item in r:
-                if item.get('isDeleted'):
-                    item['title'] = utils.deleteByUser()
-                    results.append(item)
-                else:
-                    results.append(item)
-            return Response(body=r,
-                headers={'Content-Type': 'application/json'},
-                status_code=200)
+            if reload:
+                count = collection.count_documents({'type':'board'})
+                res = collection.aggregate([
+                    {'$match': {'type': 'board', }},
+                    {'$sort': {'created_at': -1}},
+                    {'$skip': skip}, {'$limit':limit},
+                    {'$lookup': {'from':'board', 'localField':'id', 'foreignField':'related_id', 'as':'replyNum'}}, # join
+                    {'$project':{'_id': 0,'user': 1,'title': 1,'id': 1,'isDeleted':1,'created_at':1,'updated_at':1,
+                            'favorites': {'$cond': {'if': {'$isArray': '$favorites'}, 'then':{'$size':'$favorites'},'else':0}}, # Array 형식 get size
+                            'replyNum': {'$cond': {'if': {'$isArray': '$replyNum'}, 'then':{'$size':'$replyNum'},'else':0}} # Array 형식 get size
+                        }},
+                ])
+                r = utils.convertDatetimeHours(res)
+                results = []
+                for item in r:
+                    if item.get('isDeleted'):
+                        item['title'] = utils.deleteByUser()
+                        results.append(item)
+                    else:
+                        results.append(item)
+                return Response(body={
+                    'results': results,
+                    'cnt': count},
+                    headers={'Content-Type': 'application/json'},
+                    status_code=200)
+            else:
+                res = collection.aggregate([
+                    {'$match': {'type': 'board', }},
+                    {'$sort': {'created_at': -1}},
+                    {'$skip': skip}, {'$limit':limit},
+                    {'$lookup': {'from':'board', 'localField':'id', 'foreignField':'related_id', 'as':'replyNum'}}, # join
+                    {'$project':{'_id': 0,'user': 1,'title': 1,'id': 1,'isDeleted':1,'created_at':1,'updated_at':1,
+                            'favorites': {'$cond': {'if': {'$isArray': '$favorites'}, 'then':{'$size':'$favorites'},'else':0}}, # Array 형식 get size
+                            'replyNum': {'$cond': {'if': {'$isArray': '$replyNum'}, 'then':{'$size':'$replyNum'},'else':0}} # Array 형식 get size
+                        }},
+                ])
+                r = utils.convertDatetimeHours(res)
+                results = []
+                for item in r:
+                    if item.get('isDeleted'):
+                        item['title'] = utils.deleteByUser()
+                        results.append(item)
+                    else:
+                        results.append(item)
+                return Response(body=results,
+                    headers={'Content-Type': 'application/json'},
+                    status_code=200)
 @board_routes.route('/board/{_id}', methods=['GET'], cors=True)
 def getBoard(_id):
     collection = db['board']

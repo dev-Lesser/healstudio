@@ -5,6 +5,7 @@
     height="64"
     class="header"
   >
+  
     <v-icon class="mr-5" v-show="$route.name == 'Home'" @click="$store.state.selected = !$store.state.selected">mdi-format-align-justify</v-icon>
     <v-btn outlined  class="mr-5" @click="$router.push('/')">검색 홈</v-btn>
     <v-btn outlined  v-if="$route.name!='Board'" @click="$router.push('/boards')">자유게시판</v-btn>
@@ -28,7 +29,8 @@ export default {
     return {
       hasToken: null,
       helloText: null,
-      user_id: window.localStorage.getItem(`user_id`)
+      user_id: window.localStorage.getItem(`user_id`),
+      notify: false,
     }
   },
   async created(){
@@ -67,7 +69,7 @@ export default {
     async gotoUserPage(){
       const uuid = window.localStorage.getItem(`token`)
       this.$router.push(`/user/${this.user_id}?uid=${uuid}`)
-    }
+    },
   }
 }
 </script>
@@ -75,7 +77,11 @@ export default {
 .header{
   font-family:'Jeju Gothic', sans-serif;
 }
+
 .header_hello_user{
   font-family:'Jeju Gothic', sans-serif;
+}
+@media screen and (max-width: 768px) { 
+    .header_hello_user { display: none; } 
 }
 </style>

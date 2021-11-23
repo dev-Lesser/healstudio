@@ -6,9 +6,13 @@
         </v-flex>
         <v-flex xs12 sm8 md8>
             <v-card class="ma-3 pa-3" >
-            <div class="board_page_title">
-                자유게시판
-            </div>
+                <v-card-actions>
+                <div class="board_page_title">
+                    자유게시판
+                </div>
+                <v-spacer/>
+                <v-btn @click="getBoardsReload"><v-icon dark>mdi-autorenew</v-icon>새로고침</v-btn>
+                </v-card-actions>
             <v-card-actions>
                 <v-card-subtitle >
                     자유게시판 자유롭게 떠들어 제껴 봅시다. 공지사항 준수
@@ -40,16 +44,29 @@
                         <v-list-item  v-if="key%2" dense :to="`/boards/${board.id}?user=${board.user}`" >
                             <div class="board_id" >{{board.id}}</div>
                             
-                            <div class="board_contents" v-if="!board.isDeleted">{{board.title}}<img v-if="isNew(board.created_at)[0]" class="ml-2" :src="newIcon"></div>
-                            <div class="board_contents_deleted" v-else>{{board.title}}</div>
+                            <div class="board_contents" v-if="!board.isDeleted">
+                                {{board.title}}
+                                <img class="board_new_img ml-2" v-if="isNew(board.created_at)[0]"  :src="newIcon">
+                                <div class="board_reply_number">[{{board.replyNum}}]</div>
+                            </div>
+                            <div class="board_contents_deleted" v-else>{{board.title}}
+                                <div class="board_reply_number">[{{board.replyNum}}]</div>
+                            </div>
                             <div class="board_user">{{board.user}}</div>
                             <div class="board_favorites">{{board.favorites}}</div>
                             <div class="board_date">{{isNew(board.created_at)[1]}}</div>
                         </v-list-item>
                         <v-list-item class="board_block_line" v-else dense :to="`/boards/${board.id}?user=${board.user}`" >
                             <div class="board_id">{{board.id}}</div>
-                            <div class="board_contents" v-if="!board.isDeleted">{{board.title}}<img v-if="isNew(board.created_at)[0]" class="ml-2" :src="newIcon"></div>
-                            <div class="board_contents_deleted" v-else>{{board.title}}</div>
+                            <div class="board_contents" v-if="!board.isDeleted">
+                                {{board.title}}
+                                <img class="board_new_img ml-2" v-if="isNew(board.created_at)[0]"  :src="newIcon">
+                                <div class="board_reply_number">[{{board.replyNum}}]</div>
+                            </div>
+                            <div class="board_contents_deleted" v-else>
+                                {{board.title}}
+                                <div class="board_reply_number">[{{board.replyNum}}]</div>
+                            </div>
                             <div class="board_user">{{board.user}}</div>
                             <div class="board_favorites">{{board.favorites}}</div>
                             <div class="board_date">{{isNew(board.created_at)[1]}}</div>
@@ -81,7 +98,8 @@
 import Meta from '@/components/board/Meta'
 import Pagination from '@/components/Pagination'
 import {
-    get_boards
+    get_boards,
+    get_boards_reload
 } from '@/assets/board'
 import newIcon from '@/assets/new.gif'
 export default {
@@ -118,10 +136,18 @@ export default {
             await this.getBoards((this.page-1) * this.length,this.length, null);
         },
         async getBoards(skip, limit, user){
-
             const [success, res] = await get_boards(skip, limit, user)
             success;
             this.boards = res;
+        },
+        async getBoardsReload(){
+            const [success, res] = await get_boards_reload((this.$store.state.current-1) * this.length, this.length, null, true);
+            
+            if (success){
+                this.$store.state.meta.board = res.cnt
+                this.boards = res.results
+            }
+
         },
         isNew(date){
             const dateDiff =  this.now.getTime() - new Date(date).getTime()
@@ -133,6 +159,7 @@ export default {
             }
             else return [false, date.split(' ')[0]]
         },
+
         
     },
     computed:{
@@ -196,6 +223,7 @@ export default {
 .board_contents{
     width: 70%;
     font-size: 14px;
+    display:flex;
 }
 .board_user_header{
     width: 15%;
@@ -215,6 +243,9 @@ export default {
 .board_date{
     width: 10%;
 }
+@media screen and (max-width: 768px) { 
+    .board_date_header,.board_date,.board_favorites_header,.board_favorites { display: none; } 
+}
 .board_date{
     font-size: 12px;
 }
@@ -225,9 +256,17 @@ export default {
     color: rgb(252, 166, 166);
     width: 70%;
     font-size:11px;
+    display:flex;
 }
-
-
+.board_reply_number{
+    color: rgb(0, 0, 0);
+    font-size: 11px;
+    margin-left: 5px;
+}
+.board_new_img {
+    width: 15px;
+    height: 15px;
+}
 
 .pagination-bar {
         display: inline-block;
