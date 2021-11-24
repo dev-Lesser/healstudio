@@ -4,7 +4,7 @@
         <v-flex xs12 sm12 md12>
             <Meta :meta="meta"/>
         </v-flex>
-        <v-flex xs12 sm8 md8>
+        <v-flex xs12 sm10 md8>
             <v-card class="ma-3 pa-3" >
                 <v-card-actions>
                 <div class="board_page_title">
