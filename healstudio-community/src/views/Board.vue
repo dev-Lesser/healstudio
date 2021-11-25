@@ -132,7 +132,6 @@ export default {
         async pageClick(page) {
             this.page = page;
             this.$store.state.current = this.page
-            
             await this.getBoards((this.page-1) * this.length,this.length, null);
         },
         async getBoards(skip, limit, user){

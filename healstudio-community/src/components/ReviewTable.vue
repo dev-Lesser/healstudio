@@ -12,6 +12,7 @@
             class="review_list"
             v-if="data!=null&&data.length>0"
             height="410"
+            :key="rerender"
         >
             <div class="review-header">
                 <v-list-item>
@@ -207,6 +208,7 @@ export default {
             current: 1,
             length: 5,
             limit: 30,
+            rerender: 0,
             // total: null,
         }
     },
@@ -269,7 +271,7 @@ export default {
             }
             else {
                 await this.init();
-                this.$router.go();
+                this.rerender +=1;
             }
             
             this.loading = false;
@@ -283,7 +285,6 @@ export default {
             if (!success) this.status = -1;
             else {
                 this.$store.state.reviews = res.results;
-                console.log(res)
                 this.total = res.review_count;
                 this.loading = false;
             }

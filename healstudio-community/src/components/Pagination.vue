@@ -70,7 +70,9 @@ export default {
             if (this.start == 1)  return;
             this.loading = true;
             const current = this.start - this.length;
+            console.log(this.start, this.length)
             this.start = current;
+            this.current = current
             this.end = this.start + this.length -1
             this.$emit("page-click", current);
         },
