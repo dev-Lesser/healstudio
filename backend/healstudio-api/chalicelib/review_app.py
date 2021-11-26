@@ -1,28 +1,31 @@
 from chalice import Blueprint
 from chalice import Response
 import os
-from dotenv import load_dotenv
 from .utils import utils
 import pymongo
 import datetime, json
-load_dotenv()
 
-DB_HOST = os.getenv('DB_HOST')
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_NAME = os.getenv('DB_NAME')
-COLLECTION_NAME = os.getenv('COLLECTION_NAME')
+DB_HOST = os.environ.get('DB_HOST')
+DB_USER = os.environ.get('DB_USER')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
+DB_NAME = os.environ.get('DB_NAME')
+COLLECTION_NAME = os.environ.get('COLLECTION_NAME')
+
 
 review_routes = Blueprint(__name__)
 
-client = pymongo.MongoClient('mongodb://{host}'.format(
+client = pymongo.MongoClient('mongodb+srv://{user}:{password}@{host}'.format(
     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
 ))
 db = client[DB_NAME]
 collection = db[COLLECTION_NAME]
+HEADERS = {
+    'Content-Type': 'application/json', 
+    'Access-Control-Allow-Origin': '*'
+}
 
 ### REVIEW CRUD
-@review_routes.route('/reviews/{gymId}', methods=['GET'], cors=True)
+@review_routes.route('/reviews/{gymId}', methods=['GET'], cors=False)
 def getReviews(gymId):
     collection = db['reviews']
     e = review_routes.current_request.to_dict()
@@ -56,7 +59,7 @@ def getReviews(gymId):
             'results':results,
             'review_count': count,
         },
-                headers={'Content-Type': 'application/json'},
+                headers=HEADERS,
                 status_code=200)
     ## user 가 없다면 > 모든 user 가 gym 에대한 리뷰를 updated_at 로 소팅하여 가져옴
     if gymId.isdigit():
@@ -68,14 +71,14 @@ def getReviews(gymId):
                     'results': results,
                     'review_count': count
                 },
-                headers={'Content-Type': 'application/json'},
+                headers=HEADERS,
                 status_code=200)
     else: return Response(body='error gymId: \t [%s]' % gymId,
-                headers={'Content-Type': 'text/html'},
+                headers=HEADERS,
                 status_code=200)
 
 
-@review_routes.route('/review/{gymId}', methods=['POST'], cors=True)
+@review_routes.route('/review/{gymId}', methods=['POST'], cors=False)
 def createReview(gymId):
     collection = db['reviews']
     user_collection = db['users']
@@ -85,7 +88,7 @@ def createReview(gymId):
         return Response(body={
                     "error": "리뷰를 확인해주세요"
                     },
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=403)
         
     user_id = data.get('user_id')
@@ -109,16 +112,16 @@ def createReview(gymId):
         user_collection.update_one({"user": user_id},{'$push': {'reviews': {'review_id':review_id_max, 'gym_id': gymId}}})
 
         return Response(body=gymId,
-                headers={'Content-Type': 'text/plain'},
+                headers=HEADERS,
                 status_code=200)
         
     return Response(body={
                     "error": "평점 및 리뷰를 확인해주세요"
                     },
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=403)
     
-@review_routes.route('/review/{gymId}', methods=['PATCH'], cors=True)
+@review_routes.route('/review/{gymId}', methods=['PATCH'], cors=False)
 def updateReview(gymId):
     collection = db['reviews']
     data = json.loads(review_routes.current_request.raw_body.decode())
@@ -128,7 +131,7 @@ def updateReview(gymId):
         return Response(body={
                     "error": "리뷰를 확인해주세요"
                     },
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=403)
     user_id = data.get('user_id')
     rate_point = data.get('point')
@@ -149,16 +152,16 @@ def updateReview(gymId):
     
 
         return Response(body=gymId,
-                headers={'Content-Type': 'text/plain'},
+                headers=HEADERS,
                 status_code=204)
         
     return Response(body={
                     "error": "평점 및 리뷰를 확인해주세요"
                     },
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=403)
 
-@review_routes.route('/review/{gymId}', methods=['DELETE'], cors=True)
+@review_routes.route('/review/{gymId}', methods=['DELETE'], cors=False)
 def deleteReview(gymId):
     collection = db['reviews']
     user_collection = db['users']
@@ -179,11 +182,11 @@ def deleteReview(gymId):
             {'$pull': {'reviews': {'review_id':_id, 'gym_id': gymId}}}
         )
         return Response(body=gymId,
-                headers={'Content-Type': 'text/plain'},
+                headers=HEADERS,
                 status_code=200)
         
     return Response(body={
                     "error": "평점 및 리뷰를 확인해주세요"
                     },
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=403)

@@ -10,25 +10,18 @@ from chalicelib.auth_app import auth_routes
 from chalicelib.review_app import review_routes
 from chalicelib.board_app import board_routes
 
+DB_HOST = os.environ.get('DB_HOST')
+DB_USER = os.environ.get('DB_USER')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
+DB_NAME = os.environ.get('DB_NAME')
+COLLECTION_NAME = os.environ.get('COLLECTION_NAME')
 
-from pathlib import Path
-from dotenv import load_dotenv
+HEADERS = {
+    'Content-Type': 'application/json', 
+    'Access-Control-Allow-Origin': '*'
+}
 
-basepath = Path()
-basedir = str(basepath.cwd())
-envars = basepath.cwd() / 'chalicelib/.env'
-load_dotenv(envars)
-
-DB_HOST = os.getenv('DB_HOST')
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_NAME = os.getenv('DB_NAME')
-COLLECTION_NAME = os.getenv('COLLECTION_NAME')
-
-# client = pymongo.MongoClient('mongodb+srv://{user}:{password}@{host}'.format(
-#     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
-# ))
-client = pymongo.MongoClient('mongodb://localhost:27017'.format(
+client = pymongo.MongoClient('mongodb+srv://{user}:{password}@{host}'.format(
     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
 ))
 db = client[DB_NAME]
@@ -42,7 +35,7 @@ app.register_blueprint(review_routes)
 ### BOARD API
 app.register_blueprint(board_routes) 
 
-@app.route('/search', methods=['GET'], cors=True)
+@app.route('/search', methods=['GET'], cors=False)
 def searchByQuery():
     collection = db['space']
     
@@ -52,7 +45,7 @@ def searchByQuery():
     if query!="" and len(query)< 2: # 1글자 미만 error
         return Response(
             body='텍스트 길이는 두자 이상 입력해주세요',
-            headers={'Content-Type': 'text/html'},
+            headers=HEADERS,
             status_code=400
         )
         
@@ -64,11 +57,11 @@ def searchByQuery():
         res = list(collection.find({"$text": {"$search": query}},{"_id":0,"checkParse":0}).skip(skip).limit(limit))
     else: res = list(collection.find({},{"_id":0, "checkParse":0}).skip(skip).limit(limit))
     return Response(body=res,
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=200)
 
 # meta data
-@app.route('/regions', methods=['GET'], cors=True)
+@app.route('/regions', methods=['GET'], cors=False)
 def searchRegions():
     collection = db['region']
     regions = collection.distinct('region')
@@ -76,7 +69,7 @@ def searchRegions():
     return regions
 
 # region
-@app.route('/metadata', methods=['GET'], cors=True)
+@app.route('/metadata', methods=['GET'], cors=False)
 def getMeta():
     board_collection    = db['board']
     user_collection     = db['users']
@@ -100,11 +93,12 @@ def getMeta():
         'trainer': trainer_count,
         'review': review_count
     }
+    
     return Response(body=results,
-                headers={'Content-Type': 'application/json'},
+                headers=HEADERS,
                 status_code=200)
 
-@app.route('/region', methods=['GET'], cors=True)
+@app.route('/region', methods=['GET'], cors=False)
 def searchRegionDetail():
     collection = db['region']
     e = app.current_request.to_dict()
@@ -123,13 +117,13 @@ def searchRegionDetail():
     return regions
 
 
-@app.route('/gym/{gymId}', methods=['GET'], cors=True)
+@app.route('/gym/{gymId}', methods=['GET'], cors=False)
 def searchByGymId(gymId):
     res = collection.find_one({"id": gymId},{"_id":0, "checkParse":0})
     return res
 
 
-@app.route('/gym', methods=['POST'], content_types=['application/json'], cors=True)
+@app.route('/gym', methods=['POST'], content_types=['application/json'], cors=False)
 def createGym():
     data = app.current_request.raw_body.decode()
     data['checkParse'] = False
@@ -142,7 +136,7 @@ def createGym():
     }
     return response
 
-@app.route('/gyms-lists', methods=['GET'], cors=True)
+@app.route('/gyms-lists', methods=['GET'], cors=False)
 def search():
     e = app.current_request.to_dict()
     params = e.get('query_params')
@@ -156,7 +150,7 @@ def search():
     return res
 
 
-@app.route('/trainers/{gymId}', methods=['GET'], cors=True)
+@app.route('/trainers/{gymId}', methods=['GET'], cors=False)
 def getTrainers(gymId):
     collection = db['trainers']
     e = app.current_request.to_dict()
@@ -173,10 +167,10 @@ def getTrainers(gymId):
     ]))
     
     return Response(body=res,
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=200)
 
-@app.route('/user/{user_id}', methods=['GET'], cors=True)
+@app.route('/user/{user_id}', methods=['GET'], cors=False)
 def getUserDetails(user_id):
     collection = db['users']
     e = app.current_request.to_dict()
@@ -220,16 +214,16 @@ def getUserDetails(user_id):
             'results':results_bucket,
             'fav_count': count
             },
-                headers={'Content-Type': 'application/json'},
+                headers=HEADERS,
                 status_code=200)
         
     return Response(body={
                     "error": "error"
                     },
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=403)
 
-@app.route('/favorite/{gymId}', methods=['GET','POST'], cors=True)
+@app.route('/favorite/{gymId}', methods=['GET','POST'], cors=False)
 def handleFavorite(gymId):
     collection = db['users']
     if app.current_request.method == 'GET':
@@ -242,11 +236,11 @@ def handleFavorite(gymId):
         )
         if res:
             return Response(body=True,
-                headers={'Content-Type': 'application/json'},
+                headers=HEADERS,
                 status_code=200)
         else:
             return Response(body=False,
-                headers={'Content-Type': 'application/json'},
+                headers=HEADERS,
                 status_code=200)
     elif app.current_request.method == 'POST':
         data = json.loads(app.current_request.raw_body.decode())
@@ -265,13 +259,13 @@ def handleFavorite(gymId):
             else:
                 collection.update_one(query, {'$pull': {'favList': gymId}})
             return Response(body=gymId,
-                    headers={'Content-Type': 'application/json'},
+                    headers=HEADERS,
                     status_code=200)
             
         return Response(body={
                         "error": "error"
                         },
-                headers={'Content-Type': 'application/json'},
+                headers=HEADERS,
                 status_code=403)
 
 

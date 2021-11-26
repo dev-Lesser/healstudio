@@ -1,28 +1,32 @@
 from chalice import Blueprint
 from chalice import Response
 import os
-from dotenv import load_dotenv
 from .utils import utils
 import pymongo
 import datetime, json
-load_dotenv()
 
-DB_HOST = os.getenv('DB_HOST')
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_NAME = os.getenv('DB_NAME')
-COLLECTION_NAME = os.getenv('COLLECTION_NAME')
+DB_HOST = os.environ.get('DB_HOST')
+DB_USER = os.environ.get('DB_USER')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
+DB_NAME = os.environ.get('DB_NAME')
+COLLECTION_NAME = os.environ.get('COLLECTION_NAME')
+
+
 
 board_routes = Blueprint(__name__)
 
-client = pymongo.MongoClient('mongodb://{host}'.format(
+client = pymongo.MongoClient('mongodb+srv://{user}:{password}@{host}'.format(
     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
 ))
 db = client[DB_NAME]
 collection = db[COLLECTION_NAME]
 
+HEADERS = {
+    'Content-Type': 'application/json', 
+    'Access-Control-Allow-Origin': '*'
+}
 
-@board_routes.route('/boards', methods=['GET'], cors=True)
+@board_routes.route('/boards', methods=['GET'], cors=False)
 def getBoards():
     collection = db['board']
     if board_routes.current_request.method == 'GET':
@@ -59,7 +63,7 @@ def getBoards():
                 'results': r,
                 'board_count':count
                 },
-                headers={'Content-Type': 'application/json'},
+                headers=HEADERS,
                 status_code=200)
         else: # 전체 게시판 조회 페이지
             if reload:
@@ -85,7 +89,7 @@ def getBoards():
                 return Response(body={
                     'results': results,
                     'cnt': count},
-                    headers={'Content-Type': 'application/json'},
+                    headers=HEADERS,
                     status_code=200)
             else:
                 res = collection.aggregate([
@@ -107,9 +111,9 @@ def getBoards():
                     else:
                         results.append(item)
                 return Response(body=results,
-                    headers={'Content-Type': 'application/json'},
+                    headers=HEADERS,
                     status_code=200)
-@board_routes.route('/board/{_id}', methods=['GET'], cors=True)
+@board_routes.route('/board/{_id}', methods=['GET'], cors=False)
 def getBoard(_id):
     collection = db['board']
     if board_routes.current_request.method == 'GET':
@@ -157,11 +161,11 @@ def getBoard(_id):
             'replies': r,
             'isEnd': isEnd
             },
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=200)
         
     
-@board_routes.route('/board', methods=['POST'], cors=True)
+@board_routes.route('/board', methods=['POST'], cors=False)
 def postBoard():
     collection = db['board']
     user_collection = db['users']
@@ -172,16 +176,16 @@ def postBoard():
     contents = data.get('contents')
     if len(title.strip()) < 2 or len(title.strip())> 30:
         return Response(body='too large 30, too small 2',
-        headers={'Content-Type': 'text/html'},
+        headers=HEADERS,
         status_code=403)
     if len(contents.strip()) <10:
         return Response(body='too small 10',
-        headers={'Content-Type': 'text/html'},
+        headers=HEADERS,
         status_code=403)
 
     if not user_collection.find_one({"user":user_id, "uuid": uid}):
         return Response(body='uuid is required',
-        headers={'Content-Type': 'text/html'},
+        headers=HEADERS,
         status_code=403)
     
         
@@ -202,10 +206,10 @@ def postBoard():
 
     })
     return Response(body=_id,
-        headers={'Content-Type': 'application/json'},
+        headers=HEADERS,
         status_code=201)
     
-@board_routes.route('/board', methods=['PATCH'], cors=True)
+@board_routes.route('/board', methods=['PATCH'], cors=False)
 def patchBoard():
     collection = db['board']
     user_collection = db['users']
@@ -217,16 +221,16 @@ def patchBoard():
     _id = data.get('id')
     if len(title.strip()) < 2 or len(title.strip())> 30:
         return Response(body='too large 30, too small 2',
-        headers={'Content-Type': 'text/html'},
+        headers=HEADERS,
         status_code=403)
     if len(contents.strip()) <10 :
         return Response(body='too large 500, too small 10',
-        headers={'Content-Type': 'text/html'},
+        headers=HEADERS,
         status_code=403)
 
     if not user_collection.find_one({"user":user_id, "uuid": uid}):
         return Response(body='uuid is required',
-        headers={'Content-Type': 'text/html'},
+        headers=HEADERS,
         status_code=403)
         
     collection.update_one(
@@ -239,10 +243,10 @@ def patchBoard():
                             )
 
     return Response(body=_id,
-        headers={'Content-Type': 'application/json'},
+        headers=HEADERS,
         status_code=204)
     
-@board_routes.route('/board', methods=['DELETE'], cors=True)
+@board_routes.route('/board', methods=['DELETE'], cors=False)
 def deleteBoard():
     collection = db['board']
     user_collection = db['users']
@@ -256,17 +260,17 @@ def deleteBoard():
 
     if not user_collection.find_one({"user":user_id, "uuid": uid}):
         return Response(body='uuid is required',
-        headers={'Content-Type': 'text/html'},
+        headers=HEADERS,
         status_code=403)
     collection.update_one({'user': user_id, 'id':_id, 'title':title, 'type': 'board' },
                             {'$set' : {'isDeleted': True,}}
                             )  ### 삭제하였을 경우 isDeleted 라는 변수에 True 를 넣어주자 그래서 리플라이들은 남을수있게
 
     return Response(body=_id,
-        headers={'Content-Type': 'application/json'},
+        headers=HEADERS,
         status_code=200)
     
-@board_routes.route('/reply', methods=['POST','DELETE'], cors=True)
+@board_routes.route('/reply', methods=['POST','DELETE'], cors=False)
 def handleReply():
     collection = db['board']
     user_collection = db['users']
@@ -278,12 +282,12 @@ def handleReply():
         contents = data.get('contents')
         if len(contents.strip()) <5 or len(contents.strip()) >50 :
             return Response(body='too large 50, too small 5',
-                headers={'Content-Type': 'text/html'},
+                headers=HEADERS,
                 status_code=403)
         
         if not user_collection.find_one({"user":user_id, "uuid": uid}):
             return Response(body='uuid is required',
-                headers={'Content-Type': 'text/html'},
+                headers=HEADERS,
                 status_code=403)
         isExist = collection.find_one({"related_id": int(_id),"type": "reply"}, sort=[('id', -1)])
         if isExist:
@@ -301,7 +305,7 @@ def handleReply():
         }
         collection.insert_one(item)
         return Response(body=review_id_max,
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=201)
     elif board_routes.current_request.method == 'DELETE':
         e = board_routes.current_request.to_dict()
@@ -312,16 +316,16 @@ def handleReply():
         
         if not user_collection.find_one({"user":user_id, "uuid": uid}):
             return Response(body='uuid is required',
-                headers={'Content-Type': 'text/html'},
+                headers=HEADERS,
                 status_code=403)
         collection.delete_one({'user': user_id, 'id': _id,  'type': 'reply' })
 
         return Response(body=_id,
-            headers={'Content-Type': 'application/json'},
+            headers=HEADERS,
             status_code=200)
 
     
-@board_routes.route('/board/{_id}/favorite', methods=['PATCH'], cors=True)
+@board_routes.route('/board/{_id}/favorite', methods=['PATCH'], cors=False)
 def handleBoardFavorite(_id):
     collection = db['board']
     user_collection = db['users']
@@ -332,7 +336,7 @@ def handleBoardFavorite(_id):
 
     if not user_collection.find_one({"user":user_id, "uuid": uid}):
         return Response(body='uuid is required',
-            headers={'Content-Type': 'text/html'},
+            headers=HEADERS,
             status_code=403)
     if creater_id:
         res = collection.find_one(
@@ -342,10 +346,10 @@ def handleBoardFavorite(_id):
         if not res:
             collection.update_one(query, {'$push': {'favorites': user_id}})
             return Response(body=True, # 들어감
-                headers={'Content-Type': 'application/json'},
+                headers=HEADERS,
                 status_code=200)
         else:
             collection.update_one(query, {'$pull': {'favorites': user_id}})
             return Response(body=False, # 뺌
-                headers={'Content-Type': 'application/json'},
+                headers=HEADERS,
                 status_code=200)
