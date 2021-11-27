@@ -20,8 +20,8 @@ HEADERS = {
     'Content-Type': 'application/json', 
     'Access-Control-Allow-Origin': '*'
 }
-
-client = pymongo.MongoClient('mongodb+srv://{user}:{password}@{host}'.format(
+print(DB_HOST)
+client = pymongo.MongoClient('{host}'.format(
     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
 ))
 db = client[DB_NAME]

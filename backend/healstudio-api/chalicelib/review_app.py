@@ -14,7 +14,7 @@ COLLECTION_NAME = os.environ.get('COLLECTION_NAME')
 
 review_routes = Blueprint(__name__)
 
-client = pymongo.MongoClient('mongodb+srv://{user}:{password}@{host}'.format(
+client = pymongo.MongoClient('{host}'.format(
     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
 ))
 db = client[DB_NAME]
