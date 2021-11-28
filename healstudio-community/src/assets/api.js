@@ -75,7 +75,6 @@ export const get_reviews = async (gymId, skip, limit, user) => {
         const data = result.data
         return [true, data]
     }
-    console.log(result)
     return [false, null]
 }
 
