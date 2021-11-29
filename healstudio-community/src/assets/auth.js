@@ -10,7 +10,8 @@ export const login = async (user_id, password) => {
         method: 'post',
         url: `${BASE_URL}/auth/login`,
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
         },
         data: data
     })
