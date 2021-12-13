@@ -34,6 +34,8 @@ export default new Vuex.Store({
         brandList: null,
         productsShare: null,
         productsReview: null,
+        selected: false,
+        selectedData: null,
 
     },
     getters: {

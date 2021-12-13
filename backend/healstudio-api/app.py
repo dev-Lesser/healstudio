@@ -59,9 +59,7 @@ def searchUser(userId):
 
 @app.route('/gym/{gymId}', methods=['GET'], cors=True)
 def searchByGymId(gymId):
-    
     res = collection.find_one({"id": gymId},{"_id":0, "checkParse":0})
-
     return res
 
 @app.route('/gym', methods=['POST'], content_types=['application/json'], cors=True)

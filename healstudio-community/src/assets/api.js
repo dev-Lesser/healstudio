@@ -29,3 +29,16 @@ export const get_gyms_list = async (skip, limit) => {
     }
     return [false, null]
 }
+
+export const get_gym_by_id = async (id) => {
+    const url = `${BASE_URL}/gym/${id}`
+    const result = await axios.get(url)
+    if (result.status == 200) {
+        const data = result.data
+        // console.log(data)
+        // const values = Object.values(data)
+        // const gym = values.reduce((acc, curr) => acc.concat(curr), [])
+        return [true, data]
+    }
+    return [false, null]
+}
