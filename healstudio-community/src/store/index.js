@@ -36,6 +36,7 @@ export default new Vuex.Store({
         productsReview: null,
         selected: false,
         selectedData: null,
+        gyms: null,
 
     },
     getters: {

@@ -5,6 +5,7 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import './plugins/transition'
 
+
 import PerfectScrollbar from 'vue2-perfect-scrollbar'
 import 'vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css'
 

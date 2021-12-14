@@ -1,6 +1,6 @@
 <template>
     <div>
-        <l-map style="height: 100vh" :zoom="zoom" :center="center">
+        <l-map id="map" :zoom="zoom" :center="center">
             <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
         </l-map>
         
@@ -17,14 +17,14 @@ export default {
     components: {
         LMap,
         LTileLayer,
-        GymDetail
+        GymDetail,
     },
     data(){
         return {
             drawer: true,
             sheet: false,
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            attribution: '',
             zoom: 12,
             center: [37.555, 127.019],
             markerLatLng: [51.504, -0.159]
@@ -40,9 +40,23 @@ export default {
         // circleMarker(latLng, { radius: 8 });
         // this.mapIsReady = true;
     },
+    async mounted(){
+    },
+    computed: {
+        gyms(){
+            return this.$store.state.gyms
+        }
+    },
+    watch:{
+        gyms(){
+            // console.log(this.$store.state.gyms)
+        }
+    }
 }
     
 </script>
 <style scoped>
-
+#map{
+    height: calc(100vh - 64px);
+}
 </style>
