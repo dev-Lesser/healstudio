@@ -1,19 +1,13 @@
 <template>
-<v-navigation-drawer v-if="selected" 
-    class="sheet" 
-    absolute 
-    left 
-    floating 
-    hide-overlay 
-    color="rgba(250, 250, 250, 0.9)"
-    width="350px">
+<div v-if="selected" id="sheet" >
+    <perfect-scrollbar v-if="selectedData != null">
         <v-card-actions>
             <v-spacer />
-        <v-icon class="pl-3 mb-2" @click="$store.state.selected = !$store.state.selected">mdi-close</v-icon>
+        <v-icon class="pl-3 mb-2" v-show="$route.name == 'Home'" @click="$store.state.selected = !$store.state.selected">mdi-close</v-icon>
         </v-card-actions>
         <div class="box-title-wrap">
             <div class="box-title">
-                <div>
+                <div >
                 {{selectedData.name}}
                 <show-desc :desc="desc" />
                 </div>
@@ -30,11 +24,10 @@
                     <v-chip small outlined>{{selectedData.category}}</v-chip>
                 </div>
             </div>
-            
         </div>
         
 
-            <v-divider />
+        <v-divider />
             <v-carousel
             cycle
             height="200">
@@ -46,15 +39,14 @@
                 transition="fade-transition"
                 ></v-carousel-item>
             </v-carousel>
-            <!-- <div v-for="image, i in selectedData.imgList"  :key="i">
-            <v-img  
-            height="300"
-            ></v-img> -->
-            <!-- </div> -->
+
             <v-card-subtitle class="box-hashtag-title">
                     # 해시태그
-                <div class="box-keywords">
+                <div class="box-keywords" v-if="selectedData.keywords!=null">
                     <v-chip outlined class="box-hashtag-content ma-2" small v-for="keyword, i in selectedData.keywords" :key="`keyword--${i}`">#{{keyword}}</v-chip>
+                </div>
+                <div class="box-keywords" v-else>
+                    <v-chip outlined class="box-hashtag-content ma-2" small >없음</v-chip>
                 </div>
             </v-card-subtitle>
             <v-divider />
@@ -108,41 +100,52 @@
             </div>
             <v-divider />
             <!--  -->
-            
-            <div v-for="url, i in selectedData.urlList" :key="`url--${i}`"> 
-                <div class="box-hompage">
-                    <div  class="box-url-list" v-if="url.type == 'normal' | url.type =='modoo'">
-
-                        <v-icon>mdi-home</v-icon>
-                        <div class="box-url ml-3"><a :href="url.url">{{url.url}}</a></div>
-                    </div>
-                    <div class="box-url-list"  v-else-if="url.type == 'instagram' ">
-                        <v-icon color="#E36DEE">mdi-instagram</v-icon>
-                        <div class="box-url ml-3"><a :href="url.url">{{url.url}}</a></div>
-                    </div>
-                    <div class="box-url-list"  v-else-if="url.type == 'facebook' ">
-                        <v-icon color="#6B74F1">mdi-facebook</v-icon>
-                        <div class="box-url ml-3"><a :href="url.url">{{url.url}}</a></div>
-                    </div>
-                    <div class="box-url-list"  v-else-if="url.type == 'blog' ">
-                        <v-icon>mdi-desktop-mac</v-icon>
-                        <div class="box-url ml-3"><a :href="url.url">{{url.url}}</a></div>
-                    </div>
-                    <div class="box-url-list"  v-else>
-                        <v-icon>mdi-cube-outline</v-icon>
-                        <div class="box-url ml-3"><a :href="url.url">{{url.url}}</a></div>
-                    </div>
-                </div>
-            </div>
-            <div v-for="url, i in selectedData.imgList" :key="`img--${i}`">
-                <!-- {{url}}.jpg {{selectedData.imageUrl}} -->
-                
-            </div>
-    </v-navigation-drawer>
+            <v-expansion-panels flat dense>
+                <v-expansion-panel>
+                    <v-expansion-panel-header class="data-homepage">
+                        홈페이지
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content class="data-homepage-content" >
+                        <div class="box-hompage" v-for="url, i in selectedData.urlList" :key="`url--${i}`">
+                            <div  class="box-url-list" v-if="url.type == 'normal' | url.type =='modoo'">
+                                <v-icon>mdi-home</v-icon>
+                                <div class="box-url ml-3"><a :href="url.url">{{url.url}}</a></div>
+                            </div>
+                            <div class="box-url-list"  v-else-if="url.type == 'instagram' ">
+                                <v-icon color="#E36DEE">mdi-instagram</v-icon>
+                                <div class="box-url ml-3"><a :href="url.url">{{url.url}}</a></div>
+                            </div>
+                            <div class="box-url-list"  v-else-if="url.type == 'facebook' ">
+                                <v-icon color="#6B74F1">mdi-facebook</v-icon>
+                                <div class="box-url ml-3"><a :href="url.url">{{url.url}}</a></div>
+                            </div>
+                            <div class="box-url-list"  v-else-if="url.type == 'blog' ">
+                                <v-icon>mdi-desktop-mac</v-icon>
+                                <div class="box-url ml-3"><a :href="url.url">{{url.url}}</a></div>
+                            </div>
+                            <div class="box-url-list"  v-else>
+                                <v-icon>mdi-cube-outline</v-icon>
+                                <div class="box-url ml-3"><a :href="url.url">{{url.url}}</a></div>
+                            </div>
+                        </div>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+            </v-expansion-panels>
+        </perfect-scrollbar>
+        <v-divider />
+        <v-card-actions class="container-reviews-trainers">
+            <v-btn color="grey lighten-2" @click="clickToReview">리뷰 작성</v-btn>
+            <v-spacer/>  
+            <v-btn>트레이너 확인</v-btn>
+        </v-card-actions>
+    </div>
 </template>
 <script>
 import ShowDesc from '@/components/ShowDesc'
     export default {
+        props:{
+            data: Object
+        },
         components:{
             ShowDesc
         },
@@ -162,6 +165,27 @@ import ShowDesc from '@/components/ShowDesc'
                 return this.$store.state.selectedData;
             }
         },
+        mounted(){
+            var sheet = document.getElementById("sheet");
+            if (this.$route.name != 'Home' & sheet!=null){
+                console.log(sheet.style)
+                sheet.style.position = "static"
+            }
+        },
+        beforeUpdate(){
+            var sheet = document.getElementById("sheet");
+            if (this.$route.name != 'Home' & sheet!=null){
+                console.log(sheet.style)
+                sheet.style.position = "static"
+            }
+        },
+        methods:{
+            clickToReview(){
+                this.$store.state.gymDetailData = this.data
+                this.$store.state.gyms = this.selectedData;
+                this.$router.push(`/review/${this.data.id}`);
+            }
+        },
         watch: {
             selectedData() {
                 var desc = this.$store.state.selectedData.desc;
@@ -171,19 +195,27 @@ import ShowDesc from '@/components/ShowDesc'
     }
 </script>
 <style scoped>
-.sheet {
+.ps {
+    height: 80vh;
+    }
+#sheet {
     padding: 10px;
+    z-index: 700;
+    width: 360px;
+    border-width: 2px;
+    background-color: rgba(250, 250, 250, 0.9);
+    height: calc(100vh - 64px);
+    /* display: block;  */
     position: absolute;
-    z-index: 1000;
-    border-width: 1px;
-    display: block;
-    -ms-overflow-style: none; /* IE and Edge */
+    -ms-overflow-style: none; 
     -webkit-transition:width 2s, height 2s, background-color 2s, -webkit-transform 2s;
-    transition: all ease 2s 0s;
+    /* /* transition: all ease 2s 0s; */
+
 }
-.sheet::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera*/
+#sheet::-webkit-scrollbar {
+     display: none; /* Chrome, Safari, Opera */
 }
+.data-homepage,
 .box-hashtag-title{
     font-size: 15px;
     font-family:'Jeju Gothic', sans-serif;
@@ -230,7 +262,7 @@ import ShowDesc from '@/components/ShowDesc'
     display: flex;
     justify-content: left;
     align-items: center;
-    padding: 10px;
+    padding: 5px 10px 5px 10px;
     font-size: 13px;
     font-family:'Jeju Gothic', sans-serif;
 }
@@ -242,10 +274,11 @@ import ShowDesc from '@/components/ShowDesc'
     font-size: 13px;
     font-family:'Jeju Gothic', sans-serif;
 }
+.container-reviews-trainers,
 .box-description{
     font-size: 13px;
     font-family:'Jeju Gothic', sans-serif;
-    background-color: azure;
+    /* background-color: azure; */
 }
 .box-keywords{
     width: 300px;
@@ -289,7 +322,7 @@ import ShowDesc from '@/components/ShowDesc'
 .box-url {
     font-size: 13px;
     font-family:'Jeju Gothic', sans-serif;
-    width: 270px;
+    width: 210px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;  /* 말줄임 적용 */

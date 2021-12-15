@@ -3,7 +3,8 @@
     class="nav-drawer" 
     v-if="showMenu"
     v-model="drawer" 
-    app 
+    permanent
+    app
     width='360px' 
     color="rgba(208, 208, 228, 0.4)">
         <div class="sidenav-fix">
@@ -15,6 +16,7 @@
                 <v-list-item>
                     <v-list-item-content>
                         <v-text-field 
+                        class="search-text-field"
                         v-model="query"
                         @keydown.enter="searchByQuery" 
                         placeholder="주변 헬스장 검색" rounded outlined dense prepend-inner-icon="mdi-map-marker"></v-text-field>
@@ -179,7 +181,8 @@
         },
         methods: {
             async searchByQuery(event){
-                event.preventDefault() //<--
+                event.preventDefault() 
+                this.$store.state.selected = false;
                 this.loading = true
                 const skipCount = (this.current - 1) * 20
                 
@@ -192,7 +195,7 @@
                     this.$store.state.gyms = gyms
                     
                 }
-                
+
                 this.loading = false;
             },
             async handlePageClick(page) {
@@ -228,6 +231,7 @@
                 const [success, gyms] = await search_by_query(this.query, skipCount, 20);
                 if (!success) this.status = -1;
                 else {
+                    console.log(gyms)
                     this.$store.state.gyms = gyms
                     this.loading = false;
                 }
@@ -272,6 +276,7 @@
         margin: 10px;
         font-family: 'Jeju Gothic', sans-serif;
     }
+    .search-text-field,
     .data-businesshour {
         font-size: 15px;
         font-family: 'Jeju Gothic', sans-serif;

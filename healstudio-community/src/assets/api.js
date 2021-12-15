@@ -78,3 +78,21 @@ export const search_by_query = async (query, skip, limit) => {
     console.log(result)
     return [false, null]
 }
+
+export const get_reviews = async (gymId, skip, limit) => {
+    const url = `${BASE_URL}/reviews/${gymId}`
+    const result = await axios.get(url, {params: {
+        
+        skip: skip,
+        limit: limit
+    }})
+    if (result.status == 200) {
+        const data = result.data
+        // console.log(data)
+        // const values = Object.values(data)
+        // const gym = values.reduce((acc, curr) => acc.concat(curr), [])
+        return [true, data]
+    }
+    console.log(result)
+    return [false, null]
+}

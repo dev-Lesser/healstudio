@@ -1,23 +1,26 @@
 <template>
-    <div>
+    <v-layout wrap>
+        <side-nav-bar />
+        <gym-detail :data="gyms"/>
         <l-map id="map" :zoom="zoom" :center="center">
             <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
         </l-map>
         
-        <gym-detail />
-        
-        
-    </div>
+    </v-layout>
 </template>
 <script>
 import "leaflet/dist/leaflet.css"
 import { LMap, LTileLayer } from "vue2-leaflet";
 import GymDetail from "@/components/GymDetail"
+import SideNavBar from '@/components/SideNavBar'
+
 export default {
     components: {
         LMap,
         LTileLayer,
         GymDetail,
+        SideNavBar
+        
     },
     data(){
         return {
@@ -44,7 +47,7 @@ export default {
     },
     computed: {
         gyms(){
-            return this.$store.state.gyms
+            return this.$store.state.selectedData
         }
     },
     watch:{
@@ -58,5 +61,6 @@ export default {
 <style scoped>
 #map{
     height: calc(100vh - 64px);
+    width: calc(100vw - 360px);
 }
 </style>
