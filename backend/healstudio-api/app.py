@@ -1,4 +1,4 @@
-from chalice import Chalice
+from chalice import Chalice, Response
 from chalice import BadRequestError
 # from chalicelib import users
 import json, os
@@ -22,6 +22,49 @@ app = Chalice(app_name='healstudio-api')
 @app.route('/', methods=['GET'], cors=True)
 def index():
     return {'hello': 'world'}
+
+# login
+@app.route('/login', methods=['POST'], cors=True)
+def login():
+    data = json.loads(app.current_request.raw_body.decode())
+    print(data, type(data))
+    user_id = data.get('user_id')
+    password = data.get('password')
+    collection = db['users']
+    if collection.find_one({'user': user_id, 'password':password}):
+        return Response(body='token',
+                    headers={'Content-Type': 'application/json'},
+                    status_code=201)
+        
+    return Response(body='error',
+                    headers={'Content-Type': 'application/json'},
+                    status_code=400)
+    
+@app.route('/search', methods=['GET'], cors=True)
+def searchByQuery():
+    collection = db['space']
+    
+    e = app.current_request.to_dict()
+    params = e.get('query_params')
+    query = str(params.get('query')).strip()
+    if query!="" and len(query)< 2: # 1글자 미만 error
+        return Response(
+            body='텍스트 길이는 두자 이상 입력해주세요',
+            headers={'Content-Type': 'text/html'},
+            status_code=400
+        )
+        
+    skip = int(params.get('skip'))
+    limit = int(params.get('limit'))
+    if limit >= 100:
+        raise BadRequestError('error')
+    if query != '':
+        res = list(collection.find({"$text": {"$search": query}},{"_id":0,"checkParse":0}).skip(skip).limit(limit))
+    else: res = list(collection.find({},{"_id":0, "checkParse":0}).skip(skip).limit(limit))
+    
+    return Response(body=res,
+            headers={'Content-Type': 'application/json'},
+            status_code=200)
 
 # region
 @app.route('/regions', methods=['GET'], cors=True)
@@ -54,13 +97,13 @@ def searchRegionDetail():
 def searchUser(userId):
     collection = db['users']
     user = collection.find_one({'user':userId},{'_id':0, 'ip':0, 'password':0})
- 
     return user
 
 @app.route('/gym/{gymId}', methods=['GET'], cors=True)
 def searchByGymId(gymId):
     res = collection.find_one({"id": gymId},{"_id":0, "checkParse":0})
     return res
+
 
 @app.route('/gym', methods=['POST'], content_types=['application/json'], cors=True)
 def createGym():
@@ -76,7 +119,7 @@ def createGym():
     }
     return response
 
-@app.route('/gyms-lists', cors=True)
+@app.route('/gyms-lists', methods=['GET'], cors=True)
 def search():
     e = app.current_request.to_dict()
     params = e.get('query_params')
@@ -90,6 +133,25 @@ def search():
 
     return res
 
+@app.route('/reviews/{gymId}', methods=['GET'], cors=True)
+def getReviews(gymId):
+    collection = db['reviews']
+    e = app.current_request.to_dict()
+    params = e.get('query_params')
+    skip = int(params.get('skip'))
+    limit = int(params.get('limit'))
+    
+    res = list(collection.find({"related_gym_id": gymId},{"_id":0}).sort([('created_at',-1)]).skip(skip).limit(limit))
+    results = []
+    for i in res:
+        item = i
+        item['created_at'] = item['created_at'].strftime("%Y-%m-%d %H:%M:%S")
+        item['updated_at'] = item['updated_at'].strftime("%Y-%m-%d %H:%M:%S")
+        print(item)
+        results.append(item)
+    return Response(body=results,
+            headers={'Content-Type': 'application/json'},
+            status_code=200)
 # @app.route('/gyms/{gymId}', methods=['GET'])
 # def searchByGymId(gymId):
     
