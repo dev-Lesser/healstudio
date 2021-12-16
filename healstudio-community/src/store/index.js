@@ -38,6 +38,8 @@ export default new Vuex.Store({
         selectedData: null,
         gyms: null,
         gymDetailData: null,
+        reviews: null,
+        trainers: null,
 
     },
     getters: {

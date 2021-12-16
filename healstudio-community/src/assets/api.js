@@ -88,9 +88,20 @@ export const get_reviews = async (gymId, skip, limit) => {
     }})
     if (result.status == 200) {
         const data = result.data
-        // console.log(data)
-        // const values = Object.values(data)
-        // const gym = values.reduce((acc, curr) => acc.concat(curr), [])
+        return [true, data]
+    }
+    console.log(result)
+    return [false, null]
+}
+
+export const get_trainers = async (gymId, skip, limit) => {
+    const url = `${BASE_URL}/trainers/${gymId}`
+    const result = await axios.get(url, {params: {
+        skip: skip,
+        limit: limit
+    }})
+    if (result.status == 200) {
+        const data = result.data
         return [true, data]
     }
     console.log(result)

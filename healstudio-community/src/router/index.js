@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import Home from "@/views/Home";
 import Login from "@/views/Login";
 import Review from "@/views/Review"
+import Trainer from "@/views/Trainer"
 Vue.use(VueRouter);
 
 const routes = [
@@ -10,16 +11,24 @@ const routes = [
     path: "/login",
     name: "Login",
     component: Login,
+    meta: { transition: 'zoom' },
   },
   {
     path: "/",
     name: "Home",
     component: Home,
+    meta: { transition: 'fade' },
   },
   {
     path: "/review/:id",
     name: "Review",
     component: Review,
+
+  },
+  {
+    path: "/trainer/:id",
+    name: "Trainer",
+    component: Trainer,
   },
 
 ]

@@ -1,9 +1,13 @@
 <template>
   <v-app app >
     <Header />
-    
     <v-main>
-      <router-view />
+      <vue-page-transition name="fade">
+        <div class="entire-outbox">
+          
+        <router-view/>
+        </div>
+      </vue-page-transition>
     </v-main>
   </v-app>
 </template>
@@ -23,3 +27,8 @@ export default {
   }),
 };
 </script>
+<style scoped>
+.entire-outboxt {
+  width: 500px;
+}
+</style>

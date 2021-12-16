@@ -3,19 +3,19 @@
     <gym-detail :data="selectedData"/>
     <v-card class="reviews-container justify-center align-center d-flex">
     <div class="justify-center align-center d-flex">
-        <review-table :meta-data="selectedData" :data="reviews"/>
+        <trainer-table :meta-data="selectedData" :data="trainers"/>
     </div>
     </v-card>
 </div>
 </template>
 <script>
 import GymDetail from '@/components/GymDetail'
-import ReviewTable from '@/components/ReviewTable'
-import { get_gym_by_id, get_reviews } from '@/assets/api'
+import TrainerTable from '@/components/TrainerTable'
+import { get_gym_by_id, get_trainers } from '@/assets/api'
     export default {
         components:{
             GymDetail,
-            ReviewTable
+            TrainerTable,
         },
         data() {
             return {
@@ -38,7 +38,7 @@ import { get_gym_by_id, get_reviews } from '@/assets/api'
                     this.loading = false;
                 }
             }
-            await this.getReviews(this.$route.params.id, 0, 5)
+            await this.getTriners(this.$route.params.id, 0, 5)
 
         },
         computed: {
@@ -48,16 +48,16 @@ import { get_gym_by_id, get_reviews } from '@/assets/api'
             selectedData() {
                 return this.$store.state.selectedData;
             },
-            reviews(){
-                return this.$store.state.reviews;
+            trainers(){
+                return this.$store.state.trainers;
             }
         },
         methods:{
-            async getReviews(gymId, skip, limit){
-                const [success, res] = await get_reviews(gymId, skip, limit);
+            async getTriners(gymId, skip, limit){
+                const [success, res] = await get_trainers(gymId, skip, limit);
                 if (!success) this.status = -1;
                 else {
-                    this.$store.state.reviews = res;
+                    this.$store.state.trainers = res;
                     this.loading = false;
                 }
             }

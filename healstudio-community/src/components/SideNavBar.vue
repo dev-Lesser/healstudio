@@ -1,4 +1,6 @@
 <template>
+<vue-page-transition name="fade-in-right">
+
     <v-navigation-drawer 
     class="nav-drawer" 
     v-if="showMenu"
@@ -109,6 +111,7 @@
             </v-card>
         </v-list>
     </v-navigation-drawer>
+</vue-page-transition>
 </template>
 <script>
     // import Paginate from 'vuejs-paginate'
