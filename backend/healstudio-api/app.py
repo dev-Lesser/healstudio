@@ -152,6 +152,26 @@ def getReviews(gymId):
     return Response(body=results,
             headers={'Content-Type': 'application/json'},
             status_code=200)
+
+@app.route('/trainers/{gymId}', methods=['GET'], cors=True)
+def getTrainers(gymId):
+    collection = db['trainers']
+    e = app.current_request.to_dict()
+    params = e.get('query_params')
+    skip = int(params.get('skip'))
+    limit = int(params.get('limit'))
+    
+    res = list(collection.aggregate([
+        {'$unwind': "$related_gym_ids"},
+        {'$match': {"related_gym_ids": gymId}},
+        {'$skip' : skip},
+        {'$limit': limit},
+        {'$project': {'_id':0, 'created_at':0, 'updated_at':0}}
+    ]))
+    
+    return Response(body=res,
+            headers={'Content-Type': 'application/json'},
+            status_code=200)
 # @app.route('/gyms/{gymId}', methods=['GET'])
 # def searchByGymId(gymId):
     
