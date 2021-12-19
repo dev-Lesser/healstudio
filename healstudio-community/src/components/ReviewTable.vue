@@ -95,7 +95,17 @@
         >
             <no-data />
         </v-list>
-        
+        <!-- 페이지네이션 -->
+        <div class="d-flex flex-row justify-center">
+                <v-icon class="pagination_page" @click="handlePrevClick" :color="start == 1 ? '#adadad' : '#757575'">mdi-chevron-left</v-icon>
+                <div class="pagination_page d-flex flex-row justify-center align-center" 
+                    v-for="p in pages" :key="p" 
+                    :class="{ selected_page: current == p }" 
+                    @click="handlePageClick(p)">
+                    {{ p }}
+                </div>
+                <v-icon class="pagination_page" @click="handleNextClick" :color="end == limit ? '#adadad' : '#757575'">mdi-chevron-right</v-icon>
+            </div>
         <v-progress-linear
             indeterminate
             color="black"
@@ -111,16 +121,7 @@
             height="3"
             v-else
         ></v-progress-linear>
-            <!-- <div class="d-flex flex-row justify-center">
-                <v-icon class="pagination_page" @click="handlePrevClick" :color="start == 1 ? '#adadad' : '#757575'">mdi-chevron-left</v-icon>
-                <div class="pagination_page d-flex flex-row justify-center align-center" 
-                v-for="p in pages" :key="p" 
-                :class="{ selected_page: current == p }" 
-                @click="handlePageClick(p)">
-                    {{ p }}
-                </div>
-                <v-icon class="pagination_page" @click="handleNextClick" :color="end == limit ? '#adadad' : '#757575'">mdi-chevron-right</v-icon>
-            </div> -->
+
         <div style="display:flex; align-items:center;">
             <v-btn 
             @click="openCreateReview" 
@@ -177,6 +178,7 @@ import NoData from '@/components/NoData'
 
 import {
     delete_review,
+    get_reviews ,
 } from '@/assets/api'
 
 export default {
@@ -196,15 +198,16 @@ export default {
             point: 5,
             contents: '',
             pages: 5,
-            start:1,
             end: 100,
-            current: 1,
             loading: false,
             isUpdateClick: false,
             updateId: null,
             delete_overlay: false,
-            user_id: window.localStorage.getItem(`user_id`)
-            
+            user_id: window.localStorage.getItem(`user_id`),
+            start: 1,
+            current: 1,
+            length: 5,
+            limit: 30,
         }
     },
     async created(){
@@ -232,6 +235,11 @@ export default {
         },
         openEditReview(item){            
             console.log(item)
+            if (this.user_id=='null') {
+                alert('로그인이 필요한 서비스 입니다')
+                this.$router.push('/login');
+                return
+            }
             this.updateId = item.id
             this.isUpdateClick = true
             this.contents = item.contents
@@ -239,6 +247,11 @@ export default {
             this.$store.state.overlay = true; // 창을 펼친다
         },
         openDeleteReview(item){
+            if (this.user_id=='null') {
+                alert('로그인이 필요한 서비스 입니다')
+                this.$router.push('/login');
+                return
+            }
             this.updateId = item.id
             this.isUpdateClick = true
             this.contents = item.contents
@@ -251,7 +264,7 @@ export default {
             const [success, res] = await delete_review(
                 this.updateId,
                 this.$route.params.id,
-                "test",
+                this.user_id
                 );
             if (!success) {
                 this.status = -1;
@@ -263,7 +276,41 @@ export default {
             }
             
             this.loading = false;
-        }
+        },
+        async getReviews(gymId, skip, limit){
+            const [success, res] = await get_reviews(gymId, skip, limit);
+            if (!success) this.status = -1;
+            else {
+                this.$store.state.reviews = res;
+                this.loading = false;
+            }
+        },
+        async handlePageClick(page) {
+                if (this.current == page) return
+                this.loading = true;
+                this.current = page;
+                await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
+            },
+            async handlePrevClick() {
+                
+                if (this.start == 1)  return;
+                
+                this.loading = true;
+                const current = this.start - this.length;
+                this.start = current;
+                this.current = current;
+                await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
+            },
+            async handleNextClick() {
+                
+                if (this.end == this.limit) return;
+                this.loading = true;
+                const page = this.start + this.length;
+                this.start = page;
+                this.current = page;
+                await this.getReviews(this.$route.params.id, (this.current-1)*5, 5)
+                
+            },
     },
 
     async beforeUnmount(){
@@ -284,9 +331,6 @@ export default {
 }
 </script>
 <style scoped>
-.review_list{
-    /* height: 75%; */
-}
 .review_list_item{
     font-size: 13px;
 }
@@ -312,7 +356,16 @@ export default {
 .review-updated{
     width: 15%;
 }
-
+.pagination-bar {
+        display: inline-block;
+        padding-left: 0;
+        margin: 20px 0;
+        border-radius: 4px;
+    }
+.selected_page {
+    color: white;
+    background-color: #B2C9CF;
+}
 .pagination_page {
         cursor: pointer;
         width: 34px;

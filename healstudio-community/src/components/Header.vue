@@ -6,13 +6,16 @@
     class="header"
   >
     <v-icon class="mr-5" v-show="$route.name == 'Home'" @click="$store.state.selected = !$store.state.selected">mdi-format-align-justify</v-icon>
-    <v-btn outlined class="mr-5" small v-if="user_id=='null'" @click="$router.push('/login')">로그인</v-btn>
-    <v-btn outlined class="mr-5" small v-else @click="logout">로그아웃</v-btn>
+    <v-btn outlined small @click="$router.push('/')">검색 홈</v-btn>
+    <v-spacer />
+    
     <div class="header_hello_user" v-if="user_id">
       {{helloText}}
     </div>
-    <v-spacer />
-    <v-btn outlined small @click="$router.push('/')">검색 홈</v-btn>
+    
+    <v-btn outlined class="ml-5" small v-if="user_id=='null'" @click="$router.push('/login')">로그인</v-btn>
+    <v-btn outlined class="ml-5" small v-else @click="logout">로그아웃</v-btn>
+    
     
     
   </v-app-bar>

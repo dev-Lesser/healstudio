@@ -141,8 +141,11 @@ def getReviews(gymId):
     params = e.get('query_params')
     skip = int(params.get('skip'))
     limit = int(params.get('limit'))
+    sort_by = params.get('sortBy')
+    if not sort_by:
+        sort_by = 'updated_at'
     
-    res = list(collection.find({"related_gym_id": gymId},{"_id":0}).sort([('created_at',-1)]).skip(skip).limit(limit))
+    res = list(collection.find({"related_gym_id": gymId},{"_id":0}).sort([(sort_by,-1)]).skip(skip).limit(limit))
     results = []
     for i in res:
         item = i
@@ -189,17 +192,12 @@ def createReview(gymId):
         
     user_id = data.get('user_id')
     rate_point = data.get('point')
-    isExist = collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)])
-    print(isExist.get('id'))
+    isExist = dict(collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)]))
     if isExist:
-        print(isExist.get('id'),111)
-        review_id_max = isExist.get('id') + 1,
+        review_id_max = isExist.get('id') + 1
     else:
-        print(isExist.get('id'),222)
         review_id_max = 1
-    print(review_id_max)
     if contents and user_id and gymId and rate_point:
-        print(review_id_max)
         res = {
             "id": review_id_max,
             "user": user_id,

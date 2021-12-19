@@ -93,7 +93,6 @@ export default {
                 alert("리뷰 길이가 50을 넘었습니다.")
                 return
             }
-            console.log(this.current_user)
             const [success, res] = await create_review(
                 this.$route.params.id,
                 this.current_user,
@@ -115,7 +114,7 @@ export default {
             const [success, res] = await update_review(
                 this.updateId,
                 this.$route.params.id,
-                "test",
+                this.current_user,
                 this.contents,
                 this.point
                 );
