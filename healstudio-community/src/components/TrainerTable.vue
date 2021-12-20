@@ -1,7 +1,7 @@
 <template>
 <v-flex xs12 sm12 md12 >
 
-    <v-card  class="ma-3 pa-3" height="600">
+    <v-card  class="ma-3 pa-3" >
         <v-card-title>
             {{metaData.name}}
             
@@ -12,6 +12,7 @@
             two-line
             class="review_list"
             v-if="data.length>0"
+            height="450"
         >
         <div class="trainer-header">
             <v-list-item>
@@ -61,23 +62,10 @@
                 
                 
             </v-list-item>
+            
 
         </div>
-        <v-progress-linear
-            indeterminate
-            color="black"
-            class="mt-12"
-            v-if="loading"
-            height="3"
-            rounded
-            ></v-progress-linear>
-        <v-progress-linear
-            color="black"
-            class="mt-3 mb-2"
-            rounded
-            height="3"
-            v-else
-        ></v-progress-linear>
+        <v-divider />
         </v-list>
         <v-list
             two-line
@@ -85,9 +73,7 @@
             style="display:flex; align-items: center; justify-content: center; height:75%;"
             v-else
         >
-        
             <no-data />
-            
         </v-list>
         <v-progress-linear
             indeterminate
@@ -104,18 +90,19 @@
             height="3"
             v-else
         ></v-progress-linear>
+
         <div style="display:flex; align-items:center;">
             <v-btn 
             @click="$store.state.overlay = true" 
             block 
-            color="primary"
             height="40"
+            dark
             >
-                <v-icon class="mr-2" small >mdi-pencil</v-icon>
-                리뷰 작성하기
+                <v-icon class="mr-2" small >mdi-account</v-icon>
+                트레이너 등록하기
             </v-btn>
         </div>
-        <contents-form :overlay="overlay" :meta-data="metaData" :point="point" :contents="contents" :isUpdateClick="isUpdateClick"/>
+        <!-- <contents-form :overlay="overlay" :meta-data="metaData" :point="point" :contents="contents" :isUpdateClick="isUpdateClick"/> -->
         
     </v-card>
 </v-flex>

@@ -13,7 +13,6 @@ export const login = async (user_id, password) => {
         },
         data: data
     })
-    console.log(result)
     if (result.status == 200) {
         console.log('login success')
         return [true, result.data]
@@ -53,9 +52,6 @@ export const get_gym_by_id = async (id) => {
     const result = await axios.get(url)
     if (result.status == 200) {
         const data = result.data
-        // console.log(data)
-        // const values = Object.values(data)
-        // const gym = values.reduce((acc, curr) => acc.concat(curr), [])
         return [true, data]
     }
     return [false, null]
@@ -70,9 +66,6 @@ export const search_by_query = async (query, skip, limit) => {
     }})
     if (result.status == 200) {
         const data = result.data
-        // console.log(data)
-        // const values = Object.values(data)
-        // const gym = values.reduce((acc, curr) => acc.concat(curr), [])
         return [true, data]
     }
     console.log(result)
@@ -82,7 +75,6 @@ export const search_by_query = async (query, skip, limit) => {
 export const get_reviews = async (gymId, skip, limit) => {
     const url = `${BASE_URL}/reviews/${gymId}`
     const result = await axios.get(url, {params: {
-        
         skip: skip,
         limit: limit
     }})
@@ -104,7 +96,6 @@ export const get_trainers = async (gymId, skip, limit) => {
         const data = result.data
         return [true, data]
     }
-    console.log(result)
     return [false, null]
 }
 
@@ -120,7 +111,6 @@ export const create_review = async (gymId, user_id, contents, point) => {
         },
         data: data
     })
-    console.log(result)
     if (result.status == 200) {
         console.log(`created ${gymId}`)
         return [true, result.data]

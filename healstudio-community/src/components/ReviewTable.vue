@@ -1,6 +1,6 @@
 <template>
 <v-flex xs12 sm12 md12 >
-    <v-card  class="ma-3 pa-3" height="600">
+    <v-card  class="ma-3 pa-3" >
         <v-card-title>
             {{metaData.name}}
         </v-card-title>
@@ -11,6 +11,7 @@
             two-line
             class="review_list"
             v-if="data.length>0"
+            height="450"
         >
             <div class="review-header">
                 <v-list-item>
@@ -284,7 +285,7 @@ export default {
 </script>
 <style scoped>
 .review_list{
-    height: 75%;
+    /* height: 75%; */
 }
 .review_list_item{
     font-size: 13px;
