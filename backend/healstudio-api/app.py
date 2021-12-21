@@ -192,8 +192,10 @@ def createReview(gymId):
     isExist = collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)])
     print(isExist.get('id'))
     if isExist:
+        print(isExist.get('id'),111)
         review_id_max = isExist.get('id') + 1,
     else:
+        print(isExist.get('id'),222)
         review_id_max = 1
     print(review_id_max)
     if contents and user_id and gymId and rate_point:

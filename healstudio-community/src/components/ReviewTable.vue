@@ -65,8 +65,8 @@
                     <div class="review-created">
                     {{review.created_at >= review.updated_at ? review.created_at.split(" ")[0] : review.updated_at.split(" ")[0]}}
                     </div>
-                    <div>
-                        <v-icon
+                    <div v-if="user_id==review.user">
+                        <v-icon 
                             small
                             class="mr-2"
                             color="rgb(116, 116, 216)"
@@ -202,9 +202,12 @@ export default {
             isUpdateClick: false,
             updateId: null,
             delete_overlay: false,
-            
+            user_id: window.localStorage.getItem(`user_id`)
             
         }
+    },
+    async created(){
+        await this.init();
     },
     methods:{
         async init(){
@@ -262,8 +265,8 @@ export default {
         }
     },
 
-    mounted(){
-
+    async beforeUnmount(){
+        await this.init();
     },
     computed:{
         overlay: {

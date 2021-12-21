@@ -82,7 +82,7 @@
         <v-list
             two-line
             class="review_list"
-            style="display:flex; align-items: center; justify-content: center;"
+            style="display:flex; align-items: center; justify-content: center; height:75%;"
             v-else
         >
         
@@ -139,7 +139,12 @@ export default {
     },
     mounted(){
         console.log(this.$route.name)
-    }
+    },
+    methods:{
+        async init(){
+            this.$store.state.overlay = false
+        },
+    },
 }
 </script>
 <style scoped>
