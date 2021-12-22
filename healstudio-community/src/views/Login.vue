@@ -28,13 +28,13 @@
         }),
         methods: {
             async doLogin() {
-                const [issuccess, token] = await login(this.id, this.pw);
+                const [issuccess, res] = await login(this.id, this.pw);
                 if (!issuccess) {
                     alert("아이디와 비밀번호를 확인해주세요.");
                     return;
                 }
-                
-                window.localStorage.setItem("token", token);
+                window.localStorage.setItem("user_id", res.user_id);
+                window.localStorage.setItem("token", res.token);
                 this.$router.push("/");
                 
             },

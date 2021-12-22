@@ -32,7 +32,10 @@ def login():
     password = data.get('password')
     collection = db['users']
     if collection.find_one({'user': user_id, 'password':password}):
-        return Response(body='token',
+        return Response(body={
+            'token':'token',
+            'user_id': user_id,
+            },
                     headers={'Content-Type': 'application/json'},
                     status_code=200)
         
@@ -186,9 +189,17 @@ def createReview(gymId):
         
     user_id = data.get('user_id')
     rate_point = data.get('point')
+    isExist = collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)])
+    print(isExist.get('id'))
+    if isExist:
+        review_id_max = isExist.get('id') + 1,
+    else:
+        review_id_max = 1
+    print(review_id_max)
     if contents and user_id and gymId and rate_point:
+        print(review_id_max)
         res = {
-            "id":collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)])['id'] + 1,
+            "id": review_id_max,
             "user": user_id,
             "related_gym_id": gymId,
             "contents": contents,

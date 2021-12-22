@@ -10,9 +10,9 @@
             <!-- <div v-if="locations">
                 <l-marker v-for="key in latlon" :key="key" :lat-lng="latlon[key]"></l-marker>
             </div> -->
-            <v-marker v-for="key in locations" :key="`marker__${key}`" :lat-lng="locations[key]">
+            <!-- <v-marker v-for="key in locations" :key="`marker__${key}`" :lat-lng="locations[key]">
             
-            </v-marker>
+            </v-marker> -->
         </l-map>
         
 </v-layout>
@@ -21,7 +21,7 @@
 <script>
 import "leaflet/dist/leaflet.css"
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
-import * as Vue2Leaflet from 'vue2-leaflet'
+// import * as Vue2Leaflet from 'vue2-leaflet'
 
 import GymDetail from "@/components/GymDetail"
 import SideNavBar from '@/components/SideNavBar'
@@ -32,7 +32,7 @@ export default {
         LMap,
         LTileLayer,
         LMarker,
-        'v-marker': Vue2Leaflet.LMarker,
+        // 'v-marker': Vue2Leaflet.LMarker,
         GymDetail,
         SideNavBar,
         

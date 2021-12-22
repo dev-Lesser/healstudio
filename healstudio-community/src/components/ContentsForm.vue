@@ -76,15 +76,14 @@ export default {
     data(){
         return {
             limitLetters: [v => v.length <= 50 || '최대 50자'],
+            current_user: window.localStorage.getItem('user_id')
         }
     },
     methods:{
         async init(){
             this.$store.state.overlay = false
-            this.contents = ''
-            this.point = 5
-            this.isUpdateClick = false
-            this.delete_overlay = false
+            // this.point = 5
+            // this.isUpdateClick = false
         },
         async closeReview(){
             await this.init();
@@ -94,9 +93,10 @@ export default {
                 alert("리뷰 길이가 50을 넘었습니다.")
                 return
             }
+            console.log(this.current_user)
             const [success, res] = await create_review(
                 this.$route.params.id,
-                "test",
+                this.current_user,
                 this.contents,
                 this.point
                 );

@@ -122,7 +122,7 @@
             </div> -->
         <div style="display:flex; align-items:center;">
             <v-btn 
-            @click="$store.state.overlay = true" 
+            @click="openCreateReview" 
             block 
             color="primary"
             height="40"
@@ -203,6 +203,7 @@ export default {
             updateId: null,
             delete_overlay: false,
             
+            
         }
     },
     methods:{
@@ -217,7 +218,14 @@ export default {
             await this.init();
         },
 
-    
+        openCreateReview(){
+            console.log(window.localStorage.getItem("user_id"))
+            if (window.localStorage.getItem("user_id")=='null') {
+                alert('로그인이 필요한 서비스 입니다')
+                this.$router.push('/login');
+            }
+            else (this.$store.state.overlay = true)
+        },
         openEditReview(item){            
             console.log(item)
             this.updateId = item.id
@@ -263,7 +271,6 @@ export default {
                 // re
             },
             get: function(){
-                console.log(123)
                 return this.$store.state.overlay;
             }
         }
