@@ -223,12 +223,13 @@ def updateReview(gymId):
             status_code=403)
     user_id = data.get('user_id')
     rate_point = data.get('point')
-    if contents and user_id and gymId and rate_point:
+    if contents and user_id and gymId and rate_point and _id:
         insert_query = {
             "id": _id,
             "related_gym_id": gymId,
             "user": user_id,
         }
+        print(insert_query)
         res = {
             '$set' : {
                 "contents": contents,

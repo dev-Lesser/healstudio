@@ -70,6 +70,7 @@ export default {
         point: Number,
         contents: String,
         isUpdateClick: Boolean,
+        updateId: Number,
 
     },
     data(){

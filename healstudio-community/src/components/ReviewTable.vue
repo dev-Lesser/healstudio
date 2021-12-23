@@ -131,7 +131,7 @@
                 리뷰 작성하기
             </v-btn>
         </div>
-        <contents-form :overlay="overlay" :meta-data="metaData" :point="point" :contents="contents" :isUpdateClick="isUpdateClick"/>
+        <contents-form :overlay="overlay" :updateId="updateId" :meta-data="metaData" :point="point" :contents="contents" :isUpdateClick="isUpdateClick"/>
         
         
         <v-overlay :value="delete_overlay" light  >
@@ -217,7 +217,7 @@ export default {
             await this.init();
         },
 
-       
+    
         openEditReview(item){            
             console.log(item)
             this.updateId = item.id
