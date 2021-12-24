@@ -54,7 +54,5 @@ export default {
 }
 </script>
 <style scoped>
-.no_data_box{
 
-}
 </style>
