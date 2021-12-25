@@ -4,6 +4,7 @@
         <v-card-title>
             {{metaData.name}}
         </v-card-title>
+        <v-divider />
         <v-chip outlined class="box-hashtag-content ma-2" small v-for="keyword, i in metaData.keywords" :key="`keyword--${i}`">#{{keyword}}</v-chip>
         
         <v-list
@@ -88,6 +89,7 @@
             two-line
             :width="listWidth"
             class="review_list"
+            style="display:flex; align-items: center; justify-content: center;"
             v-else
         >
             <no-data />
@@ -120,7 +122,7 @@
             </div> -->
         <div style="display:flex; align-items:center;">
             <v-btn 
-            @click="overlay = !overlay" 
+            @click="$store.state.overlay = true" 
             block 
             color="primary"
             height="40"
@@ -129,67 +131,12 @@
                 리뷰 작성하기
             </v-btn>
         </div>
-        <v-overlay :value="overlay" light  >
-            <v-card class="ma-3 pa-3" :width="500"
-            :height="400" light>
-                <v-card-title>
-                    리뷰
-                    <v-card-actions>
-                        <div><v-chip outlined>{{metaData.name}}</v-chip></div>
-                    </v-card-actions>
-                </v-card-title>
-                <v-divider />
-                    
-                    <v-card-actions>
-                        <div>
-                            평점 : 
-                        </div>
-                        <v-rating
-                            v-model="point"
-                            :value="contents"
-                            background-color="grey"
-                            hover
-                            length="5"
-                            color="yellow accent-4"
-                            dense
-                            half-increments
-                            size="25"
-                            
-                            ></v-rating> 
-                        <v-spacer />
-                        <div>{{point}} 점</div>
-                    </v-card-actions>
-                    
-                
-                
-                
-                <v-divider class="mt-6" />
-                <v-textarea
-                v-model="contents"
-                clearable	
-                outlined
-                dense
-                class="ma-1 pa-2"
-                label="한줄평 50자"
-                height=100
-                color="grey"
-                rounded
-                :rules="limitLetters"
-                ></v-textarea>
-                <v-card-actions>
-                    <v-btn v-if="!isUpdateClick" @click="createReview">작성하기</v-btn>
-                    <v-btn v-else @click="editReview">수정하기</v-btn>
-                    
-                    
-                    <v-spacer/>
-                    <v-btn @click="closeReview">취소</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-overlay>
+        <contents-form :overlay="overlay" :meta-data="metaData" :point="point" :contents="contents" :isUpdateClick="isUpdateClick"/>
+        
         
         <v-overlay :value="delete_overlay" light  >
             <v-card class="ma-3 pa-3" :width="500"
-             light>
+            light>
             <v-card-title>
                 정말로 삭제 하시겠습니까?
             </v-card-title>
@@ -224,15 +171,17 @@
 </v-flex>
 </template>
 <script>
+import ContentsForm from '@/components/ContentsForm'
 import NoData from '@/components/NoData'
+
 import {
-    create_review, 
-    update_review,
     delete_review,
 } from '@/assets/api'
+
 export default {
     components: {
-        NoData
+        ContentsForm,
+        NoData,
     },
     props:{
         metaData: Object,
@@ -243,7 +192,6 @@ export default {
             listWidth: window.innerWidth - 600,
             listHeight: Math.round((window.innerHeight - 483) / 100) * 100,
             isShown: true,
-            overlay: false,
             point: 5,
             contents: '',
             pages: 5,
@@ -254,12 +202,12 @@ export default {
             isUpdateClick: false,
             updateId: null,
             delete_overlay: false,
-            limitLetters: [v => v.length <= 50 || '최대 50자'],
+            
         }
     },
     methods:{
         async init(){
-            this.overlay = false
+            this.$store.state.overlay = false
             this.contents = ''
             this.point = 5
             this.isUpdateClick = false
@@ -269,33 +217,14 @@ export default {
             await this.init();
         },
 
-        async createReview(){
-            if (this.contents.length > 50){
-                alert("리뷰 길이가 50을 넘었습니다.")
-                return
-            }
-            const [success, res] = await create_review(
-                this.$route.params.id,
-                "test",
-                this.contents,
-                this.point
-                );
-                if (!success) {
-                    this.status = -1;
-                    alert(res)
-                }
-                else {
-                    await this.init();
-                }
-                this.loading = false;
-        },
+       
         openEditReview(item){            
             console.log(item)
             this.updateId = item.id
             this.isUpdateClick = true
             this.contents = item.contents
             this.point = item.point
-            this.overlay = !this.overlay; // 창을 펼친다
+            this.$store.state.overlay = true; // 창을 펼친다
         },
         openDeleteReview(item){
             this.updateId = item.id
@@ -304,49 +233,41 @@ export default {
             this.point = item.point
             this.delete_overlay = true; // 창을 펼친다
         },
-        async editReview(){
-            console.log(this.contents, this.point, this.updateId)
-            const [success, res] = await update_review(
-                this.updateId,
-                this.$route.params.id,
-                "test",
-                this.contents,
-                this.point
-                );
-                console.log(success, res)
-                if (!success) {
-                    this.status = -1;
-                    alert(res)
-                }
-                else {
-                    await this.init();
-                }
-                
-                this.loading = false;
-        },
+        
         async deleteReview(){
             // console.log(item)
-             const [success, res] = await delete_review(
+            const [success, res] = await delete_review(
                 this.updateId,
                 this.$route.params.id,
                 "test",
                 );
-                console.log(success, res)
-                if (!success) {
-                    this.status = -1;
-                    alert(res)
-                }
-                else {
-                    await this.init();
-                }
-                
-                this.loading = false;
+            if (!success) {
+                this.status = -1;
+                alert(res)
+            }
+            else {
+                await this.init();
+                this.$router.go();
+            }
+            
+            this.loading = false;
         }
     },
 
     mounted(){
 
     },
+    computed:{
+        overlay: {
+            set: function(){
+                // re
+            },
+            get: function(){
+                console.log(123)
+                return this.$store.state.overlay;
+            }
+        }
+    }
 
     
 }

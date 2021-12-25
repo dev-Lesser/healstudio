@@ -67,9 +67,10 @@
         font-weight: bold;
     }
     .login-form {
-        font-family:'Jeju Gothic', sans-serif;
+        font-family:'Noto Sans KR', sans-serif;
         width: 320px;
         margin-top: 30px;
+        color: black,
     }
     .login-btn-submit {
         margin-top: 100px;

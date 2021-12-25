@@ -6,6 +6,7 @@
             {{metaData.name}}
             
         </v-card-title>
+        <v-divider />
         <v-chip outlined class="box-hashtag-content ma-2" small v-for="keyword, i in metaData.keywords" :key="`keyword--${i}`">#{{keyword}}</v-chip>
         <v-list
             two-line
@@ -65,8 +66,8 @@
         </v-list>
         <v-list
             two-line
-            
             class="review_list"
+            style="display:flex; align-items: center; justify-content: center;"
             v-else
         >
         <no-data />

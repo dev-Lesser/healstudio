@@ -41,6 +41,7 @@ export default new Vuex.Store({
         reviews: null,
         trainers: null,
         locations: null,
+        overlay: false,
 
     },
     getters: {
