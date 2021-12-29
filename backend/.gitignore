@@ -8,3 +8,4 @@ __pycache__
 .serverless
 .requirements.zip
 .chalice
+.chalice.zip
