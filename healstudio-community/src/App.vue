@@ -1,10 +1,9 @@
 <template>
   <v-app app >
     <Header />
-    <v-main>
+    <v-main >
       <vue-page-transition name="fade">
         <div class="entire-outbox">
-          
         <router-view/>
         </div>
       </vue-page-transition>

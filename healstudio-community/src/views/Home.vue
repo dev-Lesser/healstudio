@@ -1,23 +1,28 @@
 <template>
-    <v-layout wrap>
+<div style="display: flex; justify-contents: center;">
+<v-layout wrap>
         <side-nav-bar />
         <gym-detail :data="gyms"/>
         <l-map id="map" :zoom="zoom" :center="center">
             <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+            <l-marker :lat-lng="markerLatLng"></l-marker>
         </l-map>
         
-    </v-layout>
+</v-layout>
+</div>
 </template>
 <script>
 import "leaflet/dist/leaflet.css"
-import { LMap, LTileLayer } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 import GymDetail from "@/components/GymDetail"
 import SideNavBar from '@/components/SideNavBar'
+import { Icon } from 'leaflet';
 
 export default {
     components: {
         LMap,
         LTileLayer,
+        LMarker,
         GymDetail,
         SideNavBar
         
@@ -30,11 +35,17 @@ export default {
             attribution: '',
             zoom: 12,
             center: [37.555, 127.019],
-            markerLatLng: [51.504, -0.159]
+            markerLatLng:[37.555, 127.019],
         }
     },
     
-    async beforeMount() {
+    async created() {
+        delete Icon.Default.prototype._getIconUrl;
+        Icon.Default.mergeOptions({
+        iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+        iconUrl: require('leaflet/dist/images/marker-icon.png'),
+        shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+        });
     // HERE is where to load Leaflet components!
         // const { circleMarker } = await import("leaflet/dist/leaflet-src.esm");
 

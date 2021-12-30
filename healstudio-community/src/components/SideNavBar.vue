@@ -1,14 +1,7 @@
 <template>
-<vue-page-transition name="fade-in-right">
-
-    <v-navigation-drawer 
+    <div
     class="nav-drawer" 
-    v-if="showMenu"
-    v-model="drawer" 
-    permanent
-    app
-    width='360px' 
-    color="rgba(208, 208, 228, 0.4)">
+    >
         <div class="sidenav-fix">
             <div class="sidenav-title" onclick="location.href='/';">
                 <v-list-item-title class="sidenav-header">HEALSTUDIO</v-list-item-title>
@@ -30,7 +23,7 @@
         
         <v-list dense v-if="status!=-1">
             <perfect-scrollbar>
-                <v-list-item v-for="gym, key in gyms" :key="key">
+                <v-list-item v-for="gym, key in gyms" :key="key" @click="selectGym(key)">
                     <v-list-item-content>
                         <div class="data-header">
                             <div class="data-header-name">
@@ -51,9 +44,9 @@
                             <v-btn v-if="gym.bookingUrl!=null" :href="gym.bookingUrl" outlined small color="green">
                                 예약
                             </v-btn>
-                            <v-btn outlined small color="purple" @click="selectGym(key)">
+                            <!-- <v-btn outlined small >
                                 자세히
-                            </v-btn>
+                            </v-btn> -->
                         </div>
                         <div>
                             <div class="data-content-address">{{ gym.fullAddress}}</div>
@@ -110,11 +103,9 @@
                 데이터가 존재하지 않습니다
             </v-card>
         </v-list>
-    </v-navigation-drawer>
-</vue-page-transition>
+    </div>
 </template>
 <script>
-    // import Paginate from 'vuejs-paginate'
     import {
         get_region_list,
         search_by_query,
@@ -256,9 +247,10 @@
     .sidenav-header {
         color: rgb(124, 115, 115);
         font-size: 25px;
-        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-family: Noto Sans KR,-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
     }
     .nav-drawer {
+        width: 360px;
         background-color: rgba(208, 208, 228, 0.4);
     }
     .thumbnail-img {

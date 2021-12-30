@@ -1,5 +1,5 @@
 <template>
-<div v-if="selected" id="sheet" >
+<div v-if="selected" id="detail-sheet" >
     <perfect-scrollbar v-if="selectedData != null">
         <v-card-actions>
             <v-spacer />
@@ -166,17 +166,19 @@ import ShowDesc from '@/components/ShowDesc'
             }
         },
         mounted(){
-            var sheet = document.getElementById("sheet");
+            var sheet = document.getElementById("detail-sheet");
             if (this.$route.name != 'Home' & sheet!=null){
                 console.log(sheet.style)
                 sheet.style.position = "static"
+                sheet.style.left = '0px'
             }
         },
         beforeUpdate(){
-            var sheet = document.getElementById("sheet");
+            var sheet = document.getElementById("detail-sheet");
             if (this.$route.name != 'Home' & sheet!=null){
                 console.log(sheet.style)
                 sheet.style.position = "static"
+                sheet.style.left = '0px'
             }
         },
         methods:{
@@ -203,7 +205,7 @@ import ShowDesc from '@/components/ShowDesc'
 .ps {
     height: 80vh;
     }
-#sheet {
+#detail-sheet {
     padding: 10px;
     z-index: 700;
     width: 360px;
@@ -212,6 +214,8 @@ import ShowDesc from '@/components/ShowDesc'
     height: calc(100vh - 64px);
     /* display: block;  */
     position: absolute;
+    left:360px;
+    top:0px;
     -ms-overflow-style: none; 
     /* /* transition: all ease 2s 0s; */
 
