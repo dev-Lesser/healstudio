@@ -177,7 +177,6 @@ import ShowDesc from '@/components/ShowDesc'
         mounted(){
             var sheet = document.getElementById("detail-sheet");
             if (this.$route.name != 'Home' & sheet!=null){
-                console.log(sheet.style)
                 sheet.style.position = "static"
                 sheet.style.left = '0px'
             }
@@ -185,7 +184,6 @@ import ShowDesc from '@/components/ShowDesc'
         beforeUpdate(){
             var sheet = document.getElementById("detail-sheet");
             if (this.$route.name != 'Home' & sheet!=null){
-                console.log(sheet.style)
                 sheet.style.position = "static"
                 sheet.style.left = '0px'
             }

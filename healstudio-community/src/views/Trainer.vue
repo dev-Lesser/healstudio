@@ -8,9 +8,7 @@
                 <ad-box />
             </v-layout>
             <v-layout>
-                <div class="justify-center align-center d-flex">
-                    <trainer-table :meta-data="selectedData" :data="trainers"/>
-                </div>
+                <trainer-table :meta-data="selectedData" :data="trainers"/>
             </v-layout>
         </v-container>
     </v-card>

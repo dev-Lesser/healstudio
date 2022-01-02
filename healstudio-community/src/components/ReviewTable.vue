@@ -27,7 +27,7 @@
                     작성일
                 </div>
                 <div class="review-action">
-                    
+                    수정/삭제
                 </div>
             </v-list-item>
         </div>
@@ -67,23 +67,43 @@
                     <v-icon
                         small
                         class="mr-2"
-                        @click="editItem(item)"
+                        color="rgb(116, 116, 216)"
+                        @click="editReview(item)"
                     >
                         mdi-pencil
                     </v-icon>
                     <v-icon
                         small
-                        @click="deleteItem(item)"
+                        color="rgb(216, 116, 116)"
+                        @click="deleteReview(item)"
                     >
                         mdi-delete
                     </v-icon>
                 </div>
-            
-                
             </v-list-item>
-
         </div>
         <v-divider />
+        <v-progress-linear
+            indeterminate
+            color="black"
+            class="mt-12"
+            v-if="loading"
+            ></v-progress-linear>
+            <v-progress-linear
+            color="black"
+            class="mt-3 mb-2"
+            v-else
+            ></v-progress-linear>
+            <!-- <div class="d-flex flex-row justify-center">
+                <v-icon class="pagination_page" @click="handlePrevClick" :color="start == 1 ? '#adadad' : '#757575'">mdi-chevron-left</v-icon>
+                <div class="pagination_page d-flex flex-row justify-center align-center" 
+                v-for="p in pages" :key="p" 
+                :class="{ selected_page: current == p }" 
+                @click="handlePageClick(p)">
+                    {{ p }}
+                </div>
+                <v-icon class="pagination_page" @click="handleNextClick" :color="end == limit ? '#adadad' : '#757575'">mdi-chevron-right</v-icon>
+            </div> -->
         <v-btn @click="overlay = !overlay"> <v-icon class="mr-2" small >mdi-pencil</v-icon>리뷰 작성하기</v-btn>
         <v-overlay :value="overlay" light  >
             <v-card class="ma-3 pa-3" :width="500"
@@ -168,9 +188,19 @@ export default {
             overlay: false,
             point: 0,
             contents: '',
+            pages: 5,
+            start:1,
+            end: 100,
+            current: 1,
+            loading: false,
         }
     },
     methods:{
+        async init(){
+            this.overlay = false
+                    this.contents = ''
+                    this.point = 0
+        },
         async createReview(){
             const [success, res] = await create_review(
                 this.$route.params.id,
@@ -183,12 +213,16 @@ export default {
                     alert(res)
                 }
                 else {
-                    this.overlay = false
-                    this.contents = ''
-                    this.point = 0
+                    await this.init();
                 }
 
                 this.loading = false;
+        },
+        async editReview(item){
+            console.log(1,item)
+        },
+        async deleteReview(item){
+            console.log('delete', item)
         }
     },
 
@@ -225,4 +259,13 @@ export default {
 .review-updated{
     width: 15%;
 }
+
+.pagination_page {
+        cursor: pointer;
+        width: 34px;
+        height: 34px;
+        border-radius: 17px;
+        text-align: center;
+        margin: 4px;
+    }
 </style>

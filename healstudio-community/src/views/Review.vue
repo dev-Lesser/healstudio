@@ -5,13 +5,12 @@
     <v-card class="reviews-container justify-center align-center d-flex">
         <v-container>
             <v-layout>
+                
                 <ad-box />
             </v-layout>
-        <v-layout>
-            <div class="justify-center align-center d-flex">
+            <v-layout>
                 <review-table :meta-data="selectedData" :data="reviews"/>
-            </div>
-        </v-layout>
+            </v-layout>
         </v-container>
     </v-card>
 </div>
