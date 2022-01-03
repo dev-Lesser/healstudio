@@ -1,4 +1,6 @@
 <template>
+<v-flex xs12 sm12 md12 >
+
     <v-card  class="ma-3 pa-3">
         <v-card-title>
             {{metaData.name}}
@@ -7,8 +9,6 @@
         <v-chip outlined class="box-hashtag-content ma-2" small v-for="keyword, i in metaData.keywords" :key="`keyword--${i}`">#{{keyword}}</v-chip>
         <v-list
             two-line
-            :width="listWidth"
-            :height="listHeight"
             class="review_list"
             v-if="data.length>0"
         >
@@ -65,14 +65,14 @@
         </v-list>
         <v-list
             two-line
-            :width="listWidth"
-            :height="listHeight"
+            
             class="review_list"
             v-else
         >
         <no-data />
         </v-list>
     </v-card>
+</v-flex>
 </template>
 <script>
 import NoData from '@/components/NoData'
@@ -113,6 +113,30 @@ export default {
     width: 15%;
     text-align: center;
 }
-
+.review_list_item{
+    font-size: 13px;
+}
+.review-header{
+    font-size: 15px;
+}
+.review-user {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    width: 10%;
+}
+.review-rating {
+    width: 130px;
+    text-align: center;
+}
+.review-content {
+    width: 45%;
+}
+.review-created{
+    width: 15%;
+}
+.review-updated{
+    width: 15%;
+}
 
 </style>

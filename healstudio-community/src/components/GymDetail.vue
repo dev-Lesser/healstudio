@@ -137,9 +137,15 @@
         </perfect-scrollbar>
         <v-divider />
         <v-card-actions class="container-reviews-trainers">
-            <v-btn color="grey lighten-2" @click="clickToReview" v-show="$route.name == 'Home' | $route.name != 'Review'">리뷰 작성</v-btn>
-            <v-spacer/>  
-            <v-btn @click="clickToTrainer" v-show="$route.name == 'Home' | $route.name != 'Trainer'">트레이너 확인</v-btn>
+            <v-btn color="grey lighten-2" @click="clickToReview" v-if="$route.name == 'Home' | $route.name != 'Review'">
+                <v-icon small class="mr-3">mdi-pencil</v-icon>
+                리뷰 작성
+            </v-btn>
+            <v-spacer />
+            <v-btn @click="clickToTrainer" v-if="$route.name == 'Home' | $route.name != 'Trainer'">
+                <v-icon small class="mr-3">mdi-account</v-icon>
+                트레이너 확인
+            </v-btn>
         </v-card-actions>
     </div>
 </template>
@@ -288,6 +294,8 @@ import ShowDesc from '@/components/ShowDesc'
 }
 .container-reviews-trainers,
 .box-description{
+    display: flex;
+    justify-content: center;
     font-size: 13px;
     font-family:'Jeju Gothic', sans-serif;
     /* background-color: azure; */

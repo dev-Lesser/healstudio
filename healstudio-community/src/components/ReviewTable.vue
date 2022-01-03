@@ -1,14 +1,14 @@
 <template>
+<v-flex xs12 sm12 md12 >
     <v-card  class="ma-3 pa-3">
         <v-card-title>
             {{metaData.name}}
             
         </v-card-title>
         <v-chip outlined class="box-hashtag-content ma-2" small v-for="keyword, i in metaData.keywords" :key="`keyword--${i}`">#{{keyword}}</v-chip>
+        
         <v-list
             two-line
-            :width="listWidth"
-            :height="listHeight"
             class="review_list"
             v-if="data.length>0"
         >
@@ -136,6 +136,7 @@
             </v-card>
         </v-overlay>
         </v-list>
+        
         <v-list
             two-line
             :width="listWidth"
@@ -146,6 +147,7 @@
         <no-data />
         </v-list>
     </v-card>
+</v-flex>
 </template>
 <script>
 import NoData from '@/components/NoData'
@@ -160,7 +162,7 @@ export default {
     },
     data(){
         return {
-            listWidth: window.innerWidth - 602,
+            listWidth: window.innerWidth - 600,
             listHeight: Math.round((window.innerHeight - 483) / 100) * 100,
             isShown: true,
             overlay: false,
@@ -176,9 +178,7 @@ export default {
                 this.contents,
                 this.point
                 );
-            console.log(success)
                 if (!success) {
-                    console.log(123)
                     this.status = -1;
                     alert(res)
                 }
