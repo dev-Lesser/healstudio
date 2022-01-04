@@ -64,8 +64,19 @@
                 {{review.created_at >= review.updated_at ? review.created_at.split(" ")[0] : review.updated_at.split(" ")[0]}}
                 </div>
                 <div>
-                    <v-btn>편집</v-btn>
-                    <v-btn>삭제</v-btn>
+                    <v-icon
+                        small
+                        class="mr-2"
+                        @click="editItem(item)"
+                    >
+                        mdi-pencil
+                    </v-icon>
+                    <v-icon
+                        small
+                        @click="deleteItem(item)"
+                    >
+                        mdi-delete
+                    </v-icon>
                 </div>
             
                 
@@ -167,6 +178,7 @@ export default {
                 );
             console.log(success)
                 if (!success) {
+                    console.log(123)
                     this.status = -1;
                     alert(res)
                 }
@@ -201,7 +213,7 @@ export default {
     width: 10%;
 }
 .review-rating {
-    width: 15%;
+    width: 130px;
     text-align: center;
 }
 .review-content {

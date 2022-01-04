@@ -198,9 +198,10 @@ def createReview(gymId):
         return Response(body=gymId,
                 headers={'Content-Type': 'text/plain'},
                 status_code=200)
+        
     return Response(body={
                     "error": "평점 및 리뷰를 확인해주세요"
                     },
             headers={'Content-Type': 'application/json'},
-            status_code=400)
+            status_code=403)
 

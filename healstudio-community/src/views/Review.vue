@@ -1,21 +1,32 @@
 <template>
 <div class="reviews-card">
     <gym-detail :data="selectedData"/>
+    
     <v-card class="reviews-container justify-center align-center d-flex">
-    <div class="justify-center align-center d-flex">
-        <review-table :meta-data="selectedData" :data="reviews"/>
-    </div>
+        <v-container>
+            <v-layout>
+                <ad-box />
+            </v-layout>
+        <v-layout>
+            <div class="justify-center align-center d-flex">
+                <review-table :meta-data="selectedData" :data="reviews"/>
+            </div>
+        </v-layout>
+        </v-container>
     </v-card>
 </div>
 </template>
 <script>
 import GymDetail from '@/components/GymDetail'
+import AdBox from '@/components/AdBox'
+
 import ReviewTable from '@/components/ReviewTable'
 import { get_gym_by_id, get_reviews } from '@/assets/api'
     export default {
         components:{
             GymDetail,
-            ReviewTable
+            ReviewTable,
+            AdBox
         },
         data() {
             return {

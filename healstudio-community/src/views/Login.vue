@@ -3,12 +3,10 @@
         <div class="login-card">
             <div id="menu_logo" style="cursor: default">
                 <div id="menu_logo_letter">
-                    br
-                    <br />pr
+                    HEALSTUDIO
                 </div>
                 <div id="menu_logo_circle" />
             </div>
-            <div class="login-logo-desc">BRPR Brand Analytics</div>
             <v-form class="login-form">
                 <v-text-field v-model="id" color="#52abc4" dense outlined label="아이디" @keyup.enter="doLogin" />
                 <v-text-field v-model="pw" color="#52abc4" dense outlined label="비밀번호" type="password" @keyup.enter="doLogin" />
