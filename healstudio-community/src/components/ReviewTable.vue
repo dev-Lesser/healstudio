@@ -26,8 +26,8 @@
                 <div class="review-created">
                     작성일
                 </div>
-                <div class="review-updated">
-                    수정일
+                <div class="review-action">
+                    
                 </div>
             </v-list-item>
         </div>
@@ -61,11 +61,13 @@
                 {{review.contents}}
                 </div>
                 <div class="review-created">
-                {{review.created_at}}
+                {{review.created_at >= review.updated_at ? review.created_at.split(" ")[0] : review.updated_at.split(" ")[0]}}
                 </div>
-                <div class="review-updated">
-                {{review.updated_at}}
+                <div>
+                    <v-btn>편집</v-btn>
+                    <v-btn>삭제</v-btn>
                 </div>
+            
                 
             </v-list-item>
 
