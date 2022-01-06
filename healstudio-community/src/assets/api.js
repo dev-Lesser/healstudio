@@ -107,3 +107,23 @@ export const get_trainers = async (gymId, skip, limit) => {
     console.log(result)
     return [false, null]
 }
+
+export const create_review = async (gymId, user_id, contents, point) => {
+    const body = { user_id, contents, point }
+    const url = `${BASE_URL}/review/${gymId}`
+    var data = JSON.stringify(body);
+    const result = await axios({
+        method: 'post',
+        url: url,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    })
+    console.log(result)
+    if (result.status == 200) {
+        console.log(`created ${gymId}`)
+        return [true, result.data]
+    }
+    return [false, null]
+}

@@ -136,6 +136,7 @@
 </template>
 <script>
 import NoData from '@/components/NoData'
+import {create_review} from '@/assets/api'
 export default {
     components: {
         NoData
@@ -156,7 +157,24 @@ export default {
     },
     methods:{
         async createReview(){
-            console.log(this.point,this.contents)
+            const [success, res] = await create_review(
+                this.$route.params.id,
+                "test",
+                this.contents,
+                this.point
+                );
+            console.log(success)
+                if (!success) {
+                    this.status = -1;
+                    alert(res)
+                }
+                else {
+                    this.overlay = false
+                    this.contents = ''
+                    this.point = 0
+                }
+
+                this.loading = false;
         }
     },
 
