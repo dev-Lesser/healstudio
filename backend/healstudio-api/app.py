@@ -4,7 +4,7 @@ from chalice import BadRequestError
 import json, os
 from dotenv import load_dotenv
 import pymongo
-
+import datetime
 load_dotenv(verbose=True)
 DB_HOST = os.getenv('DB_HOST')
 DB_USER = os.getenv('DB_USER')
@@ -87,10 +87,10 @@ def searchRegionDetail():
             'region': sido, 
             'depth1': sigungu
             },{'_id':0}))
-   
+
         return regions
     regions = list(collection.find({'region': sido},{'_id':0}))
-   
+
     return regions
 # user
 @app.route('/user/{userId}', methods=['GET'], cors=True)
@@ -172,14 +172,35 @@ def getTrainers(gymId):
     return Response(body=res,
             headers={'Content-Type': 'application/json'},
             status_code=200)
-# @app.route('/gyms/{gymId}', methods=['GET'])
-# def searchByGymId(gymId):
+
+
+### REVIEW CRUD
+@app.route('/review/{gymId}', methods=['POST', 'PUT', 'PATCH', 'DELETE'], cors=True)
+def createReview(gymId):
+    collection = db['reviews']
+    data = json.loads(app.current_request.raw_body.decode())
+    contents = data.get('contents')
+    user_id = data.get('user_id')
+    rate_point = data.get('point')
+    if contents and user_id and gymId and rate_point:
+        res = {
+            "id":collection.find_one({"related_gym_id": gymId}, sort=[('id', -1)])['id'] + 1,
+            "user": user_id,
+            "related_gym_id": gymId,
+            "contents": contents,
+            "point": rate_point,
+            "created_at": datetime.datetime.now(),
+            "updated_at": datetime.datetime.now()
+        }
+        collection.insert(res)
     
-#     res = collection.find_one({"id": gymId},{"_id":0, "checkParse":0})
-#     # response = {
-        
-#     # }
-#     return res
 
+        return Response(body=gymId,
+                headers={'Content-Type': 'text/plain'},
+                status_code=200)
+    return Response(body={
+                    "error": "평점 및 리뷰를 확인해주세요"
+                    },
+            headers={'Content-Type': 'application/json'},
+            status_code=400)
 
-#
