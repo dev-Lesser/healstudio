@@ -5,7 +5,14 @@
         <gym-detail :data="gyms"/>
         <l-map id="map" :zoom="zoom" :center="center">
             <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-            <l-marker :lat-lng="markerLatLng"></l-marker>
+            
+            <l-marker  :lat-lng="markerLatLng"></l-marker>
+            <!-- <div v-if="locations">
+                <l-marker v-for="key in $store.state.locations" :key="key" :lat-lng="[$store.state.locations[key][0], $store.state.locations[key][1]]"></l-marker>
+            </div> -->
+            <!-- <v-marker v-for="(i,key) of locations" :key="key" :lat-lng="[i,key]">
+            
+          </v-marker> -->
         </l-map>
         
 </v-layout>
@@ -14,17 +21,20 @@
 <script>
 import "leaflet/dist/leaflet.css"
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
+// import * as Vue2Leaflet from 'vue2-leaflet'
+
 import GymDetail from "@/components/GymDetail"
 import SideNavBar from '@/components/SideNavBar'
 import { Icon } from 'leaflet';
-
+import { search_by_query } from '@/assets/api'
 export default {
     components: {
         LMap,
         LTileLayer,
         LMarker,
+        // 'v-marker': Vue2Leaflet.LMarker,
         GymDetail,
-        SideNavBar
+        SideNavBar,
         
     },
     data(){
@@ -36,6 +46,7 @@ export default {
             zoom: 12,
             center: [37.555, 127.019],
             markerLatLng:[37.555, 127.019],
+            latlon: null,
         }
     },
     
@@ -46,24 +57,55 @@ export default {
         iconUrl: require('leaflet/dist/images/marker-icon.png'),
         shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
         });
-    // HERE is where to load Leaflet components!
-        // const { circleMarker } = await import("leaflet/dist/leaflet-src.esm");
-
-        // And now the Leaflet circleMarker function can be used by the options:
-        // this.geojsonOptions.pointToLayer = (feature, latLng) =>
-        // circleMarker(latLng, { radius: 8 });
-        // this.mapIsReady = true;
+        // await this.getGymList(1);
     },
     async mounted(){
+        
+        for(var i in this.$store.state.locations){
+            console.log(this.$store.state.locations[i])
+        }
+        // this.$store.state.locations.forEach(e => {
+        //         console.log(e)
+        //     });
+    },
+    async beforeUpdate(){
+       
+            
+        
     },
     computed: {
         gyms(){
-            return this.$store.state.selectedData
+            return this.$store.state.selectedData;
+        },
+        locations(){
+            return this.$store.state.locations;
+        }
+    },
+    methods:{
+        async getGymList(skip) {
+            this.loading = true
+            const skipCount = (skip - 1) * 20
+            const [success, gyms] = await search_by_query(this.query, skipCount, 20);
+            const locations = gyms.map(e => {
+                return [e.y, e.x] // 반대임
+            });
+            this.$store.state.locations = locations;
+            if (!success) this.status = -1;
+            else {
+                this.$store.state.gyms = gyms
+                this.loading = false;
+            }
         }
     },
     watch:{
         gyms(){
             // console.log(this.$store.state.gyms)
+        },
+        locations(){
+            this.latlon=this.$store.state.locations.map(e => {
+                return e
+            });
+            console.log(this.latlon)
         }
     }
 }

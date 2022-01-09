@@ -41,15 +41,11 @@
                                 </div>
                             </div>
                             <v-spacer />
-                            <v-btn v-if="gym.bookingUrl!=null" :href="gym.bookingUrl" outlined small color="green">
-                                예약
-                            </v-btn>
-                            <!-- <v-btn outlined small >
-                                자세히
-                            </v-btn> -->
+                            
+                            
                         </div>
                         <div>
-                            <div class="data-content-address">{{ gym.fullAddress}}</div>
+                            <div class="data-content-address">{{ gym.fullAddress }}</div>
                         </div>
                         <v-card>
                             <v-img :src="gym.imageUrl" height="200">
@@ -181,13 +177,13 @@
                 const skipCount = (this.current - 1) * 20
                 
                 const [success, gyms] = await search_by_query(this.query, skipCount, 20);
+                console.log(gyms)
                 if (!success) {
                     console.log(success)
                     this.status = -1;
                 }
                 else {
                     this.$store.state.gyms = gyms
-                    
                 }
 
                 this.loading = false;
@@ -223,9 +219,12 @@
                 this.loading = true
                 const skipCount = (skip - 1) * 20
                 const [success, gyms] = await search_by_query(this.query, skipCount, 20);
+                const locations = gyms.map(e => {
+                    return [e.y, e.x] // 반대임
+                });
+                this.$store.state.locations = locations;
                 if (!success) this.status = -1;
                 else {
-                    console.log(gyms)
                     this.$store.state.gyms = gyms
                     this.loading = false;
                 }

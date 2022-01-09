@@ -187,6 +187,7 @@ import ShowDesc from '@/components/ShowDesc'
         methods:{
             clickToReview(){
                 this.$store.state.gymDetailData = this.data
+                console.log(this.data)
                 this.$store.state.gyms = this.selectedData;
                 this.$router.push(`/review/${this.data.id}`);
             },

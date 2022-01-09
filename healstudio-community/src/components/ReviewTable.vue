@@ -70,6 +70,8 @@
             </v-list-item>
 
         </div>
+        <v-divider />
+        <v-btn > <v-icon class="mr-2" small >mdi-pencil</v-icon>리뷰 작성하기</v-btn>
         </v-list>
         <v-list
             two-line

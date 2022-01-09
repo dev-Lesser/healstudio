@@ -40,6 +40,7 @@ export default new Vuex.Store({
         gymDetailData: null,
         reviews: null,
         trainers: null,
+        locations: null,
 
     },
     getters: {
