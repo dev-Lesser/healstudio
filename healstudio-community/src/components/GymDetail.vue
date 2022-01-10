@@ -81,7 +81,7 @@
             </v-card-subtitle>
             <v-divider />
             <div class="box-businesshour" >
-                <div class="box-businesshour-title">  <v-icon class="mt-1 mr-3" small>mdi-timelapse</v-icon>영업 시간</div>
+                <div class="box-businesshour-title">  <v-icon class="mt-1 mr-3" small>mdi-clock</v-icon>영업 시간</div>
                 <v-spacer/>
                 <v-menu v-model="info" offset-x open-on-hover>
                     <template v-slot:activator="{ on, attrs }">
@@ -92,7 +92,10 @@
                     </v-btn>
                     </template>
                     <v-card width="300px" class="pa-3">
-                    <div class="box-businesshour-sheet-title">영업 시간</div>
+                    <div class="box-businesshour-sheet-title">
+                        영업 시간
+                        <v-icon class="mt-1" small>mdi-clock</v-icon>
+                    </div>
                     <div class="box-businesshour-content ma-1 pa-2" v-for="data, ikey in selectedData.businessHours.split('|')" :key="ikey">{{data}}<v-divider /></div>
                     </v-card>
                 </v-menu>
@@ -275,7 +278,7 @@ import ShowDesc from '@/components/ShowDesc'
     font-family:'Jeju Gothic', sans-serif;
 }
 .box-businesshour-sheet-title{
-    font-size: 13px;
+    font-size: 15px;
     font-family:'Jeju Gothic', sans-serif;
 }
 .box-businesshour-content{

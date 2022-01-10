@@ -1,5 +1,4 @@
 <template>
-<transition name="slide-up">
     <div
     class="nav-drawer" 
     >
@@ -85,7 +84,7 @@
             ></v-progress-linear>
             <v-progress-linear
             color="black"
-            class="mt-3"
+            class="mt-3 mb-2"
             v-else
             ></v-progress-linear>
             <div class="d-flex flex-row justify-center">
@@ -105,7 +104,6 @@
             </v-card>
         </v-list>
     </div>
-</transition>
 </template>
 <script>
     import {
@@ -238,7 +236,7 @@
 <style scoped>
     @import url(//fonts.googleapis.com/earlyaccess/jejugothic.css);
     .ps {
-        height: 70vh;
+        height: calc(100vh - 344px);
     }
     .sidenav-title {
         color: white;
@@ -247,12 +245,14 @@
         font-size: 18px;
     }
     .sidenav-header {
+        cursor:pointer;
         color: rgb(124, 115, 115);
         font-size: 25px;
         font-family: Noto Sans KR,-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
     }
     .nav-drawer {
         width: 360px;
+        height: 80vh;
         background-color: rgba(208, 208, 228, 0.4);
     }
     .thumbnail-img {
