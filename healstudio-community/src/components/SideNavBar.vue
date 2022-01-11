@@ -1,4 +1,5 @@
 <template>
+<transition name="slide-up">
     <div
     class="nav-drawer" 
     >
@@ -104,6 +105,7 @@
             </v-card>
         </v-list>
     </div>
+</transition>
 </template>
 <script>
     import {

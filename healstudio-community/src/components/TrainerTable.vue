@@ -10,6 +10,7 @@
             :width="listWidth"
             :height="listHeight"
             class="review_list"
+            v-if="data.length>0"
         >
         <div class="trainer-header">
             <v-list-item>
@@ -53,7 +54,7 @@
                 </div>
                 <div v-for="keyword, ikey in trainer.keywords" :key="`keyword--`+ikey">
                     <v-chip outlined small class="trainer-keywords ma-2">
-                     #{{keyword}}
+                        #{{keyword}}
                     </v-chip>
                 </div>
                 
@@ -62,12 +63,23 @@
 
         </div>
         </v-list>
+        <v-list
+            two-line
+            :width="listWidth"
+            :height="listHeight"
+            class="review_list"
+            v-else
+        >
+        <no-data />
+        </v-list>
     </v-card>
 </template>
 <script>
+import NoData from '@/components/NoData'
+
 export default {
-    setup() {
-        
+    components: {
+        NoData
     },
     props:{
         metaData: Object,
@@ -80,7 +92,7 @@ export default {
         }
     },
     mounted(){
-        console.log(this.reviews)
+        console.log(this.$route.name)
     }
 }
 </script>
