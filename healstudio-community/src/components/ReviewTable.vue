@@ -10,6 +10,7 @@
             :width="listWidth"
             :height="listHeight"
             class="review_list"
+            v-if="data.length>0"
         >
         <div class="review-header">
             <v-list-item>
@@ -70,12 +71,22 @@
 
         </div>
         </v-list>
+        <v-list
+            two-line
+            :width="listWidth"
+            :height="listHeight"
+            class="review_list"
+            v-else
+        >
+        <no-data />
+        </v-list>
     </v-card>
 </template>
 <script>
+import NoData from '@/components/NoData'
 export default {
-    setup() {
-        
+    components: {
+        NoData
     },
     props:{
         metaData: Object,
@@ -85,11 +96,15 @@ export default {
         return {
             listWidth: window.innerWidth - 602,
             listHeight: Math.round((window.innerHeight - 483) / 100) * 100,
+            isShown: true,
         }
     },
+
     mounted(){
-        console.log(this.reviews)
-    }
+
+    },
+
+    
 }
 </script>
 <style scoped>
