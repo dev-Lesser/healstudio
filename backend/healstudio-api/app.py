@@ -2,14 +2,15 @@ from chalice import Chalice, Response
 from chalice import BadRequestError
 # from chalicelib import users
 import json, os
-
+from dotenv import load_dotenv
 import pymongo
 
-DB_HOST = os.environ['DB_HOST']
-DB_USER = os.environ['DB_USER']
-DB_PASSWORD = os.environ.get("DB_PASSWARD")
-DB_NAME = os.environ.get("DB_NAME")
-COLLECTION_NAME = os.environ.get("COLLECTION_NAME")
+load_dotenv(verbose=True)
+DB_HOST = os.getenv('DB_HOST')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_NAME = os.getenv('DB_NAME')
+COLLECTION_NAME = os.getenv('COLLECTION_NAME')
 
 client = pymongo.MongoClient('mongodb://{host}'.format(
     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
@@ -27,14 +28,13 @@ def index():
 @app.route('/login', methods=['POST'], cors=True)
 def login():
     data = json.loads(app.current_request.raw_body.decode())
-    print(data, type(data))
     user_id = data.get('user_id')
     password = data.get('password')
     collection = db['users']
     if collection.find_one({'user': user_id, 'password':password}):
         return Response(body='token',
                     headers={'Content-Type': 'application/json'},
-                    status_code=201)
+                    status_code=200)
         
     return Response(body='error',
                     headers={'Content-Type': 'application/json'},

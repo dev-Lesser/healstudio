@@ -7,5 +7,5 @@ node_modules
 __pycache__
 .serverless
 .requirements.zip
-.chalice
 .chalice.zip
+.env

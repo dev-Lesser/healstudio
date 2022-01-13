@@ -1,2 +1,4 @@
 .chalice/deployments/
 .chalice/venv/
+dev.json
+.env
