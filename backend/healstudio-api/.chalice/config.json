@@ -1,0 +1,12 @@
+{
+  "version": "2.0",
+  "app_name": "healstudio-api",
+  "stages": {
+    "dev": {
+      "environment_variables": {
+        
+      },
+      "api_gateway_stage": "api"
+    }
+  }
+}
