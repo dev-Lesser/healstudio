@@ -25,7 +25,7 @@ HEADERS = {
 }
 
 ### REVIEW CRUD
-@review_routes.route('/reviews/{gymId}', methods=['GET'], cors=False)
+@review_routes.route('/reviews/{gymId}', methods=['GET'], cors=True)
 def getReviews(gymId):
     collection = db['reviews']
     e = review_routes.current_request.to_dict()
@@ -78,7 +78,7 @@ def getReviews(gymId):
                 status_code=200)
 
 
-@review_routes.route('/review/{gymId}', methods=['POST'], cors=False)
+@review_routes.route('/review/{gymId}', methods=['POST'], cors=True)
 def createReview(gymId):
     collection = db['reviews']
     user_collection = db['users']
@@ -121,7 +121,7 @@ def createReview(gymId):
             headers=HEADERS,
             status_code=403)
     
-@review_routes.route('/review/{gymId}', methods=['PATCH'], cors=False)
+@review_routes.route('/review/{gymId}', methods=['PATCH'], cors=True)
 def updateReview(gymId):
     collection = db['reviews']
     data = json.loads(review_routes.current_request.raw_body.decode())
@@ -161,7 +161,7 @@ def updateReview(gymId):
             headers=HEADERS,
             status_code=403)
 
-@review_routes.route('/review/{gymId}', methods=['DELETE'], cors=False)
+@review_routes.route('/review/{gymId}', methods=['DELETE'], cors=True)
 def deleteReview(gymId):
     collection = db['reviews']
     user_collection = db['users']

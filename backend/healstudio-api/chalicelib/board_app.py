@@ -26,7 +26,7 @@ HEADERS = {
     'Access-Control-Allow-Origin': '*'
 }
 
-@board_routes.route('/boards', methods=['GET'], cors=False)
+@board_routes.route('/boards', methods=['GET'], cors=True)
 def getBoards():
     collection = db['board']
     if board_routes.current_request.method == 'GET':
@@ -113,7 +113,7 @@ def getBoards():
                 return Response(body=results,
                     headers=HEADERS,
                     status_code=200)
-@board_routes.route('/board/{_id}', methods=['GET'], cors=False)
+@board_routes.route('/board/{_id}', methods=['GET'], cors=True)
 def getBoard(_id):
     collection = db['board']
     if board_routes.current_request.method == 'GET':
@@ -165,7 +165,7 @@ def getBoard(_id):
             status_code=200)
         
     
-@board_routes.route('/board', methods=['POST'], cors=False)
+@board_routes.route('/board', methods=['POST'], cors=True)
 def postBoard():
     collection = db['board']
     user_collection = db['users']
@@ -209,7 +209,7 @@ def postBoard():
         headers=HEADERS,
         status_code=201)
     
-@board_routes.route('/board', methods=['PATCH'], cors=False)
+@board_routes.route('/board', methods=['PATCH'], cors=True)
 def patchBoard():
     collection = db['board']
     user_collection = db['users']
@@ -246,7 +246,7 @@ def patchBoard():
         headers=HEADERS,
         status_code=204)
     
-@board_routes.route('/board', methods=['DELETE'], cors=False)
+@board_routes.route('/board', methods=['DELETE'], cors=True)
 def deleteBoard():
     collection = db['board']
     user_collection = db['users']
@@ -270,7 +270,7 @@ def deleteBoard():
         headers=HEADERS,
         status_code=200)
     
-@board_routes.route('/reply', methods=['POST','DELETE'], cors=False)
+@board_routes.route('/reply', methods=['POST','DELETE'], cors=True)
 def handleReply():
     collection = db['board']
     user_collection = db['users']
@@ -325,7 +325,7 @@ def handleReply():
             status_code=200)
 
     
-@board_routes.route('/board/{_id}/favorite', methods=['PATCH'], cors=False)
+@board_routes.route('/board/{_id}/favorite', methods=['PATCH'], cors=True)
 def handleBoardFavorite(_id):
     collection = db['board']
     user_collection = db['users']
