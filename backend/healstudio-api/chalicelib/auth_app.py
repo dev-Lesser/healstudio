@@ -1,5 +1,12 @@
 from chalice import Blueprint
 from chalice import Response
+from chalice import CORSConfig
+
+cors_config = CORSConfig(
+    allow_origin='*',
+    allow_credentials=True
+)
+
 import bcrypt
 import requests
 import json, datetime, os
@@ -28,7 +35,7 @@ HEADERS = {
 }
 
 # login
-@auth_routes.route('/auth/login', methods=['POST'], cors=False)
+@auth_routes.route('/auth/login', methods=['POST'], cors=cors_config)
 def login():
     data = json.loads(auth_routes.current_request.raw_body.decode())
     user_id = data.get('user_id')
@@ -58,7 +65,7 @@ def login():
                     status_code=400)
 
 
-@auth_routes.route('/auth/signup', methods=['POST'], cors=False)
+@auth_routes.route('/auth/signup', methods=['POST'], cors=True)
 def signup():
     data = json.loads(auth_routes.current_request.raw_body.decode())
     user_id = data.get('user_id')

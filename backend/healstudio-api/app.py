@@ -20,7 +20,7 @@ HEADERS = {
     'Content-Type': 'application/json', 
     'Access-Control-Allow-Origin': '*'
 }
-print(DB_HOST)
+
 client = pymongo.MongoClient('{host}'.format(
     user=DB_USER, password=DB_PASSWORD, host=DB_HOST
 ))
@@ -35,7 +35,7 @@ app.register_blueprint(review_routes)
 ### BOARD API
 app.register_blueprint(board_routes) 
 
-@app.route('/search', methods=['GET'], cors=False)
+@app.route('/search', methods=['GET'], cors=True)
 def searchByQuery():
     collection = db['space']
     
@@ -61,7 +61,7 @@ def searchByQuery():
             status_code=200)
 
 # meta data
-@app.route('/regions', methods=['GET'], cors=False)
+@app.route('/regions', methods=['GET'], cors=True)
 def searchRegions():
     collection = db['region']
     regions = collection.distinct('region')
@@ -70,7 +70,7 @@ def searchRegions():
                 status_code=200)
 
 # region
-@app.route('/metadata', methods=['GET'], cors=False)
+@app.route('/metadata', methods=['GET'], cors=True)
 def getMeta():
     board_collection    = db['board']
     user_collection     = db['users']
@@ -99,7 +99,7 @@ def getMeta():
                 headers=HEADERS,
                 status_code=200)
 
-@app.route('/region', methods=['GET'], cors=False)
+@app.route('/region', methods=['GET'], cors=True)
 def searchRegionDetail():
     collection = db['region']
     e = app.current_request.to_dict()
@@ -118,13 +118,13 @@ def searchRegionDetail():
     return regions
 
 
-@app.route('/gym/{gymId}', methods=['GET'], cors=False)
+@app.route('/gym/{gymId}', methods=['GET'], cors=True)
 def searchByGymId(gymId):
     res = collection.find_one({"id": gymId},{"_id":0, "checkParse":0})
     return res
 
 
-@app.route('/gym', methods=['POST'], content_types=['application/json'], cors=False)
+@app.route('/gym', methods=['POST'], content_types=['application/json'], cors=True)
 def createGym():
     data = app.current_request.raw_body.decode()
     data['checkParse'] = False
@@ -137,7 +137,7 @@ def createGym():
     }
     return response
 
-@app.route('/gyms-lists', methods=['GET'], cors=False)
+@app.route('/gyms-lists', methods=['GET'], cors=True)
 def search():
     e = app.current_request.to_dict()
     params = e.get('query_params')
@@ -151,7 +151,7 @@ def search():
     return res
 
 
-@app.route('/trainers/{gymId}', methods=['GET'], cors=False)
+@app.route('/trainers/{gymId}', methods=['GET'], cors=True)
 def getTrainers(gymId):
     collection = db['trainers']
     e = app.current_request.to_dict()
@@ -171,7 +171,7 @@ def getTrainers(gymId):
             headers=HEADERS,
             status_code=200)
 
-@app.route('/user/{user_id}', methods=['GET'], cors=False)
+@app.route('/user/{user_id}', methods=['GET'], cors=True)
 def getUserDetails(user_id):
     collection = db['users']
     e = app.current_request.to_dict()
@@ -224,7 +224,7 @@ def getUserDetails(user_id):
             headers=HEADERS,
             status_code=403)
 
-@app.route('/favorite/{gymId}', methods=['GET','POST'], cors=False)
+@app.route('/favorite/{gymId}', methods=['GET','POST'], cors=True)
 def handleFavorite(gymId):
     collection = db['users']
     if app.current_request.method == 'GET':
