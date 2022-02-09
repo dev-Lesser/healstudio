@@ -65,8 +65,9 @@ def searchByQuery():
 def searchRegions():
     collection = db['region']
     regions = collection.distinct('region')
- 
-    return regions
+    return Response(body=regions,
+                headers=HEADERS,
+                status_code=200)
 
 # region
 @app.route('/metadata', methods=['GET'], cors=False)
@@ -232,7 +233,7 @@ def handleFavorite(gymId):
         user_id = params.get('user_id')
         uid = params.get('uid')
         res = collection.find_one(
-            {'user': user_id, 'uuid': uid, 'favList': { '$in': [gymId] }} # 있으면 찜한 목록이기 때문에 pull 함
+            {'user': user_id, 'uuid': uid, 'favList': { '$in': [gymId] }} # 있으면 찜한 목록이기 때문에 True 를 return 함
         )
         if res:
             return Response(body=True,

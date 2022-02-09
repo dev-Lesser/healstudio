@@ -14,6 +14,7 @@
 <script>
 import Header from './components/Header';
 import {get_meta} from '@/assets/api'
+import axios from 'axios'
 export default {
   name: 'App',
 
@@ -26,7 +27,6 @@ export default {
   }),
   async created(){
     if (this.$store.state.meta == null) await this.getMeta();
-    
   },
   methods:{
     async getMeta(){
