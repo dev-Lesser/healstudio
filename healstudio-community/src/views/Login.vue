@@ -61,19 +61,13 @@
         justify-content: center;
         align-items: center;
     }
-    .login-logo-desc {
-        font-family: "Segoe UI Regular";
-        font-size: 12px;
+    #menu_logo_letter{
+        font-family:'Jeju Gothic', sans-serif;
+        font-size: 30px;
         font-weight: bold;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 2.25;
-        letter-spacing: 1px;
-        text-align: left;
-        color: #292929;
-        margin-top: -25px;
     }
     .login-form {
+        font-family:'Jeju Gothic', sans-serif;
         width: 320px;
         margin-top: 30px;
     }

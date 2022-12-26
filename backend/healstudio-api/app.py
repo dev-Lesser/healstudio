@@ -177,6 +177,13 @@ def createReview(gymId):
     collection = db['reviews']
     data = json.loads(app.current_request.raw_body.decode())
     contents = data.get('contents')
+    if len(contents) > 50:
+        return Response(body={
+                    "error": "리뷰를 확인해주세요"
+                    },
+            headers={'Content-Type': 'application/json'},
+            status_code=403)
+        
     user_id = data.get('user_id')
     rate_point = data.get('point')
     if contents and user_id and gymId and rate_point:
@@ -208,6 +215,12 @@ def updateReview(gymId):
     data = json.loads(app.current_request.raw_body.decode())
     _id = data.get('id')
     contents = data.get('contents')
+    if len(contents) > 50:
+        return Response(body={
+                    "error": "리뷰를 확인해주세요"
+                    },
+            headers={'Content-Type': 'application/json'},
+            status_code=403)
     user_id = data.get('user_id')
     rate_point = data.get('point')
     if contents and user_id and gymId and rate_point:
@@ -239,24 +252,23 @@ def updateReview(gymId):
 @app.route('/review/{gymId}', methods=['DELETE'], cors=True)
 def deleteReview(gymId):
     collection = db['reviews']
-    data = json.loads(app.current_request.raw_body.decode())
-    _id = data.get('id')
-    contents = data.get('contents')
-    user_id = data.get('user_id')
-    rate_point = data.get('point')
-    if contents and user_id and gymId and rate_point:
+    e = app.current_request.to_dict()
+    params = e.get('query_params')
+    _id = int(params.get('id'))
+    user_id = params.get('user_id')
+    if user_id and gymId and _id:
         delete_query = {
             "id": _id,
             "related_gym_id": gymId,
             "user": user_id,
         }
         
-        collection.delete(delete_query)
+        collection.delete_one(delete_query)
     
 
         return Response(body=gymId,
                 headers={'Content-Type': 'text/plain'},
-                status_code=204)
+                status_code=200)
         
     return Response(body={
                     "error": "평점 및 리뷰를 확인해주세요"

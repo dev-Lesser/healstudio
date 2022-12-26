@@ -14,7 +14,7 @@ export const login = async (user_id, password) => {
         data: data
     })
     console.log(result)
-    if (result.status == 201) {
+    if (result.status == 200) {
         console.log('login success')
         return [true, result.data]
     }
@@ -142,6 +142,22 @@ export const update_review = async (id, gymId, user_id, contents, point) => {
     })
     if (result.status == 204) {
         console.log(`updated ${gymId}`)
+        return [true, result.data]
+    }
+    return [false, null]
+}
+
+export const delete_review = async (id, gymId, user_id) => {
+    const url = `${BASE_URL}/review/${gymId}?id=${id}&user_id=${user_id}`
+    const result = await axios({
+        method: 'delete',
+        url: url,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    if (result.status == 200) {
+        console.log(`deleted ${gymId}, ID: ${id}, USER_ID: ${user_id}, `)
         return [true, result.data]
     }
     return [false, null]

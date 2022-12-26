@@ -3,6 +3,7 @@
     app
     dark
     height="64"
+    class="header"
   >
   <v-card-actions>
     <v-icon class="pl-3 mb-2" v-show="$route.name == 'Home'" @click="$store.state.selected = !$store.state.selected">mdi-format-align-justify</v-icon>
@@ -46,4 +47,7 @@ export default {
   }
 }
 </script>
-
+<style scoped>
+.header {
+}
+</style>
