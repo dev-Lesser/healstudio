@@ -48,9 +48,11 @@
                 <div class="review-rating">
                 <v-rating
                     v-model="review.point"
-                    background-color="white"
+                    background-color="grey"
                     color="yellow accent-4"
                     dense
+                    hover
+                    length="5"
                     half-increments
                     size="18"
                     readonly
@@ -67,7 +69,7 @@
                         small
                         class="mr-2"
                         color="rgb(116, 116, 216)"
-                        @click="overlay = !overlay"
+                        @click="openEditReview(review)"
                     >
                         mdi-pencil
                     </v-icon>
@@ -121,6 +123,7 @@
                         </div>
                         <v-rating
                             v-model="point"
+                            :value="contents"
                             background-color="grey"
                             hover
                             length="5"
@@ -128,6 +131,7 @@
                             dense
                             half-increments
                             size="25"
+                            
                             ></v-rating> 
                         <v-spacer />
                         <div>{{point}} 점</div>
@@ -148,9 +152,10 @@
                 color="grey"
                 ></v-textarea>
                 <v-card-actions>
-                    <v-btn @click="createReview">작성하기</v-btn>
+                    <v-btn v-if="!isUpdateClick" @click="createReview">작성하기</v-btn>
+                    <v-btn v-else @click="editReview">수정하기</v-btn>
                     <v-spacer/>
-                    <v-btn @click="init">취소</v-btn>
+                    <v-btn @click="closeReview">취소</v-btn>
                 </v-card-actions>
             </v-card>
         </v-overlay>
@@ -170,7 +175,10 @@
 </template>
 <script>
 import NoData from '@/components/NoData'
-import {create_review, update_review} from '@/assets/api'
+import {
+    create_review, 
+    update_review
+} from '@/assets/api'
 export default {
     components: {
         NoData
@@ -185,20 +193,26 @@ export default {
             listHeight: Math.round((window.innerHeight - 483) / 100) * 100,
             isShown: true,
             overlay: false,
-            point: 0,
+            point: 5,
             contents: '',
             pages: 5,
             start:1,
             end: 100,
             current: 1,
             loading: false,
+            isUpdateClick: false,
+            updateId: null,
         }
     },
     methods:{
         async init(){
             this.overlay = false
             this.contents = ''
-            this.point = 0
+            this.point = 5
+            this.isUpdateClick = false
+        },
+        async closeReview(){
+            await this.init();
         },
         async createReview(){
             const [success, res] = await create_review(
@@ -216,14 +230,24 @@ export default {
                 }
                 this.loading = false;
         },
-        async editReview(item){
+        openEditReview(item){            
+            console.log(item)
+            this.updateId = item.id
+            this.isUpdateClick = true
+            this.contents = item.contents
+            this.point = item.point
+            this.overlay = !this.overlay; // 창을 펼친다
+        },
+        async editReview(){
+            console.log(this.contents, this.point, this.updateId)
             const [success, res] = await update_review(
-                item.id,
+                this.updateId,
                 this.$route.params.id,
                 "test",
-                item.contents,
-                item.point
+                this.contents,
+                this.point
                 );
+                console.log(success, res)
                 if (!success) {
                     this.status = -1;
                     alert(res)
