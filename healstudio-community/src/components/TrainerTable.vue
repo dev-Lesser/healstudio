@@ -1,7 +1,7 @@
 <template>
 <v-flex xs12 sm12 md12 >
 
-    <v-card  class="ma-3 pa-3">
+    <v-card  class="ma-3 pa-3" height="600">
         <v-card-title>
             {{metaData.name}}
             

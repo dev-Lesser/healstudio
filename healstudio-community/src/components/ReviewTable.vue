@@ -1,9 +1,8 @@
 <template>
 <v-flex xs12 sm12 md12 >
-    <v-card  class="ma-3 pa-3">
+    <v-card  class="ma-3 pa-3" height="600">
         <v-card-title>
             {{metaData.name}}
-            
         </v-card-title>
         <v-chip outlined class="box-hashtag-content ma-2" small v-for="keyword, i in metaData.keywords" :key="`keyword--${i}`">#{{keyword}}</v-chip>
         
@@ -68,14 +67,14 @@
                         small
                         class="mr-2"
                         color="rgb(116, 116, 216)"
-                        @click="editReview(item)"
+                        @click="overlay = !overlay"
                     >
                         mdi-pencil
                     </v-icon>
                     <v-icon
                         small
                         color="rgb(216, 116, 116)"
-                        @click="deleteReview(item)"
+                        @click="deleteReview(review)"
                     >
                         mdi-delete
                     </v-icon>
@@ -151,7 +150,7 @@
                 <v-card-actions>
                     <v-btn @click="createReview">작성하기</v-btn>
                     <v-spacer/>
-                    <v-btn @click="overlay = !overlay">취소</v-btn>
+                    <v-btn @click="init">취소</v-btn>
                 </v-card-actions>
             </v-card>
         </v-overlay>
@@ -171,7 +170,7 @@
 </template>
 <script>
 import NoData from '@/components/NoData'
-import {create_review} from '@/assets/api'
+import {create_review, update_review} from '@/assets/api'
 export default {
     components: {
         NoData
@@ -198,8 +197,8 @@ export default {
     methods:{
         async init(){
             this.overlay = false
-                    this.contents = ''
-                    this.point = 0
+            this.contents = ''
+            this.point = 0
         },
         async createReview(){
             const [success, res] = await create_review(
@@ -215,11 +214,24 @@ export default {
                 else {
                     await this.init();
                 }
-
                 this.loading = false;
         },
         async editReview(item){
-            console.log(1,item)
+            const [success, res] = await update_review(
+                item.id,
+                this.$route.params.id,
+                "test",
+                item.contents,
+                item.point
+                );
+                if (!success) {
+                    this.status = -1;
+                    alert(res)
+                }
+                else {
+                    await this.init();
+                }
+                this.loading = false;
         },
         async deleteReview(item){
             console.log('delete', item)

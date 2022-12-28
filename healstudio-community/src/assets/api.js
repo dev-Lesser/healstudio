@@ -127,3 +127,22 @@ export const create_review = async (gymId, user_id, contents, point) => {
     }
     return [false, null]
 }
+
+export const update_review = async (id, gymId, user_id, contents, point) => {
+    const body = { id, user_id, contents, point }
+    const url = `${BASE_URL}/review/${gymId}`
+    var data = JSON.stringify(body);
+    const result = await axios({
+        method: 'patch',
+        url: url,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    })
+    if (result.status == 204) {
+        console.log(`updated ${gymId}`)
+        return [true, result.data]
+    }
+    return [false, null]
+}
