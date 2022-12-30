@@ -81,7 +81,6 @@ def searchRegionDetail():
     params = e.get('query_params')
     sido = params.get('sido')
     sigungu = params.get('sigungu')
-    print(sido, sigungu)
     if sigungu != None:
         regions = list(collection.find({
             'region': sido, 
@@ -125,7 +124,6 @@ def search():
     params = e.get('query_params')
     skip = int(params.get('skip'))
     limit = int(params.get('limit'))
-    print(skip, limit)
     if limit >= 100:
         raise BadRequestError('error')
 
@@ -147,7 +145,6 @@ def getReviews(gymId):
         item = i
         item['created_at'] = item['created_at'].strftime("%Y-%m-%d %H:%M:%S")
         item['updated_at'] = item['updated_at'].strftime("%Y-%m-%d %H:%M:%S")
-        print(item)
         results.append(item)
     return Response(body=results,
             headers={'Content-Type': 'application/json'},
@@ -175,7 +172,7 @@ def getTrainers(gymId):
 
 
 ### REVIEW CRUD
-@app.route('/review/{gymId}', methods=['POST', 'PUT', 'PATCH', 'DELETE'], cors=True)
+@app.route('/review/{gymId}', methods=['POST'], cors=True)
 def createReview(gymId):
     collection = db['reviews']
     data = json.loads(app.current_request.raw_body.decode())
@@ -198,6 +195,68 @@ def createReview(gymId):
         return Response(body=gymId,
                 headers={'Content-Type': 'text/plain'},
                 status_code=200)
+        
+    return Response(body={
+                    "error": "평점 및 리뷰를 확인해주세요"
+                    },
+            headers={'Content-Type': 'application/json'},
+            status_code=403)
+    
+@app.route('/review/{gymId}', methods=['PATCH'], cors=True)
+def updateReview(gymId):
+    collection = db['reviews']
+    data = json.loads(app.current_request.raw_body.decode())
+    _id = data.get('id')
+    contents = data.get('contents')
+    user_id = data.get('user_id')
+    rate_point = data.get('point')
+    if contents and user_id and gymId and rate_point:
+        insert_query = {
+            "id": _id,
+            "related_gym_id": gymId,
+            "user": user_id,
+        }
+        res = {
+            '$set' : {
+                "contents": contents,
+                "point": rate_point,
+                "updated_at": datetime.datetime.now()
+            }
+        }
+        collection.update(insert_query, res)
+    
+
+        return Response(body=gymId,
+                headers={'Content-Type': 'text/plain'},
+                status_code=200)
+        
+    return Response(body={
+                    "error": "평점 및 리뷰를 확인해주세요"
+                    },
+            headers={'Content-Type': 'application/json'},
+            status_code=403)
+
+@app.route('/review/{gymId}', methods=['DELETE'], cors=True)
+def deleteReview(gymId):
+    collection = db['reviews']
+    data = json.loads(app.current_request.raw_body.decode())
+    _id = data.get('id')
+    contents = data.get('contents')
+    user_id = data.get('user_id')
+    rate_point = data.get('point')
+    if contents and user_id and gymId and rate_point:
+        delete_query = {
+            "id": _id,
+            "related_gym_id": gymId,
+            "user": user_id,
+        }
+        
+        collection.delete(delete_query)
+    
+
+        return Response(body=gymId,
+                headers={'Content-Type': 'text/plain'},
+                status_code=204)
         
     return Response(body={
                     "error": "평점 및 리뷰를 확인해주세요"
