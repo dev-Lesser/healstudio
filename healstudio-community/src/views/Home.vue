@@ -8,11 +8,11 @@
             
             <l-marker  :lat-lng="markerLatLng"></l-marker>
             <!-- <div v-if="locations">
-                <l-marker v-for="key in $store.state.locations" :key="key" :lat-lng="[$store.state.locations[key][0], $store.state.locations[key][1]]"></l-marker>
+                <l-marker v-for="key in latlon" :key="key" :lat-lng="latlon[key]"></l-marker>
             </div> -->
-            <!-- <v-marker v-for="(i,key) of locations" :key="key" :lat-lng="[i,key]">
+            <v-marker v-for="key in locations" :key="`marker__${key}`" :lat-lng="locations[key]">
             
-          </v-marker> -->
+            </v-marker>
         </l-map>
         
 </v-layout>
@@ -21,7 +21,7 @@
 <script>
 import "leaflet/dist/leaflet.css"
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
-// import * as Vue2Leaflet from 'vue2-leaflet'
+import * as Vue2Leaflet from 'vue2-leaflet'
 
 import GymDetail from "@/components/GymDetail"
 import SideNavBar from '@/components/SideNavBar'
@@ -32,7 +32,7 @@ export default {
         LMap,
         LTileLayer,
         LMarker,
-        // 'v-marker': Vue2Leaflet.LMarker,
+        'v-marker': Vue2Leaflet.LMarker,
         GymDetail,
         SideNavBar,
         
@@ -64,9 +64,6 @@ export default {
         for(var i in this.$store.state.locations){
             console.log(this.$store.state.locations[i])
         }
-        // this.$store.state.locations.forEach(e => {
-        //         console.log(e)
-        //     });
     },
     async beforeUpdate(){
        
@@ -102,10 +99,15 @@ export default {
             // console.log(this.$store.state.gyms)
         },
         locations(){
-            this.latlon=this.$store.state.locations.map(e => {
-                return e
-            });
-            console.log(this.latlon)
+            console.log(123)
+            // this.latlon=this.$store.state.locations.map(e => {
+            //     return e
+            // });
+            // this.$store.state.locations = this.latlon;
+            // for(var key in this.latlon){
+            //     console.log(this.latlon[key])
+            // }
+            
         }
     }
 }
